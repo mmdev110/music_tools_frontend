@@ -3,9 +3,10 @@ import Dropzone from 'react-dropzone'
 
 type Props = {
     audioFile: File | undefined
+    audioUrl: string
     onDrop: (acceptedFiles: File[]) => void
 }
-const AudioPlayer = ({ audioFile, onDrop }: Props) => {
+const AudioPlayer = ({ audioFile, onDrop, audioUrl }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         onDrop(acceptedFiles)
     }
@@ -16,13 +17,7 @@ const AudioPlayer = ({ audioFile, onDrop }: Props) => {
                     <section>
                         <div style={{ border: 'solid' }} {...getRootProps()}>
                             <input {...getInputProps()} />
-                            <audio
-                                controls
-                                src={
-                                    audioFile && URL.createObjectURL(audioFile)
-                                }
-                                loop={true}
-                            />
+                            <audio controls src={audioUrl} loop={true} />
                         </div>
                     </section>
                 )}

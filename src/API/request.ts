@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
 import { User, UserLoopInput } from 'types'
 import lo from 'lodash'
+import { url } from 'inspector'
 
 //requestをcamel->snakeに、
 //response.dataをsnake->camelにするための処理
@@ -146,6 +147,37 @@ const requestBackend = async <T>(
         } else {
             response = await backend.get(url, config)
         }
+        return response
+    } catch (err) {
+        throw err
+    }
+}
+
+export const uploadToS3 = async (presignedUrl: string, file: File) => {
+    console.log('@@@uploadToS3')
+    console.log('@@@presignedUrl')
+    console.log(presignedUrl)
+
+    try {
+        const config = {
+            //params: { Key: file.name, ContentType: file.type },
+            headers: {
+                'Content-Type': file.type,
+            },
+        }
+        const response = await axios.put(presignedUrl, file, config)
+        return response
+    } catch (err) {
+        throw err
+    }
+}
+export const getFromS3 = async (presignedUrl: string) => {
+    console.log('@@@getFromS3')
+    console.log('@@@presignedUrl')
+    console.log(presignedUrl)
+    try {
+        //const response = await axios.get(presignedUrl)
+        const response = await fetch(presignedUrl)
         return response
     } catch (err) {
         throw err

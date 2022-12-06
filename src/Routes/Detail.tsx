@@ -13,7 +13,7 @@ import Memo from 'Components/Memo'
 import { TERMS } from 'Constants'
 import * as Types from 'types'
 import { UserLoopInput } from 'types'
-import { getUserLoop, saveUserLoop } from 'API/request'
+import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils'
 import { isAxiosError } from 'axios'
 
@@ -68,8 +68,10 @@ const Detail = () => {
     }
     //AudioFile
     const [audioFile, setAudioFile] = useState<File>()
+    const [audioUrl, setAudioUrl] = useState('')
     const onDropAudio = (acceptedFiles: File[]) => {
         setAudioFile(acceptedFiles[0])
+        setAudioUrl(URL.createObjectURL(acceptedFiles[0]))
     }
     //MidiFile
     const [midiFile, setMidiFile] = useState<File>()
@@ -90,14 +92,27 @@ const Detail = () => {
         }
         try {
             console.log(input)
-            const data = await saveUserLoop(input, userLoopId!)
+            const { userLoopInput, s3Url } = await saveUserLoop(
+                input,
+                userLoopId!
+            )
+            console.log(userLoopInput)
+            try {
+                if (s3Url.mp3 && audioFile) {
+                    const response = await uploadToS3(s3Url.mp3, audioFile)
+                    console.log(response)
+                }
+                if (s3Url.midi && midiFile)
+                    await uploadToS3(s3Url.mp3, midiFile)
+            } catch (err) {
+                if (isAxiosError(err)) console.log(err)
+            }
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
         }
     }
     const load = async (id: number) => {
         const { userLoopInput, s3Url } = await getUserLoop(id)
-        //console.log('@@@data = ', data)
         setProgressions(userLoopInput.progressions)
         setScaleForm({
             root: userLoopInput.key,
@@ -105,6 +120,14 @@ const Detail = () => {
             transposeRoot: null,
         })
         setMemo(userLoopInput.memo)
+        try {
+            if (s3Url.mp3) {
+                //const response = await getFromS3(s3Url.mp3)
+                setAudioUrl(s3Url.mp3)
+            }
+        } catch (err) {
+            console.log(err)
+        }
     }
     useEffect(() => {
         if (!isNaN(parseInt(userLoopId!))) load(parseInt(userLoopId!))
@@ -116,7 +139,11 @@ const Detail = () => {
             <div>{userLoopId}</div>
             <button onClick={save}>save</button>
             <h2>AudioPlayer</h2>
-            <AudioPlayer audioFile={audioFile} onDrop={onDropAudio} />
+            <AudioPlayer
+                audioFile={audioFile}
+                audioUrl={audioUrl}
+                onDrop={onDropAudio}
+            />
             <h2>Memo</h2>
             <Memo memo={memo} onChange={onMemoChange} />
             <h2>Scales</h2>
