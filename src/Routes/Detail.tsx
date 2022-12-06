@@ -96,11 +96,15 @@ const Detail = () => {
         }
     }
     const load = async (id: number) => {
-        const data = await getUserLoop(id)
-        console.log('@@@data = ', data)
-        setProgressions(data.progressions)
-        setScaleForm({ root: data.key, scale: data.scale, transposeRoot: null })
-        setMemo(data.memo)
+        const { userLoopInput, s3Url } = await getUserLoop(id)
+        //console.log('@@@data = ', data)
+        setProgressions(userLoopInput.progressions)
+        setScaleForm({
+            root: userLoopInput.key,
+            scale: userLoopInput.scale,
+            transposeRoot: null,
+        })
+        setMemo(userLoopInput.memo)
     }
     useEffect(() => {
         if (!isNaN(parseInt(userLoopId!))) load(parseInt(userLoopId!))

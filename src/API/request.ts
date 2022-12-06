@@ -83,19 +83,34 @@ export const signUp = async (
     console.log(response)
     return response.data
 }
+type S3Url = {
+    mp3: string
+    midi: string
+}
+type SaveUserLoopResponse = {
+    userLoopInput: UserLoopInput
+    s3Url: S3Url
+}
 export const saveUserLoop = async (
     input: UserLoopInput,
     userLoopId: string
-) => {
-    const response = await requestBackend<UserLoopInput>(
+): Promise<SaveUserLoopResponse> => {
+    const response = await requestBackend<SaveUserLoopResponse>(
         `loop/${userLoopId}`,
         'POST',
         input
     )
     return response.data
 }
-export const getUserLoop = async (userLoopId: number) => {
-    const response = await requestBackend<UserLoopInput>(
+
+type GetUserLoopResponse = {
+    userLoopInput: UserLoopInput
+    s3Url: S3Url
+}
+export const getUserLoop = async (
+    userLoopId: number
+): Promise<GetUserLoopResponse> => {
+    const response = await requestBackend<GetUserLoopResponse>(
         `loop/${userLoopId}`,
         'GET'
     )
