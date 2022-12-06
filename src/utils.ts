@@ -1,5 +1,5 @@
-import * as Constants from './constants'
-import { TERMS } from './constants'
+import * as Constants from './Constants'
+import { TERMS } from './Constants'
 import * as Types from './types'
 
 //スケールの構成音を返す
@@ -7,7 +7,7 @@ export const generateScaleNotes = (
     root: number,
     scaleType: string
 ): Types.NOTE[] => {
-    console.log('@@@@generateScaleNotes', scaleType)
+    //console.log('@@@@generateScaleNotes', scaleType)
     let scale: number[]
     scale = Constants.SCALES[scaleType].notes
     if (!scale) throw new Error(`scale not found for: ${scaleType}`)
@@ -17,7 +17,7 @@ export const generateScaleNotes = (
     scale.forEach((elem) => {
         notes.push(sortedAllNotes[elem])
     })
-    console.log(notes)
+    //console.log(notes)
     return notes
 }
 //配列をnewIndexを[0]とする配列に並び替える
@@ -60,8 +60,8 @@ export const parseChordInput = (
 ): [Types.NOTE, string, Types.NOTE | null] => {
     const matchRoot = chord.match(Constants.CHORD_RE.ROOT)
     const matchOnChord = chord.match(Constants.CHORD_RE.ON_CHORD)
-    console.log('@@@@matchOnChord')
-    console.log(matchOnChord)
+    //console.log('@@@@matchOnChord')
+    //console.log(matchOnChord)
     if (matchRoot === null) throw new Error('invalid chord root.')
     const rootChar = matchRoot[0]
     const rootNote = findNote(matchRoot[0])

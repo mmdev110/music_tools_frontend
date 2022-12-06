@@ -1,6 +1,6 @@
 import Note from './Note'
-import * as Constants from '../constants'
-import { TERMS, CHORD_RE, SCALES } from '../constants'
+import * as Constants from '../Constants'
+import { TERMS, CHORD_RE, SCALES } from '../Constants'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils'
 import lo from 'lodash'
 import { NOTE } from '../types'
@@ -80,7 +80,7 @@ export default class Chord {
         toKey: number,
         scale: string
     ): [string, string] => {
-        console.log('@@@@getTransposedRoot')
+        //console.log('@@@@getTransposedRoot')
         if (this._name === '') return ['', '']
         this._calcDegree(fromKey)
         const { root, on } = this._degree
@@ -122,7 +122,7 @@ export default class Chord {
         if (matchSeventh) this._detail.seventh = matchSeventh[0]
 
         const matchTension = chordQuality.match(CHORD_RE.TENSIONS)
-        console.log({ matchTension })
+        //console.log({ matchTension })
         if (matchTension) this._detail.tensions = matchTension
         this._detail.root = rootNote.index
     }
@@ -247,8 +247,8 @@ export default class Chord {
         //色々計算して、itselfとrelationにpushしていく
         let itself: string[] = []
         let relation: string[] = []
-        console.log(this._degree)
-        console.log(this._detail)
+        //console.log(this._degree)
+        //console.log(this._detail)
 
         //ダイアトニック
         const [isDiatonic, role] = this._isDiatonic(key, scale)
@@ -319,8 +319,6 @@ export default class Chord {
         const { quality, third, seventh, fifth, tensions } = this._detail
         let scaleConf = SCALES[scale].diatonics!
         if (!scaleConf) throw new Error(`conf not found for: ${scale}`)
-        console.log(root, third, fifth, seventh)
-        console.log(scaleConf)
         const info = scaleConf.find((info) => {
             return (
                 info.root === root &&
@@ -397,9 +395,9 @@ export default class Chord {
         return false
     }
     private _notesIncludes(root: number, semitonesFromRoot: number) {
-        console.log(
-            `@@@@notesIncludes: root ${root}, semi:${semitonesFromRoot}`
-        )
+        //console.log(
+        //    `@@@@notesIncludes: root ${root}, semi:${semitonesFromRoot}`
+        //)
         const target = transposeNote(root, semitonesFromRoot)
         return this._notes.includes(target)
     }
@@ -417,7 +415,6 @@ export default class Chord {
         return this._notesIncludes(root, 2)
     }
     private _isSubDominantMinor(key: number) {
-        console.log('@@@@isSubdominantMinor')
         //const notesInC = this._notes.map((note) => transposeNote(note, -key))
         //キーから半音8個上の音を持っていればサブドミナントマイナー
         return this._notesIncludes(key, 8)
@@ -446,7 +443,7 @@ export default class Chord {
     //ドミナントモーション
     //C majorでのG7->C, G->Cなど
     private _isDominantMotion(next: Chord): boolean {
-        console.log('@@@@isDominantMotion')
+        //console.log('@@@@isDominantMotion')
         return (
             this._isDominant() &&
             this._isPFourthMove(next) &&

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import * as Constants from '../constants'
+import * as Constants from '../Constants'
 import * as Types from '../types'
 import * as Utils from '../utils'
 
@@ -63,11 +63,11 @@ const OneChord = (props: Props) => {
         if (itself.length === 0 && relation.length === 0) return <div>-</div>
         return (
             <div style={{ fontSize: 15 }}>
-                {itself.map((chara) => {
-                    return <div>{chara}</div>
+                {itself.map((chara, index) => {
+                    return <div key={index}>{chara}</div>
                 })}
-                {relation.map((chara) => {
-                    return <div>{chara}</div>
+                {relation.map((chara, index) => {
+                    return <div key={index}>{chara}</div>
                 })}
             </div>
         )

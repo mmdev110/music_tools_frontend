@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import * as Constants from '../constants'
+import * as Constants from '../Constants'
 import * as Types from '../types'
 import * as Utils from '../utils'
 
@@ -15,7 +15,6 @@ const InputCell = (props: Props) => {
     const [input, setInput] = useState('')
     const formRef = useRef<HTMLInputElement>(null)
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('change at Input Cell')
         const newInput = event.target.value
         setInput(newInput)
         props.onChange(newInput, props.index)

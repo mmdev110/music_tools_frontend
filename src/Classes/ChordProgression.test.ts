@@ -1,7 +1,7 @@
 import { it, describe, expect } from 'vitest'
 import ChordProgression from './ChordProgression'
-import * as Constants from '../constants'
-import { TERMS } from '../constants'
+import * as Constants from '../Constants'
+import { TERMS } from '../Constants'
 import * as Utils from '../utils'
 
 describe('newFromChordNames()', () => {

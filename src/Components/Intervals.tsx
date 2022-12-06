@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import * as Constants from '../constants'
+import * as Constants from '../Constants'
 import * as Types from '../types'
 
 type Props = {}
@@ -22,7 +22,6 @@ const Intervals = (props: Props) => {
     )
     const [intervals, SetIntervals] = useState(intervalsInitial)
     const selectNote = (note: string) => {
-        console.log(note)
         const newIntervals: Cell[][] = intervals.map((column) => {
             return column.map((elem) => {
                 if (elem.value === note) {

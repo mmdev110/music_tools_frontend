@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import * as Constants from '../constants'
-import { TERMS } from '../constants'
+import * as Constants from '../Constants'
+import { TERMS } from '../Constants'
 import * as Utils from '../utils'
 import * as Types from '../types'
 import { SequencerNote, SequencerSetting } from '../types'
@@ -10,8 +10,6 @@ import MidiTypes from '@tonejs/midi/dist/Note'
 import Sequencer from './Sequencer'
 import RootForm from './RootForm'
 import ScaleForm from './ScaleForm'
-import { hasSelectionSupport } from '@testing-library/user-event/dist/utils'
-import { networkInterfaces } from 'os'
 
 type Props = {}
 
@@ -65,16 +63,13 @@ const SequenceAnalyzer = (props: Props) => {
         setFileBuffer(acceptedFiles)
     }
     useEffect(() => {
-        console.log('@@@useEffect')
-        console.log(fileBuffer)
         if (fileBuffer.length > 0) {
             processFile(fileBuffer[0])
             const tmp = fileBuffer
             tmp.shift()
-            console.log(tmp)
             setFileBuffer(tmp)
         }
-    })
+    }, [fileBuffer])
     const processFile = (file: File): Promise<number> => {
         return new Promise((resolve) => {
             const reader = new FileReader()
@@ -203,7 +198,11 @@ const SequenceAnalyzer = (props: Props) => {
     }
     return (
         <div className="Sequencer-Analyzer">
-            <ScaleForm onChange={handleScaleFormChange} showTranspose={false} />
+            <ScaleForm
+                scaleForm={scaleForm}
+                onChange={handleScaleFormChange}
+                showTranspose={false}
+            />
             <div className="DropZone">
                 <Dropzone onDrop={processFiles}>
                     {({ getRootProps, getInputProps }) => (

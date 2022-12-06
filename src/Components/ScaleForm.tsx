@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { TERMS } from '../constants'
+import React, { useState, useEffect, useRef } from 'react'
+import { TERMS } from '../Constants'
 import * as Util from '../utils'
 import * as Types from '../types'
 import { SequencerNote, SequencerSetting } from '../types'
@@ -11,12 +11,28 @@ import InputCell from './InputCell'
 type Props = {
     onChange: React.ChangeEventHandler<HTMLSelectElement>
     showTranspose: boolean
+    scaleForm: Types.ScaleForm
 }
 const ScaleForm = (props: Props) => {
+    const rootRef = useRef<HTMLSelectElement>(null)
+    const scaleRef = useRef<HTMLSelectElement>(null)
+    useEffect(() => {
+        //props.scaleFormに選択状態を合わせる
+        for (let i = 0; i < rootRef.current?.children.length!; i++) {
+            const option = rootRef.current?.children[i] as HTMLOptionElement
+            if (option.value === props.scaleForm.root.toString())
+                option.selected = true
+        }
+        for (let i = 0; i < scaleRef.current?.children.length!; i++) {
+            const option = scaleRef.current?.children[i] as HTMLOptionElement
+            console.log(option.value)
+            if (option.value === props.scaleForm.scale) option.selected = true
+        }
+    }, [props.scaleForm])
     return (
         <div className="Scale-Form" style={{}}>
             <form>
-                <select name="root" onChange={props.onChange}>
+                <select ref={rootRef} name="root" onChange={props.onChange}>
                     <option value="0">C</option>
                     <option value="1">C#/Db</option>
                     <option value="2">D</option>
@@ -30,7 +46,7 @@ const ScaleForm = (props: Props) => {
                     <option value="10">A#/Bb</option>
                     <option value="11">B</option>
                 </select>
-                <select name="scale" onChange={props.onChange}>
+                <select ref={scaleRef} name="scale" onChange={props.onChange}>
                     <option value={TERMS.MAJOR}>メジャー</option>
                     <option value={TERMS.NATURAL_MINOR}>
                         ナチュラルマイナー

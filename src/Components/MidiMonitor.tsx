@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { ALL_DEGREES } from '../constants'
+import { ALL_DEGREES } from '../Constants'
 import * as Util from '../utils'
 import * as Types from '../types'
-import Note from '../Classes/Note'
+//import Note from '../Classes/Note'
+import Note from 'Classes/Note'
 import lo from 'lodash'
 import { o } from 'vitest/dist/index-2f5b6168'
 
@@ -42,7 +43,7 @@ const MidiMonitor = () => {
         return notes
     }
     const notes = buildNotes()
-    console.log('notes = ', notes)
+    //console.log('notes = ', notes)
 
     const handleInput = (event: WebMidi.MIDIMessageEvent) => {
         const command = event.data[0]

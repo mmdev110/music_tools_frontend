@@ -1,5 +1,5 @@
 import { findNote, shiftArrayIndex } from '../utils'
-import { ALL_NOTES, ALL_DEGREES } from '../constants'
+import { ALL_NOTES, ALL_DEGREES } from '../Constants'
 import { NOTE } from '../types'
 
 export default class Note {

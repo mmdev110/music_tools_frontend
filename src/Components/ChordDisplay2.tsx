@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ALL_DEGREES, TERMS } from '../constants'
+import { ALL_DEGREES, TERMS } from '../Constants'
 import * as Types from '../types'
 import ChordProgression from '../Classes/ChordProgression'
 import lo from 'lodash'
@@ -8,25 +8,9 @@ import ScaleForm from './ScaleForm'
 
 type Props = {
     scaleForm: Types.ScaleForm
+    onProgressionsChange: Function
+    progressionNames: string[]
 }
-const DefaultChordNames: string[] = [
-    'CM7',
-    'Am7',
-    'Dm7',
-    'G7',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-]
 const ResetChordNames: string[] = [
     '',
     '',
@@ -45,31 +29,38 @@ const ResetChordNames: string[] = [
     '',
     '',
 ]
-const chordProgressionDefault: ChordProgression =
-    ChordProgression.newFromChordNames(DefaultChordNames, 0, TERMS.MAJOR)
-const ChordDisplay2 = (props: Props) => {
+
+const ChordDisplay2 = ({
+    progressionNames,
+    onProgressionsChange,
+    scaleForm,
+}: Props) => {
     //console.log('@@@@ChordDisplay')
-    const [input, setInput] = useState(DefaultChordNames)
-    const [progression, setProgression] = useState(chordProgressionDefault)
+    const [progression, setProgression] = useState(
+        ChordProgression.newFromChordNames(
+            ResetChordNames,
+            scaleForm.root,
+            scaleForm.scale
+        )
+    )
     const onChange = (index: number, chords: string) => {
-        console.log('onchange at ChordDisplay')
-        let newInput = input
+        let newInput = progressionNames
         newInput[index] = chords
-        setInput(newInput)
-        console.log(newInput)
+        //親のstate更新
+        onProgressionsChange(newInput)
+        //degree等を更新
         updateProgression(newInput)
     }
     useEffect(() => {
-        updateProgression(input)
-    }, [props.scaleForm])
+        updateProgression(progressionNames)
+    }, [scaleForm, progressionNames])
     const onReset = () => {
         const reset = lo.cloneDeep(ResetChordNames)
-        setInput(reset)
+        onProgressionsChange(reset)
         updateProgression(reset)
     }
     const updateProgression = (chordNames: string[]) => {
-        const { root, scale } = props.scaleForm
-        console.log({ chordNames })
+        const { root, scale } = scaleForm
         const newProgression = ChordProgression.newFromChordNames(
             chordNames,
             root,
@@ -82,10 +73,10 @@ const ChordDisplay2 = (props: Props) => {
         const chunkBy4 = lo.chunk(progression.chords, 4)
         return chunkBy4.map((chunk, index) => {
             return (
-                <div className="One-Bar">
+                <div key={index} className="One-Bar">
                     {chunk.map((chord, index2) => {
                         const { degree, detail, characteristics } = chord
-                        const { scaleForm } = props
+                        //const { scaleForm } = props
                         let degreeName: string = ''
                         if (degree.root !== -1) {
                             degreeName =
@@ -107,6 +98,7 @@ const ChordDisplay2 = (props: Props) => {
 
                         return (
                             <OneChord
+                                key={index2}
                                 chord={chord.name}
                                 degree={degreeName}
                                 chara_itself={characteristics.itself}

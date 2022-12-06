@@ -1,3 +1,21 @@
+import internal from 'stream'
+
+export type User = {
+    userId: number
+    email: string
+    token: string
+}
+export type UserLoopInput = {
+    id?: number
+    progressions: string[]
+    key: number
+    scale: string
+    midiRoots: number[]
+    memo: string
+    audioPath: string
+    midiPath: string
+}
+
 //Miditypes.Noteを加工したもの
 export type SequencerNote = {
     style: string
