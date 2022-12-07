@@ -16,6 +16,7 @@ import { UserLoopInput } from 'types'
 import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils'
 import { isAxiosError } from 'axios'
+import lo from 'lodash'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -78,6 +79,11 @@ const Detail = () => {
     const onDropMidi = (acceptedFiles: File[]) => {
         setMidiFile(acceptedFiles[0])
     }
+    //rootIndexes
+    const [rootIndexes, setRootIndexes] = useState<number[]>([])
+    const handleRootIndexes = (indexes: number[]) => {
+        setRootIndexes(indexes)
+    }
 
     const save = async () => {
         console.log('save')
@@ -85,7 +91,7 @@ const Detail = () => {
             progressions: progressions,
             key: scaleForm.root,
             scale: scaleForm.scale,
-            midiRoots: [1],
+            midiRoots: rootIndexes,
             memo: memo,
             audioPath: audioFile ? audioFile.name : '',
             midiPath: midiFile ? midiFile.name : '',
@@ -103,7 +109,7 @@ const Detail = () => {
                     console.log(response)
                 }
                 if (s3Url.midi && midiFile)
-                    await uploadToS3(s3Url.mp3, midiFile)
+                    await uploadToS3(s3Url.midi, midiFile)
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
@@ -124,6 +130,13 @@ const Detail = () => {
             if (s3Url.mp3) {
                 //const response = await getFromS3(s3Url.mp3)
                 setAudioUrl(s3Url.mp3)
+            }
+            if (s3Url.midi) {
+                const response = await getFromS3(s3Url.midi)
+                const blob = await response.blob()
+                const file = new File([blob], userLoopInput.midiPath)
+                setMidiFile(file)
+                setRootIndexes(userLoopInput.midiRoots)
             }
         } catch (err) {
             console.log(err)
@@ -164,7 +177,13 @@ const Detail = () => {
             <h2>Modes</h2>
             <Modes scaleForm={scaleForm} />
             <h2>MIDI Analyzer</h2>
-            <SequenceAnalyzer />
+            <SequenceAnalyzer
+                scaleForm={scaleForm}
+                onDrop={onDropMidi}
+                midiFile={midiFile}
+                rootIndexes={rootIndexes}
+                onMidiNoteClick={handleRootIndexes}
+            />
             <h2>MIDI Monitor</h2>
             <MidiMonitorDescription />
             <MidiMonitor />

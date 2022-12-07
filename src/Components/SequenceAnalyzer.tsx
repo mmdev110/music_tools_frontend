@@ -9,27 +9,15 @@ import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
 import Sequencer from './Sequencer'
 import RootForm from './RootForm'
-import ScaleForm from './ScaleForm'
 
-type Props = {}
-
-const dummy = (): MidiTypes.Note[] => {
-    var dummyMidi = new Midi()
-    // add a track
-    const dummyTrack = dummyMidi.addTrack()
-    dummyTrack
-        .addNote({
-            midi: 60,
-            time: 0,
-            durationTicks: 100,
-        })
-        .addNote({
-            name: 'B5',
-            time: 0.3,
-            durationTicks: 1920,
-        })
-    return dummyTrack.notes
+type Props = {
+    scaleForm: Types.ScaleForm
+    onDrop: (acceptedFiles: File[]) => void
+    midiFile: File | undefined
+    rootIndexes: number[]
+    onMidiNoteClick: (index: number[]) => void
 }
+
 type NumberOrNull = number | null
 type Form = NumberOrNull[][]
 const blankForm: NumberOrNull[] = [null, null, null, null] //1小節分
@@ -39,38 +27,24 @@ const initialSetting: SequencerSetting = {
     maxOctave: 3,
 }
 
-const SequenceAnalyzer = (props: Props) => {
+const SequenceAnalyzer = ({
+    scaleForm,
+    onDrop,
+    onMidiNoteClick,
+    midiFile,
+    rootIndexes,
+}: Props) => {
     const [notes, setNotes] = useState<SequencerNote[]>([])
     const [setting, setSetting] = useState(initialSetting)
-    const [rootForm, setRootForm] = useState<Form>([
-        [null, null, null, null],
-        [null, null, null, null],
-        [null, null, null, null],
-        [null, null, null, null],
-    ])
     const [fileName, setFileName] = useState('')
-    const [fileBuffer, setFileBuffer] = useState<File[]>([])
-    const [scaleForm, setScaleForm] = useState<Types.ScaleForm>({
-        root: 0,
-        scale: TERMS.MAJOR,
-        transposeRoot: null,
-    })
 
     const processFiles = async (acceptedFiles: File[]) => {
         setFileName(acceptedFiles[0].name)
         setNotes([])
-
-        setFileBuffer(acceptedFiles)
+        onDrop(acceptedFiles)
     }
-    useEffect(() => {
-        if (fileBuffer.length > 0) {
-            processFile(fileBuffer[0])
-            const tmp = fileBuffer
-            tmp.shift()
-            setFileBuffer(tmp)
-        }
-    }, [fileBuffer])
     const processFile = (file: File): Promise<number> => {
+        console.log(file.name)
         return new Promise((resolve) => {
             const reader = new FileReader()
             reader.onabort = () => console.log('file reading was aborted')
@@ -118,36 +92,34 @@ const SequenceAnalyzer = (props: Props) => {
         const setting = analyzeSetting(newNotes)
         //console.log({ setting })
         setSetting(setting)
-        const newRootForm: Form = []
-        for (let i = 0; i < setting.barLength; i++) {
-            newRootForm.push([null, null, null, null])
-        }
-        setRootForm(newRootForm)
     }
 
     useEffect(() => {
         const newNotes = analyzeNotes(notes, scaleForm)
         setNotes(newNotes)
-    }, [])
-
-    //ノートのintervalなどを解析
-
-    const rootFormOnChange = (rootName: string, formIndex: number) => {
-        console.log('@@@@rootFormOnChange')
-        const newRootForm = rootForm
-        const firstIndex = Math.floor(formIndex / 4)
-        const secondIndex = formIndex - firstIndex * 4
-        const root = Utils.findNote(rootName)
-        const pitch = root.index
-        if (root) {
-            newRootForm[firstIndex][secondIndex] = pitch
-        } else {
-            newRootForm[firstIndex][secondIndex] = null
-        }
-        setRootForm(newRootForm)
-        const newNotes = analyzeNotes(notes, scaleForm)
-        setNotes(newNotes)
-    }
+    }, [scaleForm])
+    useEffect(() => {
+        if (midiFile) processFile(midiFile)
+    }, [midiFile])
+    useEffect(() => {
+        console.log(rootIndexes)
+        //rootIndexesをnotesに適用
+        //midifileが読み込まれるのをどうやって待つか・・・
+        //if (midiFile) {
+        //while (true) {
+        //    console.log('ppp')
+        //    if (notes.length > 0) {
+        //        const newNotes = [...notes]
+        //        rootIndexes.forEach((ind) => {
+        //            newNotes[ind].isRoot = true
+        //        })
+        //        const analyzed = analyzeNotes(newNotes, scaleForm)
+        //        setNotes(newNotes)
+        //        break
+        //    }
+        //}
+        //}
+    }, [rootIndexes])
 
     const analyzeSetting = (notes: SequencerNote[]): SequencerSetting => {
         let setting: SequencerSetting = initialSetting
@@ -175,36 +147,24 @@ const SequenceAnalyzer = (props: Props) => {
         }
         return setting
     }
-    const handleScaleFormChange = (
-        event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        const name = event.target.name
-        let value =
-            name === 'root' || name === 'transposeRoot'
-                ? Number(event.target.value)
-                : event.target.value
-        const newScaleForm = { ...scaleForm, [name]: value }
-        console.log('@@newScaleForm', newScaleForm)
-        setScaleForm(newScaleForm)
-        const newNotes = analyzeNotes(notes, newScaleForm)
-        setNotes(newNotes)
-    }
-    const setAsRoot = (index: number) => {
-        console.log('hi: ', index)
+
+    const onClick = (index: number) => {
+        //console.log('hi: ', index)
         const newNotes = [...notes]
         newNotes[index].isRoot = !newNotes[index].isRoot
         const newNotesAnalyzed = analyzeNotes(newNotes, scaleForm)
         setNotes(newNotesAnalyzed)
+
+        let indexes: number[] = []
+        newNotesAnalyzed.forEach((note, index) => {
+            if (note.isRoot) indexes.push(index)
+        })
+        onMidiNoteClick(indexes)
     }
     return (
         <div className="Sequencer-Analyzer">
-            <ScaleForm
-                scaleForm={scaleForm}
-                onChange={handleScaleFormChange}
-                showTranspose={false}
-            />
             <div className="DropZone">
-                <Dropzone onDrop={processFiles}>
+                <Dropzone noClick={true} onDrop={processFiles}>
                     {({ getRootProps, getInputProps }) => (
                         <section>
                             <div
@@ -212,18 +172,15 @@ const SequenceAnalyzer = (props: Props) => {
                                 {...getRootProps()}
                             >
                                 <input {...getInputProps()} />
-                                <p>
-                                    Drag 'n' drop some files here, or click to
-                                    select files
-                                </p>
-                            </div>
-                        </section>
-                    )}
-                </Dropzone>
-            </div>
-            <div style={{ width: '90vw', overflowX: 'auto', border: 'solid' }}>
-                {fileName && <div>{fileName}</div>}
-                {/*}
+                                <div
+                                    style={{
+                                        width: '90vw',
+                                        overflowX: 'auto',
+                                        border: 'solid',
+                                    }}
+                                >
+                                    {fileName && <div>{fileName}</div>}
+                                    {/*}
                 <RootForm
                     form={rootForm}
                     scaleForm={scaleForm}
@@ -231,11 +188,16 @@ const SequenceAnalyzer = (props: Props) => {
                     setting={setting}
                 />
                     {*/}
-                <Sequencer
-                    setting={setting}
-                    notes={notes}
-                    onClick={setAsRoot}
-                />
+                                    <Sequencer
+                                        setting={setting}
+                                        notes={notes}
+                                        onClick={onClick}
+                                    />
+                                </div>
+                            </div>
+                        </section>
+                    )}
+                </Dropzone>
             </div>
         </div>
     )

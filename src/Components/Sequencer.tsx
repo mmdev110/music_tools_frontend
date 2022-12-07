@@ -97,6 +97,7 @@ const Sequencer = (props: Props) => {
         return props.notes.map((note, index) => {
             return (
                 <SingleNote
+                    key={'singlenote' + index.toString()}
                     setting={props.setting}
                     note={note}
                     index={index}

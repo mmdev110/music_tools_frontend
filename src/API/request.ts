@@ -1,9 +1,8 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
 import { User, UserLoopInput } from 'types'
 import lo from 'lodash'
-import { url } from 'inspector'
 
-//requestをcamel->snakeに、
+//request.params, request.dataをcamel->snakeに、
 //response.dataをsnake->camelにするための処理
 //programabl.com/ja/convert-snakecase-and-camelcase/
 const mapKeysDeep = (
@@ -155,8 +154,6 @@ const requestBackend = async <T>(
 
 export const uploadToS3 = async (presignedUrl: string, file: File) => {
     console.log('@@@uploadToS3')
-    console.log('@@@presignedUrl')
-    console.log(presignedUrl)
 
     try {
         const config = {
