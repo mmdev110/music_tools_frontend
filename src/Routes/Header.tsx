@@ -21,6 +21,7 @@ const Header = ({ user }: props) => {
     const signOut = async () => {
         window.localStorage.removeItem('jwt')
         navigate('/')
+        window.location.reload()
     }
     return (
         <div className="font-mono">
