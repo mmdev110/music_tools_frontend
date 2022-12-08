@@ -6,7 +6,6 @@ import { SequencerNote, SequencerSetting } from '../types'
 import { Midi } from '@tonejs/midi'
 import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
-import { isPropertySignature } from 'typescript'
 
 type Props = {
     notes: SequencerNote[]
@@ -25,13 +24,14 @@ type NotesInfo = {
     onClick: (index: number) => void
 }
 const FixedSequencerStyle: React.CSSProperties = {
-    backgroundColor: '',
+    //backgroundColor: '',
     backgroundImage: `
-    linear-gradient(0deg, transparent calc(100% - 3px), #f0f0f040 calc(100% - 3px)),
-    linear-gradient(90deg,transparent calc(100% - 3px), #f0f0f040 calc(100% - 3px)),
-    linear-gradient(0deg, transparent calc(100% - 1px), #f0f0f040 calc(100% - 1px)),
-    linear-gradient(90deg, transparent calc(100% - 1px), #f0f0f040 calc(100% - 1px))
+    linear-gradient(0deg, transparent calc(100% - 3px), ##5c5c5c40 calc(100% - 3px)),
+    linear-gradient(90deg,transparent calc(100% - 3px), ##5c5c5c40 calc(100% - 3px)),
+    linear-gradient(0deg, transparent calc(100% - 1px), ##5c5c5c40 calc(100% - 1px)),
+    linear-gradient(90deg, transparent calc(100% - 1px), ##5c5c5c40 calc(100% - 1px))
     `,
+
     backgroundSize: `
     ${pixelWidth}px ${pixelHeight * 12}px,
     ${pixelWidth * 8}px ${pixelHeight}px,
@@ -39,7 +39,6 @@ const FixedSequencerStyle: React.CSSProperties = {
     ${pixelWidth}px ${pixelHeight}px`,
     backgroundRepeat: 'repeat',
     backgroundPosition: 'bottom left',
-
     display: 'block',
     position: 'relative',
 }
@@ -77,7 +76,7 @@ const Sequencer = (props: Props) => {
         const sequencerStyle: React.CSSProperties = generateSequencerStyle(
             props.setting
         )
-        //console.log(props.setting)
+        console.log(sequencerStyle)
         return <div style={sequencerStyle}>{renderNotes()}</div>
     }
     const generateSequencerStyle = (
@@ -107,7 +106,7 @@ const Sequencer = (props: Props) => {
         })
     }
 
-    return <div className="Sequencer">{renderSequencer()}</div>
+    return renderSequencer()
 }
 
 type NoteProps = {
@@ -132,7 +131,7 @@ const SingleNote = ({ note, setting, onClick, index }: NoteProps) => {
     const top = calcTopMargin(note, setting.maxOctave) //ノートのy座標
 
     const noteStyle: React.CSSProperties = {
-        ...FixedNoteStyle,
+        height: pixelHeight,
         left: left,
         top: top,
         width: width,
@@ -141,8 +140,10 @@ const SingleNote = ({ note, setting, onClick, index }: NoteProps) => {
         onClick(index)
     }
     //console.log(noteStyle)
+    let className = 'absolute border-2 border-black pb-1 text-xs'
+    if (note.style) className = className + ' ' + note.style
     return (
-        <span className={note.style} style={noteStyle} onClick={noteOnClick}>
+        <span className={className} style={noteStyle} onClick={noteOnClick}>
             {`${note.isRoot ? 'r' : ''}${note.name}`}
             {note.interval && `-${note.interval}`}
         </span>

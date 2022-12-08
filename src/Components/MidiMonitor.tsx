@@ -26,7 +26,7 @@ const MidiMonitor = () => {
             //console.log(event.port.manufacturer)
         })
         access.inputs.forEach((input, key) => {
-            console.log(input.name)
+            //console.log(input.name)
             input.addEventListener('midimessage', handleInput)
         })
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
-import { TERMS } from '../Constants'
+import { TERMS, NoteColors } from '../Constants'
 import * as Utils from '../utils'
 import * as Types from '../types'
 import { SequencerNote, SequencerSetting } from '../types'
@@ -162,32 +162,19 @@ const SequenceAnalyzer = ({
         onMidiNoteClick(indexes)
     }
     return (
-        <div className="Sequencer-Analyzer">
+        <div className="">
             <div className="DropZone">
                 <Dropzone noClick={true} onDrop={processFiles}>
                     {({ getRootProps, getInputProps }) => (
                         <section>
-                            <div
-                                style={{ border: 'solid' }}
-                                {...getRootProps()}
-                            >
+                            <div style={{}} {...getRootProps()}>
                                 <input {...getInputProps()} />
-                                <div
-                                    style={{
-                                        width: '90vw',
-                                        overflowX: 'auto',
-                                        border: 'solid',
-                                    }}
-                                >
-                                    {fileName && <div>{fileName}</div>}
-                                    {/*}
-                <RootForm
-                    form={rootForm}
-                    scaleForm={scaleForm}
-                    onChange={rootFormOnChange}
-                    setting={setting}
-                />
-                    {*/}
+                                <div className="rounded-lg border-2 border-black">
+                                    <div>
+                                        {fileName
+                                            ? fileName
+                                            : 'Drag n Drop midi file here'}
+                                    </div>
                                     <Sequencer
                                         setting={setting}
                                         notes={notes}
@@ -253,12 +240,13 @@ const analyzeNotes = (notes: SequencerNote[], scaleForm: Types.ScaleForm) => {
                 //console.log('pitch = ', note.pitch)
                 //console.log({ indexInMode })
                 if (mode.chordTones.includes(indexInMode))
-                    note.style = 'Chord-Tone'
-                if (mode.avoids.includes(indexInMode)) note.style = 'Avoid'
+                    note.style = NoteColors.ChordTone
+                if (mode.avoids.includes(indexInMode))
+                    note.style = NoteColors.Avoid
                 if (mode.naturalTensions.includes(indexInMode))
-                    note.style = 'Natural-Tension'
+                    note.style = NoteColors.NaturalTension
                 if (mode.alteredTensions.includes(indexInMode))
-                    note.style = 'Altered-Tension'
+                    note.style = NoteColors.AlteredTension
             }
         }
 

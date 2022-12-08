@@ -365,8 +365,14 @@ export const CHORD_RE = {
 
 export const Sequencer = {
     ticksPerBar: 1920,
-    pixelHeight: 16,
+    pixelHeight: 16, //px
     pixelWidth: 32,
     pixelResolution: 8, //1ピクセル=1/8小節
-    barWidth: 24 * 8, //gridPixelWidth * gridResolution
+    barWidth: 32 * 8, //gridPixelWidth * gridResolution
+}
+export const NoteColors = {
+    ChordTone: 'bg-sky-400',
+    Avoid: 'bg-red-400',
+    NaturalTension: 'bg-green-400',
+    AlteredTension: 'bg-yellow-400',
 }

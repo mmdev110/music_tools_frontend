@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
-import { TERMS } from '../Constants'
+import { TERMS, NoteColors } from 'Constants'
 import * as Utils from '../utils'
 import * as Types from '../types'
 
@@ -38,12 +38,12 @@ const Modes = (props: Props) => {
                     //console.log(index)
                     //console.log(mode)
                     if (mode.chordTones.includes(index))
-                        style = Colors.ChordTone
-                    if (mode.avoids.includes(index)) style = Colors.Avoid
+                        style = NoteColors.ChordTone
+                    if (mode.avoids.includes(index)) style = NoteColors.Avoid
                     if (mode.naturalTensions.includes(index))
-                        style = Colors.NaturalTension
+                        style = NoteColors.NaturalTension
                     if (mode.alteredTensions.includes(index))
-                        style = Colors.AlteredTension
+                        style = NoteColors.AlteredTension
                 }
                 return { style: style, value: elem.flat }
             })
@@ -127,33 +127,28 @@ const Modes = (props: Props) => {
             {/*凡例*/}
             <div className="ml-5 mt-5 flex flex-col">
                 <div className="flex">
-                    <div className={Colors.ChordTone + ' px-4'}></div>
+                    <div className={NoteColors.ChordTone + ' px-4'}></div>
                     <div>コードトーン</div>
                 </div>
                 <div className="flex">
-                    <div className={Colors.NaturalTension + ' px-4'}></div>
+                    <div className={NoteColors.NaturalTension + ' px-4'}></div>
                     <div>ナチュラルテンション</div>
                 </div>
 
                 <div className="flex">
-                    <div className={Colors.AlteredTension + ' px-4'}></div>
+                    <div className={NoteColors.AlteredTension + ' px-4'}></div>
 
                     <div>オルタードテンション</div>
                 </div>
                 <div className="flex">
-                    <div className={Colors.Avoid + ' px-4'}></div>
+                    <div className={NoteColors.Avoid + ' px-4'}></div>
                     <div>アボイド</div>
                 </div>
             </div>
         </div>
     )
 }
-const Colors = {
-    ChordTone: 'bg-sky-400',
-    Avoid: 'bg-red-400',
-    NaturalTension: 'bg-green-400',
-    AlteredTension: 'bg-yellow-400',
-}
+
 type CellProps = {
     style?: string
     onClick?: Function
