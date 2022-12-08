@@ -34,38 +34,36 @@ const Intervals = (props: Props) => {
         SetIntervals(newIntervals)
     }
     return (
-        <div className="Intervals">
-            <div className="Intervals-List">
-                {Constants.ALL_DEGREES.map((elem, index) => {
-                    return (
-                        <div
-                            className="Intervals-Column"
-                            key={'column' + index.toString()}
-                        >
-                            <Cell
-                                cell={{
-                                    isSelected: false,
-                                    value: elem.interval,
-                                }}
-                            />
-                            {intervals[index].map((elem, index2) => {
-                                return (
-                                    <Cell
-                                        key={
-                                            'Cell' +
-                                            index
-                                                .toString()
-                                                .concat(index2.toString())
-                                        }
-                                        onClick={selectNote}
-                                        cell={elem}
-                                    />
-                                )
-                            })}
-                        </div>
-                    )
-                })}
-            </div>
+        <div className="flex min-w-full rounded-md border-4 border-black text-2xl">
+            {Constants.ALL_DEGREES.map((elem, index) => {
+                return (
+                    <div
+                        className="flex basis-1/12 flex-col items-center border-r-2 border-black last:border-r-0"
+                        key={'column' + index.toString()}
+                    >
+                        <Cell
+                            cell={{
+                                isSelected: false,
+                                value: elem.interval,
+                            }}
+                        />
+                        {intervals[index].map((elem, index2) => {
+                            return (
+                                <Cell
+                                    key={
+                                        'Cell' +
+                                        index
+                                            .toString()
+                                            .concat(index2.toString())
+                                    }
+                                    onClick={selectNote}
+                                    cell={elem}
+                                />
+                            )
+                        })}
+                    </div>
+                )
+            })}
         </div>
     )
 }
@@ -79,10 +77,15 @@ const Cell = (props: CellProps) => {
         if (props.onClick) props.onClick(event.currentTarget.innerText)
     }
     //console.log(props.cell)
+    const baseStyle =
+        'min-w-full border-b-2 border-black first:border-b-4 last:border-b-0'
+    const selected = 'bg-amber-400'
     return (
         <div
             onClick={onClick}
-            className={`Cell ${props.cell.isSelected ? 'Selected' : ''}`}
+            className={
+                props.cell.isSelected ? baseStyle + ' ' + selected : baseStyle
+            }
         >
             {props.cell.value}
         </div>

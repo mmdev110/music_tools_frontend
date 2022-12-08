@@ -62,7 +62,7 @@ const OneChord = (props: Props) => {
         const relation = props.chara_relation
         if (itself.length === 0 && relation.length === 0) return <div>-</div>
         return (
-            <div style={{ fontSize: 15 }}>
+            <div className="flex flex-col items-center">
                 {itself.map((chara, index) => {
                     return <div key={index}>{chara}</div>
                 })}
@@ -74,11 +74,11 @@ const OneChord = (props: Props) => {
     }
 
     return (
-        <div className="One-Chord">
+        <div className="flex basis-1/4 flex-col items-center">
             {isInputting ? renderInputForm() : renderChordText()}
             <div>{props.degree}</div>
             {renderCharacteristic()}
-            <div>{props.transposedChord}</div>
+            <div className="mt-auto">{props.transposedChord}</div>
         </div>
     )
 }

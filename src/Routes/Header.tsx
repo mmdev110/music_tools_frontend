@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
-import { Route, Routes, BrowserRouter, Link, Outlet } from 'react-router-dom'
+import {
+    Route,
+    Routes,
+    BrowserRouter,
+    Link,
+    Outlet,
+    useNavigate,
+} from 'react-router-dom'
 
 import { TERMS } from 'Constants'
 import Detail from 'Routes/Detail'
@@ -10,31 +17,46 @@ type props = {
     user: Types.User | null
 }
 const Header = ({ user }: props) => {
+    const navigate = useNavigate()
+    const signOut = async () => {
+        window.localStorage.removeItem('jwt')
+        navigate('/')
+    }
     return (
-        <div className="bg-stone-600 font-mono text-slate-100">
-            <div>Header Page</div>
-            {user ? (
-                <div>{`Welcome! ${user.email}`}</div>
-            ) : (
-                'You are not logged in.'
-            )}
-            <div className="flex justify-center">
-                {user ? (
-                    <Link to="signout">SignOut</Link>
-                ) : (
-                    <div className="flex">
-                        <div>
-                            <Link to="signin">SignIn</Link>
+        <div className="font-mono">
+            <div className="flex justify-between bg-stone-600 px-20  text-slate-100">
+                <div>LOOP ANALYZER</div>
+                <div className="flex">
+                    {user ? (
+                        <div>{`Welcome! ${user.email} |`}</div>
+                    ) : (
+                        'You are not logged in. |'
+                    )}
+                    {user ? (
+                        <div className="flex">
+                            <div>
+                                <Link to="list">List |</Link>
+                            </div>
+                            <div
+                                className="hover:cursor-pointer"
+                                onClick={signOut}
+                            >
+                                SignOut |
+                            </div>
                         </div>
-                        <div>
-                            <Link to="signup">SignUp</Link>
+                    ) : (
+                        <div className="flex">
+                            <div>
+                                <Link to="signin">SignIn |</Link>
+                            </div>
+                            <div>
+                                <Link to="signup">SignUp |</Link>
+                            </div>
                         </div>
-                    </div>
-                )}
-                <Link to="list">List</Link>
-                <Link to="/">Top</Link>
+                    )}
+                    <Link to="/">Top</Link>
+                </div>
             </div>
-
             <Outlet />
         </div>
     )

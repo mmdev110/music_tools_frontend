@@ -7,6 +7,8 @@ import * as Types from 'types'
 import * as Utils from 'utils'
 //import './App.css'
 import { signIn } from 'API/request'
+import BasicPage from 'Components/BasicPage'
+import { Button, Input } from 'Components/HTMLElementsWrapper'
 
 const SignIn = () => {
     const [form, setForm] = useState({ email: '', password: '' })
@@ -32,25 +34,39 @@ const SignIn = () => {
         setForm(newForm)
     }
     return (
-        <div className="App">
-            <div>SignIn Page</div>
-            <form onSubmit={onSubmit}>
-                <input
-                    type="text"
-                    name="email"
-                    placeholder="email"
-                    onChange={onChange}
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="password"
-                    onChange={onChange}
-                />
-                <input type="submit" value="signin" />
-            </form>
-            {resultText ? <div>{resultText}</div> : null}
-        </div>
+        <BasicPage>
+            <div className="flex flex-col gap-y-5 pt-10">
+                <div>SIGNIN</div>
+                <form onSubmit={onSubmit}>
+                    <div className="flex flex-col gap-y-5">
+                        <div>
+                            <label className="inline-block w-48 text-left">
+                                E-MAIL ADDRESS
+                            </label>
+                            <Input
+                                type="text"
+                                name="email"
+                                onChange={onChange}
+                            />
+                        </div>
+                        <div>
+                            <label className="inline-block w-48 text-left">
+                                PASSWORD
+                            </label>
+                            <Input
+                                type="password"
+                                name="password"
+                                onChange={onChange}
+                            />
+                        </div>
+                        <div>
+                            <Button type="submit">SIGNIN</Button>
+                        </div>
+                    </div>
+                </form>
+                {resultText ? <div>{resultText}</div> : null}
+            </div>
+        </BasicPage>
     )
 }
 

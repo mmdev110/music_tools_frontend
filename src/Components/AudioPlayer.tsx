@@ -15,7 +15,11 @@ const AudioPlayer = ({ audioFile, onDrop, audioUrl }: Props) => {
             <Dropzone accept={{ 'audio/mpeg': ['.mp3'] }} onDrop={processFiles}>
                 {({ getRootProps, getInputProps }) => (
                     <section>
-                        <div style={{ border: 'solid' }} {...getRootProps()}>
+                        <div
+                            className="border-2 border-solid border-sky-400"
+                            {...getRootProps()}
+                        >
+                            Drag and Drop mp3
                             <input {...getInputProps()} />
                             <audio controls src={audioUrl} loop={true} />
                         </div>

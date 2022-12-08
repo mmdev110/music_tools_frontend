@@ -3,11 +3,12 @@ import React from 'react'
 type Props = {
     memo: string
     onChange: React.ChangeEventHandler<HTMLTextAreaElement>
+    className: string
 }
-const Memo = ({ memo, onChange }: Props) => {
+const Memo = ({ memo, onChange, className }: Props) => {
     return (
         <div>
-            <textarea value={memo} onChange={onChange} />
+            <textarea className={className} value={memo} onChange={onChange} />
         </div>
     )
 }

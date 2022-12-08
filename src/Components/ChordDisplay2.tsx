@@ -73,7 +73,10 @@ const ChordDisplay2 = ({
         const chunkBy4 = lo.chunk(progression.chords, 4)
         return chunkBy4.map((chunk, index) => {
             return (
-                <div key={index} className="One-Bar">
+                <div
+                    key={index}
+                    className="flex grow justify-around border-t-4 border-black first:border-t-0 "
+                >
                     {chunk.map((chord, index2) => {
                         const { degree, detail, characteristics } = chord
                         //const { scaleForm } = props
@@ -114,9 +117,11 @@ const ChordDisplay2 = ({
         })
     }
     return (
-        <div className="Chord-Display">
+        <div className="w-full">
             <button onClick={onReset}>reset</button>
-            {render()}
+            <div className="flex flex-col rounded-xl border-4 border-black">
+                {render()}
+            </div>
         </div>
     )
 }

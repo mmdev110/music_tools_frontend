@@ -14,7 +14,6 @@ import Header from 'Routes/Header'
 import Top from 'Routes/Top'
 import SignIn from 'Routes/SignIn'
 import SignUp from 'Routes/SignUp'
-import SignOut from 'Routes/SignOut'
 import Detail from 'Routes/Detail'
 import List from 'Routes/List'
 import ErrorPage from 'Routes/ErrorPage'
@@ -50,10 +49,6 @@ const App = () => {
                 {
                     path: 'signup',
                     element: <SignUp />,
-                },
-                {
-                    path: 'signout',
-                    element: <SignOut />,
                 },
                 {
                     path: 'list',

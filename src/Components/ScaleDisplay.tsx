@@ -7,7 +7,7 @@ const ScaleDisplay = ({ scaleForm }: Types.ScaleDisplayProps) => {
     const notes = Util.generateScaleNotes(scaleForm.root, scaleForm.scale)
     const flatOrSharp = Util.getSignatureType(scaleForm.root, scaleForm.scale)
     return (
-        <div className="Scale-Display">
+        <div className="flex gap-x-6 text-2xl">
             {notes.map((note, index) => (
                 <div key={index}>{note[flatOrSharp]}</div>
             ))}

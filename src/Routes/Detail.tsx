@@ -17,6 +17,8 @@ import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils'
 import { isAxiosError } from 'axios'
 import lo from 'lodash'
+import BasicPage from 'Components/BasicPage'
+import { Button, Input } from 'Components/HTMLElementsWrapper'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -147,48 +149,59 @@ const Detail = () => {
     }, [])
 
     return (
-        <div className="App">
-            Tools I Need
-            <div>{userLoopId}</div>
-            <button onClick={save}>save</button>
-            <h2>AudioPlayer</h2>
-            <AudioPlayer
-                audioFile={audioFile}
-                audioUrl={audioUrl}
-                onDrop={onDropAudio}
-            />
-            <h2>Memo</h2>
-            <Memo memo={memo} onChange={onMemoChange} />
-            <h2>Scales</h2>
-            <ScaleForm
-                scaleForm={scaleForm}
-                onChange={onScaleFormChange}
-                showTranspose={true}
-            />
-            <ScaleDisplay scaleForm={scaleForm} />
-            <h2>Chord Display</h2>
-            <ChordDisplay
-                progressionNames={progressions}
-                onProgressionsChange={onProgressionsChange}
-                scaleForm={scaleForm}
-            />
-            <h2>Intervals</h2>
-            <Intervals />
-            <h2>Modes</h2>
-            <Modes scaleForm={scaleForm} />
-            <h2>MIDI Analyzer</h2>
-            <SequenceAnalyzer
-                scaleForm={scaleForm}
-                onDrop={onDropMidi}
-                midiFile={midiFile}
-                rootIndexes={rootIndexes}
-                onMidiNoteClick={handleRootIndexes}
-            />
-            <h2>MIDI Monitor</h2>
-            <MidiMonitorDescription />
-            <MidiMonitor />
-            <div style={{ marginTop: '10em' }}></div>
-        </div>
+        <BasicPage>
+            <div className="flex flex-col gap-y-5 pt-10">
+                <div>
+                    <Button onClick={save}>save</Button>
+                </div>
+
+                <div className="text-2xl">AudioPlayer</div>
+                <AudioPlayer
+                    audioFile={audioFile}
+                    audioUrl={audioUrl}
+                    onDrop={onDropAudio}
+                />
+                <div className="text-2xl">Memo</div>
+                <Memo
+                    className="h-1/2 w-full border-2 border-sky-400"
+                    memo={memo}
+                    onChange={onMemoChange}
+                />
+                <div className="text-2xl">Scales</div>
+                <ScaleForm
+                    scaleForm={scaleForm}
+                    onChange={onScaleFormChange}
+                    showTranspose={true}
+                />
+                <ScaleDisplay scaleForm={scaleForm} />
+                <div className="text-2xl">Chord Display</div>
+                <ChordDisplay
+                    progressionNames={progressions}
+                    onProgressionsChange={onProgressionsChange}
+                    scaleForm={scaleForm}
+                />
+                <div className="text-2xl">Intervals</div>
+
+                <Intervals />
+                <div className="text-2xl">Modes</div>
+
+                <Modes scaleForm={scaleForm} />
+                <div className="text-2xl">MIDI Analyzer</div>
+
+                <SequenceAnalyzer
+                    scaleForm={scaleForm}
+                    onDrop={onDropMidi}
+                    midiFile={midiFile}
+                    rootIndexes={rootIndexes}
+                    onMidiNoteClick={handleRootIndexes}
+                />
+                <div className="text-2xl">MIDI Monitor</div>
+
+                <MidiMonitorDescription />
+                <MidiMonitor />
+                <div style={{ marginTop: '10em' }}></div>
+            </div>
+        </BasicPage>
     )
 }
 

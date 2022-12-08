@@ -37,12 +37,13 @@ const Modes = (props: Props) => {
                 if (mode) {
                     //console.log(index)
                     //console.log(mode)
-                    if (mode.chordTones.includes(index)) style = 'Chord-Tone'
-                    if (mode.avoids.includes(index)) style = 'Avoid'
+                    if (mode.chordTones.includes(index))
+                        style = Colors.ChordTone
+                    if (mode.avoids.includes(index)) style = Colors.Avoid
                     if (mode.naturalTensions.includes(index))
-                        style = 'Natural-Tension'
+                        style = Colors.NaturalTension
                     if (mode.alteredTensions.includes(index))
-                        style = 'Altered-Tension'
+                        style = Colors.AlteredTension
                 }
                 return { style: style, value: elem.flat }
             })
@@ -50,6 +51,7 @@ const Modes = (props: Props) => {
         //console.log(gen)
         return gen
     }
+
     useEffect(() => {
         //console.log(props.scaleForm)
         const newInterval: Cell[][] = generateIntervals(
@@ -62,16 +64,17 @@ const Modes = (props: Props) => {
         SetIntervals(newInterval)
     }, [props.scaleForm])
 
-    //型問題解消のため
     const [intervals, SetIntervals] = useState<Cell[][]>()
-    const selectNote = (note: string) => {
-        //console.log(note)
-    }
+
     const renderNotes = (index: number) => {
         if (!intervals) return
         return intervals.map((elem) => {
             const cell = elem[index]
-            return <Cell style={cell.style}>{cell.value}</Cell>
+            return (
+                <div className="min-w-full border-b-2 border-black last:border-b-0">
+                    <Cell style={cell.style}>{cell.value}</Cell>
+                </div>
+            )
         })
     }
     const shiftedNotes = Utils.shiftArrayIndex(
@@ -79,10 +82,10 @@ const Modes = (props: Props) => {
         props.scaleForm.root
     )
     return (
-        <div className="Intervals">
-            <div className="Intervals-List">
+        <div className="min-w-full text-2xl">
+            <div className="flex rounded-md border-4 border-black">
                 {/*左端の列*/}
-                <div className="Intervals-Column">
+                <div className="flex flex-col items-center justify-evenly border-r-4 border-black text-lg">
                     <Cell>-</Cell>
                     {shiftedNotes.map((elem, index) => {
                         let text =
@@ -94,9 +97,11 @@ const Modes = (props: Props) => {
                                     : TERMS.NATURAL_MINOR
                             ) || '-'
                         return (
-                            <Cell key={'aa' + index.toString()} style="">
-                                {text}
-                            </Cell>
+                            <div className="min-w-full border-b-2 border-black first:border-y-2 last:border-b-0">
+                                <Cell key={'aa' + index.toString()} style="">
+                                    {text}
+                                </Cell>
+                            </div>
                         )
                     })}
                 </div>
@@ -104,34 +109,51 @@ const Modes = (props: Props) => {
                 {Constants.ALL_DEGREES.map((elem, index) => {
                     let text = elem.interval
                     return (
-                        <div className="Intervals-Column">
-                            <Cell key={'aa' + index.toString()} style="">
-                                {text}
-                            </Cell>
+                        <div className="flex basis-1/12 flex-col items-center justify-evenly border-r-2 border-black last:border-r-0">
+                            <div className="min-w-full border-b-2 border-black last:border-b-0">
+                                <Cell
+                                    key={'aa' + index.toString()}
+                                    style="text-lg"
+                                >
+                                    {text}
+                                </Cell>
+                            </div>
+
                             {renderNotes(index)}
                         </div>
                     )
                 })}
             </div>
             {/*凡例*/}
-            <div className="Legend">
-                <div className="Legend Color">
-                    <div className="Cell Chord-Tone Legend ColorBox"></div>
-                    <div className="Cell Natural-Tension Legend ColorBox"></div>
-                    <div className="Cell Altered-Tension Legend ColorBox"></div>
-                    <div className="Cell Avoid Legend ColorBox"></div>
-                </div>
-                <div className="Legend Type">
+            <div className="ml-5 mt-5 flex flex-col">
+                <div className="flex">
+                    <div className={Colors.ChordTone + ' px-4'}></div>
                     <div>コードトーン</div>
+                </div>
+                <div className="flex">
+                    <div className={Colors.NaturalTension + ' px-4'}></div>
                     <div>ナチュラルテンション</div>
+                </div>
+
+                <div className="flex">
+                    <div className={Colors.AlteredTension + ' px-4'}></div>
+
                     <div>オルタードテンション</div>
+                </div>
+                <div className="flex">
+                    <div className={Colors.Avoid + ' px-4'}></div>
                     <div>アボイド</div>
                 </div>
             </div>
         </div>
     )
 }
-
+const Colors = {
+    ChordTone: 'bg-sky-400',
+    Avoid: 'bg-red-400',
+    NaturalTension: 'bg-green-400',
+    AlteredTension: 'bg-yellow-400',
+}
 type CellProps = {
     style?: string
     onClick?: Function
@@ -142,7 +164,7 @@ const Cell = (props: CellProps) => {
         if (props.onClick) props.onClick(event.currentTarget.innerText)
     }
     return (
-        <div onClick={onClick} className={`Cell ${props.style || ''}`}>
+        <div onClick={onClick} className={props.style || ''}>
             {props.children}
         </div>
     )

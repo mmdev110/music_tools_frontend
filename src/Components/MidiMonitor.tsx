@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { ALL_DEGREES } from '../Constants'
 import * as Util from '../utils'
 import * as Types from '../types'
-//import Note from '../Classes/Note'
 import Note from 'Classes/Note'
-import lo from 'lodash'
-import { o } from 'vitest/dist/index-2f5b6168'
 
 type NotesInput = number[]
+const showMax = 16 //rootの分は除く
+const vh = 50
+
 const MidiMonitor = () => {
     const [notesHist, setNotesHist] = useState<NotesInput>([]) //入力の履歴(入力中が空になったらリセットされる)
     const [currentInputs, setCurrentInputs] = useState<NotesInput>([]) //入力中のノートのみ
@@ -16,7 +16,7 @@ const MidiMonitor = () => {
     }, [])
     useEffect(() => {
         if (notesHist.length > 0 && currentInputs.length === 0) {
-            console.log('reset !!')
+            //console.log('reset !!')
             setNotesHist([])
         }
     }, [currentInputs])
@@ -53,7 +53,13 @@ const MidiMonitor = () => {
             case 146:
                 noteOn(note, velocity)
                 break
+            case 144:
+                noteOn(note, velocity)
+                break
             case 130:
+                noteOff(note, velocity)
+                break
+            case 128:
                 noteOff(note, velocity)
                 break
             default:
@@ -75,7 +81,7 @@ const MidiMonitor = () => {
         })
     }
     const noteOff = (note: number, velocity: number) => {
-        console.log(`noteOff! ${note} ${velocity}`)
+        //console.log(`noteOff! ${note} ${velocity}`)
         setCurrentInputs((before) => {
             const after = before.filter((notein) => notein !== note)
             return after
@@ -87,7 +93,6 @@ const MidiMonitor = () => {
     const clearInput = () => {
         setNotesHist([])
     }
-    const showMax = 16 //rootの分は除く
     const filterNotesForView = (): Note[] => {
         if (notes.length === 0) return []
         const root = notes[0]
@@ -96,19 +101,21 @@ const MidiMonitor = () => {
         return [root, ...rest]
     }
     return (
-        <div className="MidiMonitor">
-            <div style={StyleFlex}>
-                {filterNotesForView().map((note, i) => {
-                    const { name, pitch, octave, degree } = note
-                    const degreeName = ALL_DEGREES[degree].interval
-                    return (
-                        <div
-                            style={StyleFlexChild(pitch, octave, i)}
-                            key={i}
-                        >{`${name}${octave}-${degreeName}`}</div>
-                    )
-                })}
-            </div>
+        <div
+            className="flex w-full items-end justify-start rounded-md border-2 border-black"
+            style={{ height: vh.toString() + 'vh' }}
+        >
+            {filterNotesForView().map((note, i) => {
+                const { name, pitch, octave, degree } = note
+                const degreeName = ALL_DEGREES[degree].interval
+                return (
+                    <div
+                        className="whitespace-nowrap border-2 border-black text-xs"
+                        style={StyleFlexChild(pitch, octave, i)}
+                        key={i}
+                    >{`${name}${octave}-${degreeName}`}</div>
+                )
+            })}
         </div>
     )
 }
@@ -125,16 +132,18 @@ const StyleFlexChild = (
     octave: number,
     i: number
 ): React.CSSProperties => {
-    const heightUnit = pitch + 12 * (octave - 1) + 1
-    console.log({ heightUnit })
-    const fontSize = 0.4
+    const MAXPITCH = 25 //MAXPITCH鍵分表示させたい
+    let pitches = pitch + 12 * (octave - 1) //bottomから何pitch持ち上げるか
+    console.log(pitches)
+    pitches = pitches > MAXPITCH - 1 ? MAXPITCH - 1 : pitches
+    const heightUnit = vh / MAXPITCH
     return {
-        border: 'solid 1px',
+        //border: 'solid 1px',
         //left: i * 100,
-        marginBottom: ((heightUnit * 100) / 61).toString() + '%', //height*heightUnit
-        fontSize: fontSize.toString() + 'em',
-        height: (100 / 61).toString() + '%', //100%を61鍵分表示
-        width: (80 / 16).toString() + 'vw',
+        marginBottom: (heightUnit * pitches).toString() + 'vh', //height*heightUnit
+        //fontSize: fontSize.toString() + 'em',
+        height: heightUnit.toString() + 'vh',
+        width: (100 / (showMax + 1)).toString() + '%',
         //paddingLeft: (0.5 * fontSize).toString() + 'em',
         //paddingRight: (0.5 * fontSize).toString() + 'em',
     }
