@@ -76,7 +76,6 @@ const Sequencer = (props: Props) => {
         const sequencerStyle: React.CSSProperties = generateSequencerStyle(
             props.setting
         )
-        console.log(sequencerStyle)
         return <div style={sequencerStyle}>{renderNotes()}</div>
     }
     const generateSequencerStyle = (
