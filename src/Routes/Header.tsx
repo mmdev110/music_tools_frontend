@@ -26,7 +26,7 @@ const Header = ({ user }: props) => {
     return (
         <div className="font-mono">
             <div className="flex justify-between bg-stone-600 px-20  text-slate-100">
-                <div>LOOP ANALYZER</div>
+                <Link to="/">LOOP ANALYZER</Link>
                 <div className="flex">
                     {user ? (
                         <div>{`Welcome! ${user.email} |`}</div>
