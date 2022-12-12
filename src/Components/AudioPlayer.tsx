@@ -3,14 +3,25 @@ import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
 
 type Props = {
-    droppedFile: File | undefined
+    droppedFile?: File | undefined
     audioUrl: string
-    audioName: string
-    onDrop: (acceptedFiles: File[]) => void
+    audioName?: string
+    onDrop?: (acceptedFiles: File[]) => void
+    dropDisabled: boolean
+    mini: boolean
+    autoPlay?: boolean
 }
-const AudioPlayer = ({ droppedFile, onDrop, audioUrl, audioName }: Props) => {
+const AudioPlayer = ({
+    droppedFile,
+    onDrop,
+    audioUrl,
+    audioName,
+    dropDisabled,
+    mini,
+    autoPlay,
+}: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
-        onDrop(acceptedFiles)
+        if (onDrop) onDrop(acceptedFiles)
     }
     const audioRef = useRef<HTMLMediaElement>(null)
     useEffect(() => {
@@ -26,6 +37,7 @@ const AudioPlayer = ({ droppedFile, onDrop, audioUrl, audioName }: Props) => {
             <Dropzone
                 accept={{ 'audio/mpeg': ['.mp3', '.wav'] }}
                 onDrop={processFiles}
+                disabled={dropDisabled}
             >
                 {({ getRootProps, getInputProps }) => (
                     <section>
@@ -41,6 +53,7 @@ const AudioPlayer = ({ droppedFile, onDrop, audioUrl, audioName }: Props) => {
                                         controls
                                         src={URL.createObjectURL(droppedFile)}
                                         loop={true}
+                                        autoPlay={autoPlay}
                                     />
                                 </div>
                             ) : (
@@ -50,6 +63,7 @@ const AudioPlayer = ({ droppedFile, onDrop, audioUrl, audioName }: Props) => {
                                         ref={audioRef}
                                         controls
                                         loop={true}
+                                        autoPlay={autoPlay}
                                     />
                                 </div>
                             )}

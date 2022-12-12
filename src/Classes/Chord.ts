@@ -1,6 +1,6 @@
 import Note from './Note'
 import * as Constants from '../Constants'
-import { TERMS, CHORD_RE, SCALES } from '../Constants'
+import { TERMS, CHORD_RE, SCALES, ALL_DEGREES } from '../Constants'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils'
 import lo from 'lodash'
 import { NOTE } from '../types'
@@ -512,6 +512,14 @@ export default class Chord {
         if (this._degree.on === -1)
             return { degree: this._degree.root, root: this._detail.root }
         return { degree: this._degree.on, root: this._detail.on }
+    }
+    getDegreeName(): string {
+        if (this._name === '') return ''
+        let degreeName =
+            ALL_DEGREES[this._degree.root].degree + this._detail.quality
+        if (this._degree.on !== -1)
+            degreeName = degreeName + '/' + ALL_DEGREES[this._degree.on].degree
+        return degreeName
     }
 
     //getter, setter

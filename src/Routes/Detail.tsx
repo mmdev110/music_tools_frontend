@@ -97,7 +97,7 @@ const Detail = () => {
             midiRoots: rootIndexes,
             memo: memo,
             userLoopAudio: {
-                name: droppedFile ? droppedFile.name : '',
+                name: droppedFile ? droppedFile.name : audioName,
                 url: { get: '', put: '' },
             },
             userLoopMidi: {
@@ -141,18 +141,18 @@ const Detail = () => {
             transposeRoot: null,
         })
         setMemo(userLoopInput.memo)
+        setAudioName(audio.name)
+        setRootIndexes(userLoopInput.midiRoots)
         try {
             if (audio.url.get) {
                 //const response = await getFromS3(s3Url.mp3)
                 setAudioUrl(audio.url.get)
-                setAudioName(audio.name)
             }
             if (midi.url.get) {
                 const response = await getFromS3(midi.url.get)
                 const blob = await response.blob()
                 const file = new File([blob], midi.name)
                 setMidiFile(file)
-                setRootIndexes(userLoopInput.midiRoots)
             }
         } catch (err) {
             console.log(err)
@@ -175,6 +175,8 @@ const Detail = () => {
                     audioUrl={audioUrl}
                     audioName={audioName}
                     onDrop={onDropAudio}
+                    dropDisabled={false}
+                    mini={false}
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo
