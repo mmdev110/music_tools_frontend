@@ -3,21 +3,21 @@ import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
 
 type Props = {
-    audioFile: File | undefined
+    droppedFile: File | undefined
     audioUrl: string
+    audioName: string
     onDrop: (acceptedFiles: File[]) => void
 }
-const test =
-    'https://music-tools-local2.s3.ap-northeast-1.amazonaws.com/11/Glitchedtones+-+Chillout+Waves+(Demosong)_hls.m3u8'
-const AudioPlayer = ({ audioFile, onDrop, audioUrl }: Props) => {
+const AudioPlayer = ({ droppedFile, onDrop, audioUrl, audioName }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         onDrop(acceptedFiles)
     }
     const audioRef = useRef<HTMLMediaElement>(null)
     useEffect(() => {
         if (HLS.isSupported()) {
+            console.log(audioUrl)
             const hls = new HLS()
-            hls.loadSource(test)
+            hls.loadSource(audioUrl)
             hls.attachMedia(audioRef.current!)
         }
     }, [audioUrl])
@@ -33,18 +33,26 @@ const AudioPlayer = ({ audioFile, onDrop, audioUrl }: Props) => {
                             className="border-2 border-solid border-sky-400"
                             {...getRootProps()}
                         >
-                            <div>
-                                {audioFile
-                                    ? audioFile.name
-                                    : 'Drag and Drop mp3'}
-                            </div>
                             <input {...getInputProps()} />
-                            <audio
-                                ref={audioRef}
-                                controls
-                                src={audioUrl}
-                                loop={true}
-                            />
+                            {droppedFile ? (
+                                <div>
+                                    <div>{droppedFile.name}</div>
+                                    <audio
+                                        controls
+                                        src={URL.createObjectURL(droppedFile)}
+                                        loop={true}
+                                    />
+                                </div>
+                            ) : (
+                                <div>
+                                    <div>{audioName}</div>
+                                    <audio
+                                        ref={audioRef}
+                                        controls
+                                        loop={true}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </section>
                 )}

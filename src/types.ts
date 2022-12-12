@@ -12,8 +12,15 @@ export type UserLoopInput = {
     scale: string
     midiRoots: number[]
     memo: string
-    audioPath: string
-    midiPath: string
+    userLoopAudio: MediaPath
+    userLoopMidi: MediaPath
+}
+type MediaPath = {
+    name: string
+    url: {
+        get: string
+        put: string
+    }
 }
 
 //Miditypes.Noteを加工したもの

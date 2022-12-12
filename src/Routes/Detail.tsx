@@ -69,12 +69,13 @@ const Detail = () => {
         setMemo(e.target.value)
         console.log(e.target.value)
     }
-    //AudioFile
-    const [audioFile, setAudioFile] = useState<File>()
+    //droppedFile
+    const [droppedFile, setDroppedFile] = useState<File>()
     const [audioUrl, setAudioUrl] = useState('')
+    const [audioName, setAudioName] = useState('')
     const onDropAudio = (acceptedFiles: File[]) => {
-        setAudioFile(acceptedFiles[0])
-        setAudioUrl(URL.createObjectURL(acceptedFiles[0]))
+        setDroppedFile(acceptedFiles[0])
+        //setAudioUrl(URL.createObjectURL(acceptedFiles[0]))
     }
     //MidiFile
     const [midiFile, setMidiFile] = useState<File>()
@@ -95,23 +96,32 @@ const Detail = () => {
             scale: scaleForm.scale,
             midiRoots: rootIndexes,
             memo: memo,
-            audioPath: audioFile ? audioFile.name : '',
-            midiPath: midiFile ? midiFile.name : '',
+            userLoopAudio: {
+                name: droppedFile ? droppedFile.name : '',
+                url: { get: '', put: '' },
+            },
+            userLoopMidi: {
+                name: midiFile ? midiFile.name : '',
+                url: { get: '', put: '' },
+            },
         }
         try {
             console.log(input)
-            const { userLoopInput, s3Url } = await saveUserLoop(
-                input,
-                userLoopId!
-            )
+            const { userLoopInput } = await saveUserLoop(input, userLoopId!)
             console.log(userLoopInput)
+            //s3へのアップロード
             try {
-                if (s3Url.mp3 && audioFile) {
-                    const response = await uploadToS3(s3Url.mp3, audioFile)
+                const audio = userLoopInput.userLoopAudio
+                if (audio.url.put && droppedFile) {
+                    const response = await uploadToS3(
+                        audio.url.put,
+                        droppedFile
+                    )
                     console.log(response)
                 }
-                if (s3Url.midi && midiFile)
-                    await uploadToS3(s3Url.midi, midiFile)
+                const midi = userLoopInput.userLoopMidi
+                if (midi.url.put && midiFile)
+                    await uploadToS3(midi.url.put, midiFile)
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
@@ -120,7 +130,10 @@ const Detail = () => {
         }
     }
     const load = async (id: number) => {
-        const { userLoopInput, s3Url } = await getUserLoop(id)
+        const { userLoopInput } = await getUserLoop(id)
+        console.log('@@URI', userLoopInput)
+        const audio = userLoopInput.userLoopAudio
+        const midi = userLoopInput.userLoopMidi
         setProgressions(userLoopInput.progressions)
         setScaleForm({
             root: userLoopInput.key,
@@ -129,14 +142,15 @@ const Detail = () => {
         })
         setMemo(userLoopInput.memo)
         try {
-            if (s3Url.mp3) {
+            if (audio.url.get) {
                 //const response = await getFromS3(s3Url.mp3)
-                setAudioUrl(s3Url.mp3)
+                setAudioUrl(audio.url.get)
+                setAudioName(audio.name)
             }
-            if (s3Url.midi) {
-                const response = await getFromS3(s3Url.midi)
+            if (midi.url.get) {
+                const response = await getFromS3(midi.url.get)
                 const blob = await response.blob()
-                const file = new File([blob], userLoopInput.midiPath)
+                const file = new File([blob], midi.name)
                 setMidiFile(file)
                 setRootIndexes(userLoopInput.midiRoots)
             }
@@ -157,8 +171,9 @@ const Detail = () => {
 
                 <div className="text-2xl">AudioPlayer</div>
                 <AudioPlayer
-                    audioFile={audioFile}
+                    droppedFile={droppedFile}
                     audioUrl={audioUrl}
+                    audioName={audioName}
                     onDrop={onDropAudio}
                 />
                 <div className="text-2xl">Memo</div>
