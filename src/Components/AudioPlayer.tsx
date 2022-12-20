@@ -32,6 +32,12 @@ const AudioPlayer = ({
             hls.attachMedia(audioRef.current!)
         }
     }, [audioUrl])
+
+    const [fileUrl, setFileUrl] = useState('')
+    useEffect(() => {
+        if (droppedFile) setFileUrl(URL.createObjectURL(droppedFile))
+    }, [droppedFile])
+    console.log('render')
     return (
         <div>
             <Dropzone
@@ -51,9 +57,9 @@ const AudioPlayer = ({
                                     <div>{droppedFile.name}</div>
                                     <audio
                                         controls
-                                        src={URL.createObjectURL(droppedFile)}
+                                        src={fileUrl}
                                         loop={true}
-                                        autoPlay={autoPlay}
+                                        autoPlay={true}
                                     />
                                 </div>
                             ) : (

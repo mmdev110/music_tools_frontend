@@ -7,6 +7,7 @@ export type User = {
 }
 export type UserLoopInput = {
     id?: number
+    name: string
     progressions: string[]
     key: number
     scale: string

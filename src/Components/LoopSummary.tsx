@@ -46,14 +46,16 @@ const LoopSummary = ({ input, onPlayButtonClick, onInfoClick }: Props) => {
                 onClick={onClick}
             >
                 <div className="w-1/5  overflow-y-clip break-words border-r-2 border-black">
-                    {input.userLoopAudio.name || 'name'}
+                    {input.name || input.userLoopAudio.name || ''}
                 </div>
                 <div className="w-1/12 border-r-2 border-black">
                     <div>{note.flat}</div>
                     <div>{input.scale}</div>
                 </div>
-                <div className="w-1/3 whitespace-pre-wrap border-r-2 border-black">
+                <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black">
                     <div>{formatProgressions(input.progressions)}</div>
+                </div>
+                <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black">
                     <div>{formatProgressions(degrees)}</div>
                 </div>
                 <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">

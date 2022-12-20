@@ -104,23 +104,23 @@ const SequenceAnalyzer = ({
     useEffect(() => {
         console.log(rootIndexes)
         //rootIndexesをnotesに適用
-        //midifileが読み込まれるのをどうやって待つか・・・
-        //if (midiFile) {
-        //while (true) {
-        //    console.log('ppp')
-        //    if (notes.length > 0) {
-        //        const newNotes = [...notes]
-        //        rootIndexes.forEach((ind) => {
-        //            newNotes[ind].isRoot = true
-        //        })
-        //        const analyzed = analyzeNotes(newNotes, scaleForm)
-        //        setNotes(newNotes)
-        //        break
-        //    }
-        //}
-        //}
+        //midifileが読み込まれるまで待つ
+        const timer = setInterval(() => {
+            setNotes((notes) => {
+                if (notes.length > 0) {
+                    console.log('newnotes')
+                    rootIndexes.forEach((ind) => {
+                        notes[ind].isRoot = true
+                    })
+                    const analyzed = analyzeNotes(notes, scaleForm)
+                    clearInterval(timer)
+                    return analyzed
+                } else {
+                    return notes
+                }
+            })
+        }, 1000)
     }, [rootIndexes])
-
     const analyzeSetting = (notes: SequencerNote[]): SequencerSetting => {
         let setting: SequencerSetting = initialSetting
 

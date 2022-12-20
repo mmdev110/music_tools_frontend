@@ -58,6 +58,12 @@ const Detail = () => {
         }
         setScaleForm(newScaleForm)
     }
+    //name
+    const [name, setName] = useState('')
+    const onNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setName(e.target.value)
+        console.log(e.target.value)
+    }
     //Progressions
     const [progressions, setProgressions] = useState(DefaultChordNames)
     const onProgressionsChange = (newInput: string[]) => {
@@ -92,6 +98,7 @@ const Detail = () => {
         console.log('save')
         const input: UserLoopInput = {
             progressions: progressions,
+            name: name,
             key: scaleForm.root,
             scale: scaleForm.scale,
             midiRoots: rootIndexes,
@@ -140,6 +147,7 @@ const Detail = () => {
             scale: userLoopInput.scale,
             transposeRoot: null,
         })
+        setName(userLoopInput.name)
         setMemo(userLoopInput.memo)
         setAudioName(audio.name)
         setRootIndexes(userLoopInput.midiRoots)
@@ -168,7 +176,12 @@ const Detail = () => {
                 <div>
                     <Button onClick={save}>save</Button>
                 </div>
-
+                <div className="text-2xl">name</div>
+                <Memo
+                    className="h-6 w-1/4 border-2 border-sky-400"
+                    memo={name}
+                    onChange={onNameChange}
+                />
                 <div className="text-2xl">AudioPlayer</div>
                 <AudioPlayer
                     droppedFile={droppedFile}
@@ -197,12 +210,6 @@ const Detail = () => {
                     onProgressionsChange={onProgressionsChange}
                     scaleForm={scaleForm}
                 />
-                <div className="text-2xl">Intervals</div>
-
-                <Intervals />
-                <div className="text-2xl">Modes</div>
-
-                <Modes scaleForm={scaleForm} />
                 <div className="text-2xl">MIDI Analyzer</div>
 
                 <SequenceAnalyzer
@@ -212,6 +219,13 @@ const Detail = () => {
                     rootIndexes={rootIndexes}
                     onMidiNoteClick={handleRootIndexes}
                 />
+                <div className="text-2xl">Intervals</div>
+
+                <Intervals />
+                <div className="text-2xl">Modes</div>
+
+                <Modes scaleForm={scaleForm} />
+
                 <div className="text-2xl">MIDI Monitor</div>
 
                 <MidiMonitorDescription />
