@@ -10,20 +10,51 @@ import { signUp } from 'API/request'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 const SignUp = () => {
-    const [form, setForm] = useState({ email: '', password: '' })
+    const [email, setEmail] = useState({ email: '', error: '' })
+    const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value
+        const err = validateEmail(input)
+        const newEmail = { ...email, email: input }
+        //エラーが無くなったら消してあげる
+        if (email.error && err === '') newEmail.error = err
+        setEmail(newEmail)
+    }
+    const validateEmail = (input: string): string => {
+        const re =
+            /^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$/
+
+        return re.test(input) ? '' : '無効なアドレスです'
+    }
+    const [password, setPassword] = useState({ password: '', error: '' })
+    const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value
+        const err = validatePassword(input)
+        const newP = { ...password, password: input }
+        if (password.error !== '' && err === '') newP.error = err //エラーが無くなったら消してあげる
+        setPassword(newP)
+    }
+    const validatePassword = (input: string): string => {
+        if (input.length < 8) return 'パスワードは8文字以上入力してください'
+        return ''
+    }
     const [resultText, setResultText] = useState('')
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            const result = await signUp(form.email, form.password)
+            const err = validate()
+            if (err) return
+            const result = await signUp(email.email, password.password)
             setResultText(`registered: ${result.email}`)
         } catch (err) {
             if (isAxiosError(err)) setResultText(err.response?.data.message)
         }
     }
-    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newForm = { ...form, [event.target.name]: event.target.value }
-        setForm(newForm)
+    const validate = (): boolean => {
+        const errText = validateEmail(email.email)
+        if (errText) setEmail({ ...email, error: errText })
+        const errText2 = validatePassword(password.password)
+        if (errText2) setPassword({ ...password, error: errText2 })
+        return errText !== '' || errText2 !== ''
     }
     return (
         <BasicPage>
@@ -31,25 +62,39 @@ const SignUp = () => {
                 <div>CREATE ACCOUNT</div>
                 <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-y-5">
-                        <div>
-                            <label className="inline-block w-48 text-left">
+                        <div className="flex flex-row">
+                            <div className="inline-block w-48 text-left">
                                 E-MAIL ADDRESS
-                            </label>
-                            <Input
-                                type="text"
-                                name="email"
-                                onChange={onChange}
-                            />
+                            </div>
+                            <div>
+                                <Input
+                                    type="text"
+                                    name="email"
+                                    onChange={onEmailChange}
+                                />
+                                {email.error && (
+                                    <div className="text-red-500">
+                                        {email.error}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div>
+                        <div className="flex flex-row">
                             <label className="inline-block w-48 text-left">
                                 PASSWORD
                             </label>
-                            <Input
-                                type="password"
-                                name="password"
-                                onChange={onChange}
-                            />
+                            <div>
+                                <Input
+                                    type="password"
+                                    name="password"
+                                    onChange={onPasswordChange}
+                                />
+                                {password.error && (
+                                    <div className="text-red-500">
+                                        {password.error}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div>
                             <Button type="submit">CREATE ACCOUNT</Button>
