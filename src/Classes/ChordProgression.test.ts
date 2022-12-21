@@ -2,7 +2,7 @@ import { it, describe, expect } from 'vitest'
 import ChordProgression from './ChordProgression'
 import * as Constants from '../Constants'
 import { TERMS } from '../Constants'
-import * as Utils from '../utils'
+import * as Utils from '../utils/music'
 
 describe('newFromChordNames()', () => {
     it('should analyze 1625 in D Major properly', () => {

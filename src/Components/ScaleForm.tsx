@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { TERMS } from '../Constants'
-import * as Util from '../utils'
+import * as Util from '../utils/music'
 import * as Types from '../types'
 import { SequencerNote, SequencerSetting } from '../types'
 import { Midi } from '@tonejs/midi'

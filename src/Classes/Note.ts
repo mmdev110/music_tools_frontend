@@ -1,4 +1,4 @@
-import { findNote, shiftArrayIndex } from '../utils'
+import { findNote, shiftArrayIndex } from '../utils/music'
 import { ALL_NOTES, ALL_DEGREES } from '../Constants'
 import { NOTE } from '../types'
 

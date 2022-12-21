@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import * as Constants from '../Constants'
 import * as Types from '../types'
-import * as Utils from '../utils'
+import * as Utils from '../utils/music'
 
 type Props = {
     chord: string

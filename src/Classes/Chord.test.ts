@@ -1,6 +1,6 @@
 import { iteratee } from 'lodash'
 import { it, describe, expect } from 'vitest'
-import * as Utils from '../utils'
+import * as Utils from '../utils/music'
 import * as Constants from '../Constants'
 import { TERMS } from '../Constants'
 import Chord from './Chord'

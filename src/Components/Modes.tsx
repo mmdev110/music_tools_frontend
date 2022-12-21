@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
 import { TERMS, NoteColors } from 'Constants'
-import * as Utils from '../utils'
+import * as Utils from '../utils/music'
 import * as Types from '../types'
 
 type Props = {

@@ -1,6 +1,8 @@
-import * as Constants from './Constants'
-import { TERMS } from './Constants'
-import * as Types from './types'
+import * as Constants from '../Constants'
+import { TERMS } from '../Constants'
+import * as Types from '../types'
+
+//音楽理論関連のutil
 
 //スケールの構成音を返す
 export const generateScaleNotes = (

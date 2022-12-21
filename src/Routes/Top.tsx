@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { TERMS } from 'Constants'
 import * as Types from 'types'
-import * as Utils from 'utils'
+import * as Utils from 'utils/music'
 import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'
 type props = {

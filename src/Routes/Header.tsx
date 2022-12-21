@@ -11,7 +11,7 @@ import {
 import { TERMS } from 'Constants'
 import Detail from 'Routes/Detail'
 import * as Types from 'types'
-import * as Utils from 'utils'
+import * as Utils from 'utils/music'
 import { forEachChild } from 'typescript'
 type props = {
     user: Types.User | null

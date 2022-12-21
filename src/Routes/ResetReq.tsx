@@ -6,10 +6,11 @@ import Detail from 'Routes/Detail'
 import * as Types from 'types'
 import * as Utils from 'utils/music'
 //import './App.css'
-import { signUp } from 'API/request'
+import { resetPasswordRequest } from 'API/request'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
-const SignUp = () => {
+import { validateEmail, validatePassword } from 'utils/front'
+const ResetReq = () => {
     const [email, setEmail] = useState({ email: '', error: '' })
     const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value
@@ -19,54 +20,41 @@ const SignUp = () => {
         if (email.error && err === '') newEmail.error = err
         setEmail(newEmail)
     }
-    const validateEmail = (input: string): string => {
-        const re =
-            /^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$/
 
-        return re.test(input) ? '' : '無効なアドレスです'
-    }
-    const [password, setPassword] = useState({ password: '', error: '' })
-    const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const input = e.target.value
-        const err = validatePassword(input)
-        const newP = { ...password, password: input }
-        //エラーが無くなったら消してあげる
-        if (password.error !== '' && err === '') newP.error = err
-        setPassword(newP)
-    }
-    const validatePassword = (input: string): string => {
-        if (input.length < 8) return 'パスワードは8文字以上入力してください'
-        return ''
-    }
     const [resultText, setResultText] = useState('')
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
             const err = validate()
             if (err) return
-            const result = await signUp(email.email, password.password)
-            setResultText(`registered: ${result.email}`)
+            const result = await resetPasswordRequest(email.email)
+            setResultText(`mail sent to:${email.email}`)
         } catch (err) {
+            console.log(err)
             if (isAxiosError(err)) setResultText(err.response?.data.message)
         }
     }
     const validate = (): boolean => {
         const errText = validateEmail(email.email)
         if (errText) setEmail({ ...email, error: errText })
-        const errText2 = validatePassword(password.password)
-        if (errText2) setPassword({ ...password, error: errText2 })
-        return errText !== '' || errText2 !== ''
+        return errText !== ''
     }
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
-                <div>CREATE ACCOUNT</div>
+                <div>RESET PASSWORD</div>
+                <div>
+                    パスワードを忘れてしまった場合、サービスに登録されたメールアドレスをご入力ください。
+                    <br />
+                    パスワードリセット用のリンクをお送りいたします。
+                </div>
                 <form onSubmit={onSubmit}>
                     <div className="flex flex-col gap-y-5">
                         <div className="flex flex-row">
                             <div className="inline-block w-48 text-left">
                                 E-MAIL ADDRESS
                             </div>
+
                             <div>
                                 <Input
                                     type="text"
@@ -80,25 +68,8 @@ const SignUp = () => {
                                 )}
                             </div>
                         </div>
-                        <div className="flex flex-row">
-                            <label className="inline-block w-48 text-left">
-                                PASSWORD
-                            </label>
-                            <div>
-                                <Input
-                                    type="password"
-                                    name="password"
-                                    onChange={onPasswordChange}
-                                />
-                                {password.error && (
-                                    <div className="text-red-500">
-                                        {password.error}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                         <div>
-                            <Button type="submit">CREATE ACCOUNT</Button>
+                            <Button type="submit">RESET PASSWORD</Button>
                         </div>
                     </div>
                 </form>
@@ -108,4 +79,4 @@ const SignUp = () => {
     )
 }
 
-export default SignUp
+export default ResetReq

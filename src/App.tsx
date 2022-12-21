@@ -8,7 +8,7 @@ import {
 import { isAxiosError } from 'axios'
 import { TERMS } from 'Constants'
 import * as Types from './types'
-import * as Utils from './utils'
+import * as Utils from './utils/music'
 import { forEachChild } from 'typescript'
 import Header from 'Routes/Header'
 import Top from 'Routes/Top'
@@ -16,6 +16,8 @@ import SignIn from 'Routes/SignIn'
 import SignUp from 'Routes/SignUp'
 import Detail from 'Routes/Detail'
 import List from 'Routes/List'
+import ResetNew from 'Routes/ResetNew'
+import ResetReq from 'Routes/ResetReq'
 import ErrorPage from 'Routes/ErrorPage'
 import { getUser } from 'API/request'
 
@@ -57,6 +59,14 @@ const App = () => {
                 {
                     path: 'edit/:userLoopId',
                     element: <Detail />,
+                },
+                {
+                    path: 'reset_password/request',
+                    element: <ResetReq />,
+                },
+                {
+                    path: 'reset_password/new',
+                    element: <ResetNew />,
                 },
             ],
         },

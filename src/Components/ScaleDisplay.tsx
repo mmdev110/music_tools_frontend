@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
 import * as Types from '../types'
-import * as Util from '../utils'
+import * as Util from '../utils/music'
 
 const ScaleDisplay = ({ scaleForm }: Types.ScaleDisplayProps) => {
     const notes = Util.generateScaleNotes(scaleForm.root, scaleForm.scale)

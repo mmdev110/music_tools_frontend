@@ -4,7 +4,7 @@ import { isAxiosError } from 'axios'
 import { TERMS } from 'Constants'
 import Detail from 'Routes/Detail'
 import * as Types from 'types'
-import * as Utils from 'utils'
+import * as Utils from 'utils/music'
 //import './App.css'
 import { signIn } from 'API/request'
 import BasicPage from 'Components/BasicPage'
@@ -32,6 +32,12 @@ const SignIn = () => {
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newForm = { ...form, [event.target.name]: event.target.value }
         setForm(newForm)
+    }
+    const navigateToResetPassword = () => {
+        navigate('/reset_password/request')
+    }
+    const navigateToSignUp = () => {
+        navigate('/signup')
     }
     return (
         <BasicPage>
@@ -65,6 +71,18 @@ const SignIn = () => {
                     </div>
                 </form>
                 {resultText ? <div>{resultText}</div> : null}
+                <div
+                    className="text-sm text-sky-800 hover:cursor-pointer"
+                    onClick={navigateToResetPassword}
+                >
+                    forgot your password?
+                </div>
+                <div
+                    className="text-sm text-sky-800 hover:cursor-pointer"
+                    onClick={navigateToSignUp}
+                >
+                    create a new account
+                </div>
             </div>
         </BasicPage>
     )

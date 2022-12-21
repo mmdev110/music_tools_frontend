@@ -2,6 +2,7 @@ import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
 import { User, UserLoopInput } from 'types'
 import lo from 'lodash'
 
+const backend = axios.create({ baseURL: 'http://localhost:5000/' })
 //request.params, request.dataをcamel->snakeに、
 //response.dataをsnake->camelにするための処理
 //programabl.com/ja/convert-snakecase-and-camelcase/
@@ -28,8 +29,6 @@ const mapKeysSnakeCase = (data: object) => {
     return mapKeysDeep(data, (_: string, key: string) => lo.snakeCase(key))
 }
 
-const backend = axios.create({ baseURL: 'http://localhost:5000/' })
-
 backend.interceptors.request.use((request: any) => {
     if (request.method == 'get') {
         const convertParams = mapKeysSnakeCase(request.params)
@@ -51,6 +50,8 @@ backend.interceptors.response.use(
         return Promise.reject(error)
     }
 )
+////////
+
 //jwtによる認証
 export const getUser = async (): Promise<User | null> => {
     const jwt = window.localStorage.getItem('jwt')
@@ -179,4 +180,27 @@ export const getFromS3 = async (presignedUrl: string) => {
     } catch (err) {
         throw err
     }
+}
+type ResetPasswordResponse = { message: string }
+export const resetPasswordRequest = async (
+    email: string
+): Promise<ResetPasswordResponse> => {
+    const response = await requestBackend<ResetPasswordResponse>(
+        'reset_password?action=request',
+        'POST',
+        { email: email }
+    )
+    //console.log(response.data)
+    return response.data
+}
+export const setNewPassword = async (
+    newPassword: string,
+    token: string
+): Promise<User> => {
+    const response = await requestBackend<User>(
+        'reset_password?action=reset',
+        'POST',
+        { newPassword: newPassword, token: token }
+    )
+    return response.data
 }
