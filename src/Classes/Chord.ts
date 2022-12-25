@@ -3,7 +3,7 @@ import * as Constants from '../Constants'
 import { TERMS, CHORD_RE, SCALES, ALL_DEGREES } from '../Constants'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils/music'
 import lo from 'lodash'
-import { NOTE } from '../types'
+import { NOTE } from '../types/music'
 
 //type Third = '' | 'm' | 'sus4' | 'sus2' | 'aug' | 'dim'
 type Third = string
@@ -93,7 +93,7 @@ export default class Chord {
     }
     analyzeDetail = () => {
         if (this._name === '') return
-        console.log(`analyzeChordDetail for ${this._name}`)
+        //console.log(`analyzeChordDetail for ${this._name}`)
         //正規表現を駆使してコード表記から各値を切り出す
         const matchRoot = this._name.match(CHORD_RE.ROOT)
         const matchOnChord = this._name.match(CHORD_RE.ON_CHORD)

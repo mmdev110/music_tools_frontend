@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
 import { TERMS, NoteColors } from 'Constants'
 import * as Utils from '../utils/music'
-import * as Types from '../types'
+import * as Types from '../types/music'
 
 type Props = {
-    scaleForm: Types.ScaleForm
+    scaleForm: Types.ScaleFormType
 }
 type Cell = {
     style: string

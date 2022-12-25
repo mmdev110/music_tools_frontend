@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
+import Modal from 'react-modal'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
 import ChordDisplay from 'Components/ChordDisplay2'
@@ -9,9 +10,10 @@ import SequenceAnalyzer from 'Components/SequenceAnalyzer'
 import MidiMonitorDescription from 'Components/MidiMonitorDescription'
 import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
+import TagModal from 'Pages/TagModal'
 import Memo from 'Components/Memo'
 import { TERMS } from 'Constants'
-import * as Types from 'types'
+import { Tag, ScaleFormType } from 'types'
 import { UserLoopInput } from 'types'
 import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -19,6 +21,7 @@ import { isAxiosError } from 'axios'
 import lo from 'lodash'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
+import LoopSummary from 'Components/LoopSummary'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -38,11 +41,46 @@ const DefaultChordNames: string[] = [
     '',
     '',
 ]
+const ModalStyle = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+}
+const loopInit: UserLoopInput = {
+    id: 0,
+    name: '',
+    progressions: [],
+    key: 0,
+    scale: '',
+    midiRoots: [],
+    memo: '',
+    userLoopAudio: {
+        name: '',
+        url: {
+            get: '',
+            put: '',
+        },
+    },
+    userLoopMidi: {
+        name: '',
+        url: {
+            get: '',
+            put: '',
+        },
+    },
+    userLoopTags: [],
+}
+Modal.setAppElement('#root')
 const Detail = () => {
     let { userLoopId } = useParams()
     console.log({ userLoopId })
 
-    const [scaleForm, setScaleForm] = useState<Types.ScaleForm>({
+    const [scaleForm, setScaleForm] = useState<ScaleFormType>({
         root: 0,
         scale: TERMS.MAJOR,
         transposeRoot: null,
@@ -50,7 +88,7 @@ const Detail = () => {
     const onScaleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const name = event.target.name
         let value = event.target.value
-        let newScaleForm: Types.ScaleForm
+        let newScaleForm: ScaleFormType
         if (name === 'root') {
             newScaleForm = { ...scaleForm, root: parseInt(value) }
         } else {
@@ -93,6 +131,8 @@ const Detail = () => {
     const handleRootIndexes = (indexes: number[]) => {
         setRootIndexes(indexes)
     }
+    //userLoop
+    const [loop, setLoop] = useState<UserLoopInput>(loopInit)
 
     const save = async () => {
         console.log('save')
@@ -111,7 +151,9 @@ const Detail = () => {
                 name: midiFile ? midiFile.name : '',
                 url: { get: '', put: '' },
             },
+            userLoopTags: loop.userLoopTags,
         }
+
         try {
             console.log(input)
             const { userLoopInput } = await saveUserLoop(input, userLoopId!)
@@ -151,6 +193,7 @@ const Detail = () => {
         setMemo(userLoopInput.memo)
         setAudioName(audio.name)
         setRootIndexes(userLoopInput.midiRoots)
+        setLoop(userLoopInput)
         try {
             if (audio.url.get) {
                 //const response = await getFromS3(s3Url.mp3)
@@ -170,6 +213,22 @@ const Detail = () => {
         if (!isNaN(parseInt(userLoopId!))) load(parseInt(userLoopId!))
     }, [])
 
+    //tag modal
+    const [modalIsOpen, setIsOpen] = React.useState(false)
+    const showModal = () => {
+        setIsOpen(true)
+    }
+
+    const closeModal = () => {
+        setIsOpen(false)
+    }
+    const updateTags = (selectedTags: Tag[]) => {
+        setLoop((loop) => {
+            loop.userLoopTags = selectedTags
+            return loop
+        })
+    }
+
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
@@ -182,6 +241,12 @@ const Detail = () => {
                     memo={name}
                     onChange={onNameChange}
                 />
+                <Button onClick={showModal}>タグ編集</Button>
+                <div className="flex flex-row gap-x-4">
+                    {loop.userLoopTags.map((tag) => (
+                        <Button>{tag.name}</Button>
+                    ))}
+                </div>
                 <div className="text-2xl">AudioPlayer</div>
                 <AudioPlayer
                     droppedFile={droppedFile}
@@ -232,6 +297,20 @@ const Detail = () => {
                 <MidiMonitor />
                 <div style={{ marginTop: '10em' }}></div>
             </div>
+            {/* tag編集*/}
+            <Modal
+                isOpen={modalIsOpen}
+                //onAfterOpen={afterOpenModal}
+                onRequestClose={closeModal}
+                style={ModalStyle}
+                contentLabel="Example Modal"
+            >
+                <TagModal
+                    onTagUpdate={updateTags}
+                    closeModal={closeModal}
+                    loopTags={loop.userLoopTags}
+                />
+            </Modal>
         </BasicPage>
     )
 }

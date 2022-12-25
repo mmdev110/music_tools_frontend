@@ -1,6 +1,6 @@
 import * as Constants from '../Constants'
 import { TERMS } from '../Constants'
-import * as Types from '../types'
+import * as Types from '../types/music'
 
 //音楽理論関連のutil
 

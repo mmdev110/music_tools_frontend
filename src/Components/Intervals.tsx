@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import * as Constants from '../Constants'
-import * as Types from '../types'
+import * as Types from '../types/music'
 
 type Props = {}
 type Cell = {

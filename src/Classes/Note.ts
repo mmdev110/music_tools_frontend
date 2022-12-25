@@ -1,6 +1,6 @@
 import { findNote, shiftArrayIndex } from '../utils/music'
 import { ALL_NOTES, ALL_DEGREES } from '../Constants'
-import { NOTE } from '../types'
+import { NOTE } from '../types/music'
 
 export default class Note {
     name: string

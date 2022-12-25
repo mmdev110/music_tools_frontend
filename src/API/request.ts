@@ -1,56 +1,60 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
-import { User, UserLoopInput } from 'types'
+import { User, UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'
 import lo from 'lodash'
 
 const backend = axios.create({ baseURL: 'http://localhost:5000/' })
-//request.params, request.dataをcamel->snakeに、
-//response.dataをsnake->camelにするための処理
-//programabl.com/ja/convert-snakecase-and-camelcase/
-const mapKeysDeep = (
-    data: any,
-    callback: (value: string, key: string) => {}
-): object => {
-    if (lo.isArray(data)) {
-        return data.map((innerData: object) => mapKeysDeep(innerData, callback))
-    } else if (lo.isObject(data)) {
-        return lo.mapValues(lo.mapKeys(data, callback), (val: any) =>
-            mapKeysDeep(val, callback)
-        )
-    } else {
-        return data
+
+const configBackend = () => {
+    //request.params, request.dataをcamel->snakeに、
+    //response.dataをsnake->camelにするための処理
+    //programabl.com/ja/convert-snakecase-and-camelcase/
+    const mapKeysDeep = (
+        data: any,
+        callback: (value: string, key: string) => {}
+    ): object => {
+        if (lo.isArray(data)) {
+            return data.map((innerData: object) =>
+                mapKeysDeep(innerData, callback)
+            )
+        } else if (lo.isObject(data)) {
+            return lo.mapValues(lo.mapKeys(data, callback), (val: any) =>
+                mapKeysDeep(val, callback)
+            )
+        } else {
+            return data
+        }
     }
-}
 
-const mapKeysCamelCase = (data: object) => {
-    return mapKeysDeep(data, (_: string, key: string) => lo.camelCase(key))
-}
-
-const mapKeysSnakeCase = (data: object) => {
-    return mapKeysDeep(data, (_: string, key: string) => lo.snakeCase(key))
-}
-
-backend.interceptors.request.use((request: any) => {
-    if (request.method == 'get') {
-        const convertParams = mapKeysSnakeCase(request.params)
-        return { ...request, params: convertParams }
-    } else {
-        const convertedData = mapKeysSnakeCase(request.data)
-        return { ...request, data: convertedData }
+    const mapKeysCamelCase = (data: object) => {
+        return mapKeysDeep(data, (_: string, key: string) => lo.camelCase(key))
     }
-})
 
-backend.interceptors.response.use(
-    (response: any) => {
-        const { data } = response
-        const convertedData = mapKeysCamelCase(data)
-        return { ...response, data: convertedData }
-    },
-    (error) => {
-        //const message = 'error message'
-        return Promise.reject(error)
+    const mapKeysSnakeCase = (data: object) => {
+        return mapKeysDeep(data, (_: string, key: string) => lo.snakeCase(key))
     }
-)
-////////
+    backend.interceptors.request.use((request: any) => {
+        if (request.method == 'get') {
+            const convertParams = mapKeysSnakeCase(request.params)
+            return { ...request, params: convertParams }
+        } else {
+            const convertedData = mapKeysSnakeCase(request.data)
+            return { ...request, data: convertedData }
+        }
+    })
+
+    backend.interceptors.response.use(
+        (response: any) => {
+            const { data } = response
+            const convertedData = mapKeysCamelCase(data)
+            return { ...response, data: convertedData }
+        },
+        (error) => {
+            //const message = 'error message'
+            return Promise.reject(error)
+        }
+    )
+}
+configBackend()
 
 //jwtによる認証
 export const getUser = async (): Promise<User | null> => {
@@ -117,8 +121,14 @@ export const getUserLoop = async (
     )
     return response.data
 }
-export const getUserLoops = async (): Promise<UserLoopInput[]> => {
-    const response = await requestBackend<UserLoopInput[]>('list', 'GET')
+export const getUserLoops = async (
+    condition: UserLoopSearchCondition
+): Promise<UserLoopInput[]> => {
+    const response = await requestBackend<UserLoopInput[]>(
+        'list',
+        'POST',
+        condition
+    )
     return response.data
 }
 //疎通確認
@@ -173,13 +183,9 @@ export const getFromS3 = async (presignedUrl: string) => {
     console.log('@@@getFromS3')
     console.log('@@@presignedUrl')
     console.log(presignedUrl)
-    try {
-        //const response = await axios.get(presignedUrl)
-        const response = await fetch(presignedUrl)
-        return response
-    } catch (err) {
-        throw err
-    }
+    //const response = await axios.get(presignedUrl)
+    const response = await fetch(presignedUrl)
+    return response
 }
 type ResetPasswordResponse = { message: string }
 export const resetPasswordRequest = async (
@@ -202,5 +208,16 @@ export const setNewPassword = async (
         'POST',
         { newPassword: newPassword, token: token }
     )
+    return response.data
+}
+
+//ユーザーのtag一覧の取得
+export const getTags = async (): Promise<Tag[]> => {
+    const response = await requestBackend<Tag[]>('tags', 'GET')
+    return response.data
+}
+//ユーザーのtag更新
+export const saveTags = async (data: Tag[]): Promise<Tag[]> => {
+    const response = await requestBackend<Tag[]>('tags', 'POST', data)
     return response.data
 }

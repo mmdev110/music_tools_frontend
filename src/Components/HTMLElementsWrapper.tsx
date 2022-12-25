@@ -4,21 +4,22 @@ import React, {
     PropsWithoutRef,
 } from 'react'
 
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+    bgColor?: string
+}
+export const Button = ({ bgColor, ...props }: ButtonProps) => {
+    const bg = bgColor || 'bg-sky-500'
+    const px = 'px-4'
+    const font = 'font-bold'
+    const text = 'text-white'
+    const rounded = 'rounded'
+    const className = [bg, px, font, text, rounded].join(' ')
+    return <button className={className} {...props} />
+}
+
 type ClassName = {
     className?: string
 }
-type ButtonProps = ClassName & ButtonHTMLAttributes<HTMLButtonElement>
-export const Button = ({ className, ...props }: ButtonProps) => {
-    return (
-        <button
-            className={
-                className || 'rounded bg-sky-500 px-4 font-bold text-white'
-            }
-            {...props}
-        />
-    )
-}
-
 type InputProps = ClassName & InputHTMLAttributes<HTMLInputElement>
 export const Input = ({ className, ...props }: InputProps) => {
     return (

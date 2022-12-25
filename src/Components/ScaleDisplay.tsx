@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
-import * as Types from '../types'
+import * as Types from '../types/music'
 import * as Util from '../utils/music'
 
 const ScaleDisplay = ({ scaleForm }: Types.ScaleDisplayProps) => {

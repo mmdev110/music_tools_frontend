@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
 import { TERMS, NoteColors } from '../Constants'
 import * as Utils from '../utils/music'
-import * as Types from '../types'
-import { SequencerNote, SequencerSetting } from '../types'
+import * as Types from '../types/music'
+import { SequencerNote, SequencerSetting } from '../types/music'
 import { Midi } from '@tonejs/midi'
 import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
@@ -11,7 +11,7 @@ import Sequencer from './Sequencer'
 import RootForm from './RootForm'
 
 type Props = {
-    scaleForm: Types.ScaleForm
+    scaleForm: Types.ScaleFormType
     onDrop: (acceptedFiles: File[]) => void
     midiFile: File | undefined
     rootIndexes: number[]
@@ -110,7 +110,7 @@ const SequenceAnalyzer = ({
                 if (notes.length > 0) {
                     console.log('newnotes')
                     rootIndexes.forEach((ind) => {
-                        notes[ind].isRoot = true
+                        if (notes[ind]) notes[ind].isRoot = true
                     })
                     const analyzed = analyzeNotes(notes, scaleForm)
                     clearInterval(timer)
@@ -189,7 +189,10 @@ const SequenceAnalyzer = ({
         </div>
     )
 }
-const analyzeNotes = (notes: SequencerNote[], scaleForm: Types.ScaleForm) => {
+const analyzeNotes = (
+    notes: SequencerNote[],
+    scaleForm: Types.ScaleFormType
+) => {
     console.log('@@@@@analyzeNotes')
     //console.log(rootForm)
     //console.log(scaleForm)

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ALL_DEGREES } from '../Constants'
 import * as Util from '../utils/music'
-import * as Types from '../types'
+import * as Types from '../types/music'
 import Note from 'Classes/Note'
 
 type NotesInput = number[]

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { ALL_DEGREES, TERMS } from '../Constants'
-import * as Types from '../types'
+import * as Types from '../types/music'
 import ChordProgression from '../Classes/ChordProgression'
 import lo from 'lodash'
 import OneChord from './OneChord'
 import ScaleForm from './ScaleForm'
 
 type Props = {
-    scaleForm: Types.ScaleForm
+    scaleForm: Types.ScaleFormType
     onProgressionsChange: Function
     progressionNames: string[]
 }

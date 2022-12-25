@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { TERMS } from '../Constants'
 import * as Util from '../utils/music'
-import * as Types from '../types'
-import { SequencerNote, SequencerSetting } from '../types'
+import * as Types from '../types/music'
+import { SequencerNote, SequencerSetting } from '../types/music'
 import { Midi } from '@tonejs/midi'
 import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
@@ -11,7 +11,7 @@ import InputCell from './InputCell'
 type Props = {
     onChange: React.ChangeEventHandler<HTMLSelectElement>
     showTranspose: boolean
-    scaleForm: Types.ScaleForm
+    scaleForm: Types.ScaleFormType
 }
 const ScaleForm = (props: Props) => {
     const rootRef = useRef<HTMLSelectElement>(null)

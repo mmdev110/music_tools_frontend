@@ -9,12 +9,11 @@ import {
 } from 'react-router-dom'
 
 import { TERMS } from 'Constants'
-import Detail from 'Routes/Detail'
-import * as Types from 'types'
-import * as Utils from 'utils/music'
+import Detail from 'Pages/Detail'
+import { User } from 'types/'
 import { forEachChild } from 'typescript'
 type props = {
-    user: Types.User | null
+    user: User | null
 }
 const Header = ({ user }: props) => {
     const navigate = useNavigate()

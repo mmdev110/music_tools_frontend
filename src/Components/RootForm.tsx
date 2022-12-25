@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import * as Constants from '../Constants'
 import * as Utils from '../utils/music'
-import * as Types from '../types'
-import { SequencerNote, SequencerSetting } from '../types'
+import * as Types from '../types/music'
+import { SequencerNote, SequencerSetting } from '../types/music'
 import { Midi } from '@tonejs/midi'
 import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
@@ -12,7 +12,7 @@ type numberOrNull = number | null
 type Props = {
     form: numberOrNull[][]
     setting: SequencerSetting
-    scaleForm: Types.ScaleForm
+    scaleForm: Types.ScaleFormType
     onChange: Function
 }
 const { pixelWidth } = Constants.Sequencer

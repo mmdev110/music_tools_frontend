@@ -7,22 +7,22 @@ import {
 } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { TERMS } from 'Constants'
-import * as Types from './types'
+import { User } from './types'
 import * as Utils from './utils/music'
 import { forEachChild } from 'typescript'
-import Header from 'Routes/Header'
-import Top from 'Routes/Top'
-import SignIn from 'Routes/SignIn'
-import SignUp from 'Routes/SignUp'
-import Detail from 'Routes/Detail'
-import List from 'Routes/List'
-import ResetNew from 'Routes/ResetNew'
-import ResetReq from 'Routes/ResetReq'
-import ErrorPage from 'Routes/ErrorPage'
+import Header from 'Pages/Header'
+import Top from 'Pages/Top'
+import SignIn from 'Pages/SignIn'
+import SignUp from 'Pages/SignUp'
+import Detail from 'Pages/Detail'
+import List from 'Pages/List'
+import ResetNew from 'Pages/ResetNew'
+import ResetReq from 'Pages/ResetReq'
+import ErrorPage from 'Pages/ErrorPage'
 import { getUser } from 'API/request'
 
 const App = () => {
-    const [user, setUser] = useState<Types.User | null>(null)
+    const [user, setUser] = useState<User | null>(null)
     const auth = async () => {
         try {
             const me = await getUser()
