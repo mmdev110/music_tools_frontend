@@ -251,11 +251,7 @@ const Detail = () => {
         setIsOpen(false)
     }
 
-    const [isChanged, setIsChanged] = useState(false)
-    useEffect(() => {
-        setIsChanged(checkChanged())
-    })
-    const checkChanged = (): boolean => {
+    const isChanged = (): boolean => {
         console.log('@@@checkChanged')
         console.log(oldLoop)
         const isAudioChanged = !!droppedFile
@@ -305,7 +301,7 @@ const Detail = () => {
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
                 <div>
-                    <Button disabled={!isChanged} onClick={save}>
+                    <Button disabled={!isChanged()} onClick={save}>
                         save
                     </Button>
                 </div>

@@ -23,6 +23,7 @@ const TagModal = ({ onTagUpdate, closeModal, loopTags }: Props) => {
         loadTags()
     }, [])
     const [tags, setTags] = useState<TagUI[]>([])
+    const [oldTags, setOldTags] = useState<TagUI[]>([])
     //編集前のタグ
     const loadTags = async () => {
         try {
@@ -40,6 +41,7 @@ const TagModal = ({ onTagUpdate, closeModal, loopTags }: Props) => {
                 return tagUI
             })
             setTags(tagUIs)
+            setOldTags(lo.cloneDeep(tagUIs))
         } catch (e) {
             console.log(e)
         }
@@ -102,6 +104,9 @@ const TagModal = ({ onTagUpdate, closeModal, loopTags }: Props) => {
     const cancel = () => {
         closeModal()
     }
+    const isChanged = (): boolean => {
+        return !lo.isEqual(oldTags, tags)
+    }
     return (
         <div>
             <h2>タグ編集</h2>
@@ -138,7 +143,9 @@ const TagModal = ({ onTagUpdate, closeModal, loopTags }: Props) => {
                 })}
             </div>
 
-            <Button onClick={save}>保存</Button>
+            <Button disabled={!isChanged()} onClick={save}>
+                保存
+            </Button>
             <Button onClick={cancel}>cancel</Button>
         </div>
     )
