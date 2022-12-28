@@ -99,15 +99,12 @@ type S3Url = {
     mp3: string
     midi: string
 }
-type SaveUserLoopResponse = {
-    userLoopInput: UserLoopInput
-    s3Url: S3Url
-}
+
 export const saveUserLoop = async (
     input: UserLoopInput,
     userLoopId: string
-): Promise<SaveUserLoopResponse> => {
-    const response = await requestBackend<SaveUserLoopResponse>(
+): Promise<UserLoopInput> => {
+    const response = await requestBackend<UserLoopInput>(
         `loop/${userLoopId}`,
         'POST',
         input

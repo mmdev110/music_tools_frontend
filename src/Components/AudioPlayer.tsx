@@ -10,6 +10,7 @@ type Props = {
     dropDisabled: boolean
     mini: boolean
     autoPlay?: boolean
+    isHLS: boolean
 }
 const AudioPlayer = ({
     droppedFile,
@@ -19,6 +20,7 @@ const AudioPlayer = ({
     dropDisabled,
     mini,
     autoPlay,
+    isHLS,
 }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         if (onDrop) onDrop(acceptedFiles)
@@ -37,7 +39,6 @@ const AudioPlayer = ({
     useEffect(() => {
         if (droppedFile) setFileUrl(URL.createObjectURL(droppedFile))
     }, [droppedFile])
-    console.log('render')
     return (
         <div>
             <Dropzone
@@ -52,24 +53,23 @@ const AudioPlayer = ({
                             {...getRootProps()}
                         >
                             <input {...getInputProps()} />
-                            {droppedFile ? (
+                            <div>{audioName}</div>
+                            {isHLS ? (
                                 <div>
-                                    <div>{droppedFile.name}</div>
-                                    <audio
-                                        controls
-                                        src={fileUrl}
-                                        loop={true}
-                                        autoPlay={true}
-                                    />
-                                </div>
-                            ) : (
-                                <div>
-                                    <div>{audioName}</div>
                                     <audio
                                         ref={audioRef}
                                         controls
                                         loop={true}
                                         autoPlay={autoPlay}
+                                    />
+                                </div>
+                            ) : (
+                                <div>
+                                    <audio
+                                        controls
+                                        src={fileUrl}
+                                        loop={true}
+                                        autoPlay={true}
                                     />
                                 </div>
                             )}

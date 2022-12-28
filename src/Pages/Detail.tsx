@@ -22,6 +22,7 @@ import lo from 'lodash'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import LoopSummary from 'Components/LoopSummary'
+import { scryRenderedDOMComponentsWithClass } from 'react-dom/test-utils'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -54,7 +55,7 @@ const ModalStyle = {
 const loopInit: UserLoopInput = {
     id: 0,
     name: '',
-    progressions: [],
+    progressions: DefaultChordNames,
     key: 0,
     scale: '',
     midiRoots: [],
@@ -78,7 +79,6 @@ const loopInit: UserLoopInput = {
 Modal.setAppElement('#root')
 const Detail = () => {
     let { userLoopId } = useParams()
-    console.log({ userLoopId })
 
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({
         root: 0,
@@ -98,28 +98,36 @@ const Detail = () => {
     }
     //name
     const [name, setName] = useState('')
-    const onNameChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setName(e.target.value)
-        console.log(e.target.value)
+    const onNameChange = (str: string) => {
+        setName(str)
     }
-    //Progressions
+
+    //tags
+    const [tags, setTags] = useState<Tag[]>([])
+    const onTagsChange = (selectedTags: Tag[]) => {
+        setTags(selectedTags)
+    }
     const [progressions, setProgressions] = useState(DefaultChordNames)
+    //Progressions
     const onProgressionsChange = (newInput: string[]) => {
         setProgressions(newInput)
     }
     //Memo
     const [memo, setMemo] = useState('')
-    const onMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setMemo(e.target.value)
-        console.log(e.target.value)
+    const onMemoChange = (str: string) => {
+        setMemo(str)
     }
     //droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [audioUrl, setAudioUrl] = useState('')
     const [audioName, setAudioName] = useState('')
+    const [isHLS, setIsHLS] = useState(false)
     const onDropAudio = (acceptedFiles: File[]) => {
-        setDroppedFile(acceptedFiles[0])
-        //setAudioUrl(URL.createObjectURL(acceptedFiles[0]))
+        const file: File = acceptedFiles[0]
+        setDroppedFile(file)
+        setAudioUrl(URL.createObjectURL(file))
+        setAudioName(file.name)
+        setIsHLS(false)
     }
     //MidiFile
     const [midiFile, setMidiFile] = useState<File>()
@@ -127,12 +135,13 @@ const Detail = () => {
         setMidiFile(acceptedFiles[0])
     }
     //rootIndexes
-    const [rootIndexes, setRootIndexes] = useState<number[]>([])
-    const handleRootIndexes = (indexes: number[]) => {
-        setRootIndexes(indexes)
+    const [midiRoots, setMidiRoots] = useState<number[]>([])
+    const onMidiRootsChange = (rootIndexes: number[]) => {
+        setMidiRoots(rootIndexes)
     }
     //userLoop
-    const [loop, setLoop] = useState<UserLoopInput>(loopInit)
+    //const [loop, setLoop] = useState<UserLoopInput>(loopInit)
+    const [oldLoop, setOldLoop] = useState<UserLoopInput>(loopInit)
 
     const save = async () => {
         console.log('save')
@@ -141,41 +150,49 @@ const Detail = () => {
             name: name,
             key: scaleForm.root,
             scale: scaleForm.scale,
-            midiRoots: rootIndexes,
+            midiRoots: midiRoots,
             memo: memo,
             userLoopAudio: {
-                name: droppedFile ? droppedFile.name : audioName,
+                name: audioName,
                 url: { get: '', put: '' },
             },
             userLoopMidi: {
                 name: midiFile ? midiFile.name : '',
                 url: { get: '', put: '' },
             },
-            userLoopTags: loop.userLoopTags,
+            userLoopTags: tags,
         }
-
+        //保存
+        let userLoopResponse: UserLoopInput | undefined
         try {
-            console.log(input)
-            const { userLoopInput } = await saveUserLoop(input, userLoopId!)
-            console.log(userLoopInput)
-            //s3へのアップロード
+            userLoopResponse = await saveUserLoop(input, userLoopId!)
+            console.log(userLoopResponse)
+        } catch (err) {
+            if (isAxiosError(err)) console.log(err)
+        }
+        //s3へのアップロード
+        if (userLoopResponse) {
             try {
-                const audio = userLoopInput.userLoopAudio
+                const audio = userLoopResponse.userLoopAudio
+                console.log(droppedFile)
                 if (audio.url.put && droppedFile) {
+                    console.log('upload audio')
                     const response = await uploadToS3(
                         audio.url.put,
                         droppedFile
                     )
                     console.log(response)
                 }
-                const midi = userLoopInput.userLoopMidi
-                if (midi.url.put && midiFile)
+                const midi = userLoopResponse.userLoopMidi
+                //TODO:常にアップロードされるので対策考える
+                //S3から拾ったものとドロップされたもの両方midiFileに格納してしまうため
+                if (midi.url.put && midiFile) {
+                    console.log('upload midi')
                     await uploadToS3(midi.url.put, midiFile)
+                }
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
-        } catch (err) {
-            if (isAxiosError(err)) console.log(err)
         }
     }
     const load = async (id: number) => {
@@ -183,21 +200,24 @@ const Detail = () => {
         console.log('@@URI', userLoopInput)
         const audio = userLoopInput.userLoopAudio
         const midi = userLoopInput.userLoopMidi
-        setProgressions(userLoopInput.progressions)
         setScaleForm({
             root: userLoopInput.key,
             scale: userLoopInput.scale,
             transposeRoot: null,
         })
+        console.log(userLoopInput)
+        setProgressions(userLoopInput.progressions)
+        setTags(userLoopInput.userLoopTags)
         setName(userLoopInput.name)
         setMemo(userLoopInput.memo)
-        setAudioName(audio.name)
-        setRootIndexes(userLoopInput.midiRoots)
-        setLoop(userLoopInput)
+        //setLoop(userLoopInput)
+        setOldLoop(userLoopInput)
         try {
             if (audio.url.get) {
                 //const response = await getFromS3(s3Url.mp3)
                 setAudioUrl(audio.url.get)
+                setAudioName(audio.name)
+                setIsHLS(true)
             }
             if (midi.url.get) {
                 const response = await getFromS3(midi.url.get)
@@ -210,7 +230,11 @@ const Detail = () => {
         }
     }
     useEffect(() => {
-        if (!isNaN(parseInt(userLoopId!))) load(parseInt(userLoopId!))
+        if (userLoopId) {
+            const id_int = parseInt(userLoopId)
+            const isNumber = !isNaN(id_int)
+            if (isNumber) load(id_int)
+        }
     }, [])
 
     //tag modal
@@ -221,12 +245,6 @@ const Detail = () => {
 
     const closeModal = () => {
         setIsOpen(false)
-    }
-    const updateTags = (selectedTags: Tag[]) => {
-        setLoop((loop) => {
-            loop.userLoopTags = selectedTags
-            return loop
-        })
     }
 
     return (
@@ -243,7 +261,7 @@ const Detail = () => {
                 />
                 <Button onClick={showModal}>タグ編集</Button>
                 <div className="flex flex-row gap-x-4">
-                    {loop.userLoopTags.map((tag) => (
+                    {tags.map((tag) => (
                         <Button>{tag.name}</Button>
                     ))}
                 </div>
@@ -253,6 +271,7 @@ const Detail = () => {
                     audioUrl={audioUrl}
                     audioName={audioName}
                     onDrop={onDropAudio}
+                    isHLS={isHLS}
                     dropDisabled={false}
                     mini={false}
                 />
@@ -281,8 +300,8 @@ const Detail = () => {
                     scaleForm={scaleForm}
                     onDrop={onDropMidi}
                     midiFile={midiFile}
-                    rootIndexes={rootIndexes}
-                    onMidiNoteClick={handleRootIndexes}
+                    rootIndexes={midiRoots}
+                    onMidiNoteClick={onMidiRootsChange}
                 />
                 <div className="text-2xl">Intervals</div>
 
@@ -306,9 +325,9 @@ const Detail = () => {
                 contentLabel="Example Modal"
             >
                 <TagModal
-                    onTagUpdate={updateTags}
+                    onTagUpdate={onTagsChange}
                     closeModal={closeModal}
-                    loopTags={loop.userLoopTags}
+                    loopTags={tags}
                 />
             </Modal>
         </BasicPage>

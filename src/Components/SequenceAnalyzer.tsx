@@ -102,7 +102,6 @@ const SequenceAnalyzer = ({
         if (midiFile) processFile(midiFile)
     }, [midiFile])
     useEffect(() => {
-        console.log(rootIndexes)
         //rootIndexesをnotesに適用
         //midifileが読み込まれるまで待つ
         const timer = setInterval(() => {
