@@ -80,7 +80,7 @@ export default class Chord {
         toKey: number,
         scale: string
     ): [string, string] => {
-        //console.log('@@@@getTransposedRoot')
+        ////console.log('@@@@getTransposedRoot')
         if (this._name === '') return ['', '']
         this._calcDegree(fromKey)
         const { root, on } = this._degree
@@ -93,7 +93,7 @@ export default class Chord {
     }
     analyzeDetail = () => {
         if (this._name === '') return
-        //console.log(`analyzeChordDetail for ${this._name}`)
+        ////console.log(`analyzeChordDetail for ${this._name}`)
         //正規表現を駆使してコード表記から各値を切り出す
         const matchRoot = this._name.match(CHORD_RE.ROOT)
         const matchOnChord = this._name.match(CHORD_RE.ON_CHORD)
@@ -122,7 +122,7 @@ export default class Chord {
         if (matchSeventh) this._detail.seventh = matchSeventh[0]
 
         const matchTension = chordQuality.match(CHORD_RE.TENSIONS)
-        //console.log({ matchTension })
+        ////console.log({ matchTension })
         if (matchTension) this._detail.tensions = matchTension
         this._detail.root = rootNote.index
     }
@@ -242,13 +242,13 @@ export default class Chord {
             if (next._degree.on === -1 && next._degree.root === -1)
                 next._calcDegree(key)
         }
-        console.log(`analyzeCharacteristic for: ${this._name}`)
+        //console.log(`analyzeCharacteristic for: ${this._name}`)
 
         //色々計算して、itselfとrelationにpushしていく
         let itself: string[] = []
         let relation: string[] = []
-        //console.log(this._degree)
-        //console.log(this._detail)
+        ////console.log(this._degree)
+        ////console.log(this._detail)
 
         //ダイアトニック
         const [isDiatonic, role] = this._isDiatonic(key, scale)
@@ -307,14 +307,14 @@ export default class Chord {
             this._otherSpecialRelations()
         }
 
-        console.log('itself = ', itself)
-        console.log('relation = ', relation)
+        //console.log('itself = ', itself)
+        //console.log('relation = ', relation)
         itself = lo.uniq(itself)
         relation = lo.uniq(relation)
         this._characteristics = { itself, relation }
     }
     private _isDiatonic(key: number, scale: string): [boolean, string] {
-        console.log(`@@@@_isDiatonic:`)
+        //console.log(`@@@@_isDiatonic:`)
         const { root, on } = this._degree
         const { quality, third, seventh, fifth, tensions } = this._detail
         let scaleConf = SCALES[scale].diatonics!
@@ -334,7 +334,7 @@ export default class Chord {
     //完全四度上への進行
     //G->C, C->Fなど
     private _isPFourthMove(next: Chord): boolean {
-        console.log('@@@isPFourthMove')
+        //console.log('@@@isPFourthMove')
         const { root } = this._degree
         const nextRoot = next.degree.root
         const diff = intervalUp(root, nextRoot)
@@ -395,7 +395,7 @@ export default class Chord {
         return false
     }
     private _notesIncludes(root: number, semitonesFromRoot: number) {
-        //console.log(
+        ////console.log(
         //    `@@@@notesIncludes: root ${root}, semi:${semitonesFromRoot}`
         //)
         const target = transposeNote(root, semitonesFromRoot)
@@ -433,7 +433,7 @@ export default class Chord {
     //セカンダリードミナント
     //A7->E7, A7->Em7など
     private _isSecondaryDominant(next: Chord): boolean {
-        console.log('@@@@isSecondaryDominant')
+        //console.log('@@@@isSecondaryDominant')
         return (
             this._isDominantTetrad() &&
             this._isPFourthMove(next) &&
@@ -443,7 +443,7 @@ export default class Chord {
     //ドミナントモーション
     //C majorでのG7->C, G->Cなど
     private _isDominantMotion(next: Chord): boolean {
-        //console.log('@@@@isDominantMotion')
+        ////console.log('@@@@isDominantMotion')
         return (
             this._isDominant() &&
             this._isPFourthMove(next) &&
