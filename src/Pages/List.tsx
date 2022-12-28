@@ -85,34 +85,32 @@ const List = () => {
     }
     const [audio, setAudio] = useState<Audio>({ url: '', name: '' })
     const renderTags = () => {
-        const filteredTags: TagUI[] = filterTagsFromCurrentLoops()
-        console.log('@@@filteredtags', filteredTags)
         return (
             <div className="flex flex-row gap-x-1">
-                {filteredTags.map((tag, index) => (
-                    <Button
-                        key={'tagbtn' + index.toString()}
-                        bgColor={tag.isSelected ? 'bg-sky-500' : 'bg-sky-300'}
-                        onClick={() => selectTag(index)}
-                    >
-                        {tag.name}
-                    </Button>
-                ))}
+                {allTags.map((tag, index) => {
+                    return isTagUsed(tag) ? (
+                        <Button
+                            key={'tagbtn' + index.toString()}
+                            bgColor={
+                                tag.isSelected ? 'bg-sky-500' : 'bg-sky-300'
+                            }
+                            onClick={() => selectTag(index)}
+                        >
+                            {tag.name}
+                        </Button>
+                    ) : null
+                })}
             </div>
         )
     }
-    const filterTagsFromCurrentLoops = (): TagUI[] => {
-        //alltagsの中から、現在のuserloopsに使われているものを探す
-        return allTags.filter((tag) => {
-            console.log(tag.name)
-            for (const loop of userLoops) {
-                const tags = loop.userLoopTags
-                console.log(tags)
-                const found = tags.find((ult) => ult.id === tag.id)
-                if (found) return true
-            }
-            return false
-        })
+    const isTagUsed = (tag: Tag): boolean => {
+        //tagが、現在のuserloopsに使われているものを探す
+        for (const loop of userLoops) {
+            const tags = loop.userLoopTags
+            const found = tags.find((ult) => ult.id === tag.id)
+            if (found) return true
+        }
+        return false
     }
     return (
         <BasicPage>
@@ -145,6 +143,7 @@ const List = () => {
                     audioUrl={audio.url}
                     mini={true}
                     autoPlay
+                    isHLS={true}
                 />
             )}
         </BasicPage>
