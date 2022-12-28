@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import {
     Route,
     Routes,
@@ -19,10 +19,22 @@ import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
 import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
-import { getUser, refreshToken } from 'API/request'
+import { getUser, refreshToken, healthCheck } from 'API/request'
 
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
+    const [isOnline, setIsOnline] = useState(true)
+    const chk = async () => {
+        try {
+            await healthCheck()
+        } catch (e) {
+            if (isAxiosError(e)) {
+                if (e.code == 'ERR_NETWORK') setIsOnline(false)
+                return
+            }
+            throw e
+        }
+    }
     const auth = async () => {
         const token = localStorage.getItem('access_token')
         if (token) {
@@ -58,6 +70,7 @@ const App = () => {
     }
     useEffect(() => {
         auth()
+        chk()
     }, [])
     const startRefreshTimer = (): NodeJS.Timer => {
         return setInterval(async () => {
@@ -75,7 +88,7 @@ const App = () => {
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <Header user={user} />,
+            element: <Header user={user} isOnline={isOnline} />,
             errorElement: <ErrorPage />,
             children: [
                 {

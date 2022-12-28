@@ -14,8 +14,9 @@ import { User } from 'types/'
 import { forEachChild } from 'typescript'
 type props = {
     user: User | null
+    isOnline: boolean
 }
-const Header = ({ user }: props) => {
+const Header = ({ user, isOnline }: props) => {
     const navigate = useNavigate()
     const signOut = async () => {
         window.localStorage.removeItem('access_token')
@@ -25,6 +26,11 @@ const Header = ({ user }: props) => {
     }
     return (
         <div className="font-mono">
+            {!isOnline && (
+                <div className="bg-red-700 text-center font-bold text-slate-100">
+                    オフライン動作中
+                </div>
+            )}
             <div className="flex justify-between bg-stone-600 px-20  text-slate-100">
                 <Link to="/">LOOP ANALYZER</Link>
                 <div className="flex">
