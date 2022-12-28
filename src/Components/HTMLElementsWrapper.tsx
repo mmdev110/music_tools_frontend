@@ -7,8 +7,9 @@ import React, {
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     bgColor?: string
 }
-export const Button = ({ bgColor, ...props }: ButtonProps) => {
-    const bg = bgColor || 'bg-sky-500'
+export const Button = ({ bgColor, disabled, ...props }: ButtonProps) => {
+    let bg = bgColor || 'bg-sky-500'
+    if (disabled) bg = 'bg-sky-300'
     const px = 'px-4'
     const font = 'font-bold'
     const text = 'text-white'

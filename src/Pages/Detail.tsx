@@ -23,6 +23,7 @@ import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import LoopSummary from 'Components/LoopSummary'
 import { scryRenderedDOMComponentsWithClass } from 'react-dom/test-utils'
+import { classicNameResolver, textChangeRangeIsUnchanged } from 'typescript'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -110,7 +111,9 @@ const Detail = () => {
     const [progressions, setProgressions] = useState(DefaultChordNames)
     //Progressions
     const onProgressionsChange = (newInput: string[]) => {
-        setProgressions(newInput)
+        console.log('onProgressionsChange')
+        console.log(newInput)
+        setProgressions([...newInput])
     }
     //Memo
     const [memo, setMemo] = useState('')
@@ -193,6 +196,7 @@ const Detail = () => {
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
+            await load(userLoopResponse.id!)
         }
     }
     const load = async (id: number) => {
@@ -206,8 +210,8 @@ const Detail = () => {
             transposeRoot: null,
         })
         console.log(userLoopInput)
-        setProgressions(userLoopInput.progressions)
-        setTags(userLoopInput.userLoopTags)
+        setProgressions([...userLoopInput.progressions])
+        setTags(lo.cloneDeep(userLoopInput.userLoopTags))
         setName(userLoopInput.name)
         setMemo(userLoopInput.memo)
         //setLoop(userLoopInput)
@@ -247,11 +251,63 @@ const Detail = () => {
         setIsOpen(false)
     }
 
+    const [isChanged, setIsChanged] = useState(false)
+    useEffect(() => {
+        setIsChanged(checkChanged())
+    })
+    const checkChanged = (): boolean => {
+        console.log('@@@checkChanged')
+        console.log(oldLoop)
+        const isAudioChanged = !!droppedFile
+        let isMidiChanged = false
+        if (midiFile)
+            isMidiChanged = midiFile.name !== oldLoop.userLoopMidi.name
+        console.log(progressions)
+        console.log(oldLoop.progressions)
+        console.log('name change :', name !== oldLoop.name)
+        console.log(
+            'progressions change: ',
+            !lo.isEqual(progressions, oldLoop.progressions)
+        )
+        console.log(
+            'tags change :',
+            tags,
+            oldLoop.userLoopTags,
+            !lo.isEqual(tags, oldLoop.userLoopTags)
+        )
+        console.log('root change :', scaleForm.root !== oldLoop.key)
+
+        console.log(
+            'scale change :',
+            scaleForm.scale,
+            oldLoop.scale,
+            scaleForm.scale !== oldLoop.scale
+        )
+
+        console.log('memo change :', memo !== oldLoop.memo)
+
+        console.log('audio change :', isAudioChanged)
+        console.log('midi change :', isMidiChanged)
+
+        return (
+            name !== oldLoop.name ||
+            !lo.isEqual(progressions, oldLoop.progressions) ||
+            !lo.isEqual(tags, oldLoop.userLoopTags) ||
+            scaleForm.root !== oldLoop.key ||
+            scaleForm.scale !== oldLoop.scale ||
+            memo !== oldLoop.memo ||
+            isAudioChanged ||
+            isMidiChanged
+        )
+    }
+
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
                 <div>
-                    <Button onClick={save}>save</Button>
+                    <Button disabled={!isChanged} onClick={save}>
+                        save
+                    </Button>
                 </div>
                 <div className="text-2xl">name</div>
                 <Memo
