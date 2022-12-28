@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import * as Constants from '../Constants'
+import * as Constants from '../config/music'
 import * as Utils from '../utils/music'
 import * as Types from '../types/music'
 import { SequencerNote, SequencerSetting } from '../types/music'

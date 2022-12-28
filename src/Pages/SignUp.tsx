@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Route, Routes, BrowserRouter } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
 import * as Utils from 'utils/music'

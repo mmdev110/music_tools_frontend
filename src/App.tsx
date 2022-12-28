@@ -6,10 +6,10 @@ import {
     createBrowserRouter,
 } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
+import { TOKEN_REFRESH_INTERVAL_SEC } from 'config/front'
 import { User } from './types'
 import * as Utils from './utils/music'
-import { forEachChild } from 'typescript'
 import Header from 'Pages/Header'
 import Top from 'Pages/Top'
 import SignIn from 'Pages/SignIn'
@@ -19,21 +19,59 @@ import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
 import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
-import { getUser } from 'API/request'
+import { getUser, refreshToken } from 'API/request'
 
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
     const auth = async () => {
-        try {
-            const me = await getUser()
-            setUser(me) //me=nullの場合あり(logout時)
-        } catch (err) {
-            if (isAxiosError(err)) console.log(err)
+        const token = localStorage.getItem('access_token')
+        if (token) {
+            let me: User | null = null
+            try {
+                const userResult = await getUser()
+                if (userResult) me = userResult
+            } catch (err) {
+                if (isAxiosError(err)) console.log(err)
+            }
+
+            if (me) {
+                setUser(me)
+                //アクセストークン更新用のタイマー開始
+                const timer = startRefreshTimer()
+                return () => {
+                    clearInterval(timer)
+                }
+            } else {
+                //userが取得できなかった場合
+                try {
+                    //リフレッシュする
+                    await refresh()
+                    //新しいトークンでもう1回叩く
+                    await auth()
+                } catch (e) {
+                    //accessTokenもrefreshTokenもexpireしているので、ログアウト状態とする
+                    if (isAxiosError(e)) console.log(e)
+                    return
+                }
+            }
         }
     }
     useEffect(() => {
         auth()
     }, [])
+    const startRefreshTimer = (): NodeJS.Timer => {
+        return setInterval(async () => {
+            refresh()
+        }, TOKEN_REFRESH_INTERVAL_SEC * 1000)
+    }
+    const refresh = async () => {
+        const { accessToken } = await refreshToken()
+        localStorage.setItem('access_token', accessToken)
+    }
+    const onVisit = () => {
+        //TOPのonVisit要らなくなったら消す
+        console.log('top')
+    }
     const router = createBrowserRouter([
         {
             path: '/',
@@ -42,7 +80,7 @@ const App = () => {
             children: [
                 {
                     path: '',
-                    element: <Top onVisit={auth} />,
+                    element: <Top onVisit={onVisit} />,
                 },
                 {
                     path: 'signin',

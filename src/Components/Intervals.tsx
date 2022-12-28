@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import * as Constants from '../Constants'
+import * as Constants from '../config/music'
 import * as Types from '../types/music'
 
 type Props = {}

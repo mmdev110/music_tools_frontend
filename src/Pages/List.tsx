@@ -6,7 +6,7 @@ import {
     Link,
     useNavigate,
 } from 'react-router-dom'
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
 import { UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'

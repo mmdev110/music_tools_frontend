@@ -1,8 +1,8 @@
 import { iteratee } from 'lodash'
 import { it, describe, expect } from 'vitest'
 import * as Utils from '../utils/music'
-import * as Constants from '../Constants'
-import { TERMS } from '../Constants'
+import * as Constants from '../config/music'
+import { TERMS } from '../config/music'
 import Chord from './Chord'
 describe('new()', () => {
     it('debugs newFromChordName()', () => {

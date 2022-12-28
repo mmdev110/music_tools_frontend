@@ -1,5 +1,5 @@
-import * as Constants from '../Constants'
-import { TERMS } from '../Constants'
+import * as Constants from '../config/music'
+import { TERMS } from '../config/music'
 import * as Types from '../types/music'
 
 //音楽理論関連のutil

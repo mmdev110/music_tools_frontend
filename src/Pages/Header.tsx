@@ -8,7 +8,7 @@ import {
     useNavigate,
 } from 'react-router-dom'
 
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import { User } from 'types/'
 import { forEachChild } from 'typescript'
@@ -18,8 +18,9 @@ type props = {
 const Header = ({ user }: props) => {
     const navigate = useNavigate()
     const signOut = async () => {
-        window.localStorage.removeItem('jwt')
+        window.localStorage.removeItem('access_token')
         navigate('/')
+        //jwt消してリロードすることでApp.tsxのタイマーが消える
         window.location.reload()
     }
     return (

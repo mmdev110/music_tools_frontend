@@ -2,7 +2,10 @@ import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
 import { User, UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'
 import lo from 'lodash'
 
-const backend = axios.create({ baseURL: 'http://localhost:5000/' })
+const backend = axios.create({
+    baseURL: 'http://localhost:5000/',
+    withCredentials: true,
+})
 
 const configBackend = () => {
     //request.params, request.dataをcamel->snakeに、
@@ -58,18 +61,22 @@ configBackend()
 
 //jwtによる認証
 export const getUser = async (): Promise<User | null> => {
-    const jwt = window.localStorage.getItem('jwt')
+    const jwt = window.localStorage.getItem('access_token')
     if (!jwt) return null
     const response = await requestBackend<User>('user', 'GET')
     //console.log(response)
     return response.data
 }
 //email,passwordによるsignin
+type SignInResponse = {
+    user: User
+    accessToken: string
+}
 export const signIn = async (
     email: string,
     password: string
-): Promise<User> => {
-    const response = await requestBackend<User>('signin', 'POST', {
+): Promise<SignInResponse> => {
+    const response = await requestBackend<SignInResponse>('signin', 'POST', {
         email,
         password,
     })
@@ -137,30 +144,34 @@ export const healthCheck = async (): Promise<boolean> => {
     console.log(response.data)
     return response.data
 }
+
+type ResRefresh = {
+    accessToken: string
+}
+export const refreshToken = async (): Promise<ResRefresh> => {
+    const response = await requestBackend<ResRefresh>('refresh', 'POST')
+    return response.data
+}
 const requestBackend = async <T>(
     endpoint: string,
     method: string,
     data?: any
 ): Promise<AxiosResponse<T, any>> => {
     const url = endpoint
-    const jwt = window.localStorage.getItem('jwt')
+    const jwt = window.localStorage.getItem('access_token')
     const config = {
         headers: {
             'Content-Type': 'application/json',
             Authorization: jwt ? 'Bearer ' + jwt : '',
         },
     }
-    try {
-        let response: AxiosResponse<T>
-        if (method === 'POST') {
-            response = await backend.post(url, data, config)
-        } else {
-            response = await backend.get(url, config)
-        }
-        return response
-    } catch (err) {
-        throw err
+    let response: AxiosResponse<T>
+    if (method === 'POST') {
+        response = await backend.post(url, data, config)
+    } else {
+        response = await backend.get(url, config)
     }
+    return response
 }
 
 export const uploadToS3 = async (presignedUrl: string, file: File) => {

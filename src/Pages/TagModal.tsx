@@ -1,6 +1,6 @@
 import React, { ButtonHTMLAttributes, useEffect, useState } from 'react'
 import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import * as Types from 'types/music'
 import { Tag } from 'types/'
 import { getTags, saveTags } from 'API/request'

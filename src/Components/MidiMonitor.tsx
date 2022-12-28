@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ALL_DEGREES } from '../Constants'
+import { ALL_DEGREES } from '../config/music'
 import * as Util from '../utils/music'
 import * as Types from '../types/music'
 import Note from 'Classes/Note'

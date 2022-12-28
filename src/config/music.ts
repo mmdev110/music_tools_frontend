@@ -1,4 +1,4 @@
-import * as Types from './types/music'
+import * as Types from '../types/music'
 
 export const ALL_NOTES: Types.NOTE[] = [
     { index: 0, flat: 'C', sharp: 'C' }, //0

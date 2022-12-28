@@ -1,7 +1,7 @@
 import react, { memo } from 'react'
 import { Link } from 'react-router-dom'
 import { UserLoopInput } from 'types'
-import { ALL_NOTES, ALL_DEGREES } from 'Constants'
+import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import { Button } from 'Components/HTMLElementsWrapper'
 import ChordProgression from 'Classes/ChordProgression'
 import Chord from 'Classes/Chord'

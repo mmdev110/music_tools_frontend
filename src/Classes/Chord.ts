@@ -1,6 +1,6 @@
 import Note from './Note'
-import * as Constants from '../Constants'
-import { TERMS, CHORD_RE, SCALES, ALL_DEGREES } from '../Constants'
+import * as Constants from '../config/music'
+import { TERMS, CHORD_RE, SCALES, ALL_DEGREES } from '../config/music'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils/music'
 import lo from 'lodash'
 import { NOTE } from '../types/music'

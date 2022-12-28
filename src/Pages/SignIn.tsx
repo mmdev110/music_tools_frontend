@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Route, Routes, BrowserRouter, useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
 import * as Utils from 'utils/music'
@@ -17,15 +17,19 @@ const SignIn = () => {
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         try {
-            const user = await signIn(form.email, form.password)
-            window.localStorage.setItem('jwt', user.token)
+            const { user, accessToken } = await signIn(
+                form.email,
+                form.password
+            )
+            window.localStorage.setItem('access_token', accessToken)
             navigate('/')
+            //jwt追加してリロードすることでApp.tsxのタイマーが作動する
+            window.location.reload()
             //setResultText(`sign in: ${user.email}`)
         } catch (err) {
+            console.log(err)
             if (isAxiosError(err)) {
-                setResultText(err.response?.data.message)
-            } else {
-                console.log(err)
+                setResultText(err.message)
             }
         }
     }

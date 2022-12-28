@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { TERMS } from 'Constants'
+import { TERMS } from 'config/music'
 import * as Types from 'types/music'
 import * as Utils from 'utils/music'
 import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'
+import { Button } from 'Components/HTMLElementsWrapper'
+import { getUser } from 'API/request'
 type props = {
-    onVisit: Function
+    onVisit: () => void
 }
 const Top = ({ onVisit }: props) => {
-    useEffect(() => {
-        console.log('auth')
-        onVisit()
-    }, [])
+    const onClick = async () => {
+        console.log('test')
+        try {
+            await getUser()
+        } catch (e) {
+            console.log(e)
+        }
+    }
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-2 pt-10">
@@ -28,6 +34,7 @@ const Top = ({ onVisit }: props) => {
                     <span>から試してみましょう！</span>
                 </div>
                 <HowToUse />
+                <Button onClick={onClick}>テスト</Button>
             </div>
         </BasicPage>
     )
