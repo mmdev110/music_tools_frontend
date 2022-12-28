@@ -13,12 +13,13 @@ type props = {
 }
 const Top = ({ onVisit }: props) => {
     const onClick = async () => {
-        console.log('test')
-        try {
-            await getUser()
-        } catch (e) {
-            console.log(e)
-        }
+        console.log('start')
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                console.log('finished')
+                resolve(1)
+            }, 2000)
+        })
     }
     return (
         <BasicPage>
