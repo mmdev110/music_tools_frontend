@@ -22,7 +22,7 @@ export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
     const onClick = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
-        e.preventDefault()
+        //e.preventDefault()
         //連打防止
         setDisabled(true)
         if (props.onClick) await props.onClick(e)
