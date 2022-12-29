@@ -6,19 +6,30 @@ import {
     Link,
     useNavigate,
 } from 'react-router-dom'
+import Modal from 'react-modal'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
 import { UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
-import { getUserLoops, getTags } from 'API/request'
+import { getUserLoops, getTags, deleteUserLoop } from 'API/request'
 import { isAxiosError } from 'axios'
 import BasicPage from 'Components/BasicPage'
 import { Button } from 'Components/HTMLElementsWrapper'
 import LoopSummary from 'Components/LoopSummary'
 import AudioPlayer from 'Components/AudioPlayer'
-
+import { getDisplayName } from 'utils/front'
+const ModalStyle = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+}
 type Audio = {
     name: string
     url: string
@@ -112,6 +123,25 @@ const List = () => {
         }
         return false
     }
+
+    //modal周り
+    const [modalIsOpen, setIsOpen] = React.useState(false)
+
+    const closeModal = () => {
+        setIsOpen(false)
+    }
+    const [loopToDelete, setLoopToDelete] = useState<UserLoopInput>()
+    const toggleConfirmationModal = (selectedLoop: UserLoopInput) => {
+        setLoopToDelete(selectedLoop)
+        setIsOpen(true)
+    }
+    const execDelete = async (input: UserLoopInput) => {
+        console.log(input)
+        //console.log(window.localStorage.getItem('access_token'))
+        const data = await deleteUserLoop(input.id!)
+        closeModal()
+        window.location.reload()
+    }
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
@@ -129,6 +159,7 @@ const List = () => {
                                     input={userLoop}
                                     onInfoClick={move}
                                     onPlayButtonClick={play}
+                                    onClickX={toggleConfirmationModal}
                                 />
                             )
                         })
@@ -146,7 +177,42 @@ const List = () => {
                     isHLS={true}
                 />
             )}
+            <Modal
+                isOpen={modalIsOpen}
+                //onAfterOpen={afterOpenModal}
+                onRequestClose={closeModal}
+                style={ModalStyle}
+                contentLabel="Example Modal"
+            >
+                <Confirmation
+                    onOK={execDelete}
+                    onCancel={closeModal}
+                    input={loopToDelete}
+                />
+            </Modal>
         </BasicPage>
+    )
+}
+type ConfirmationProps = {
+    input?: UserLoopInput
+    onCancel: () => void
+    onOK: (input: UserLoopInput) => void
+}
+const Confirmation = ({ input, onCancel, onOK }: ConfirmationProps) => {
+    const onClickExec = () => {
+        if (input) onOK(input)
+    }
+    return input ? (
+        <div>
+            <div>削除確認</div>
+            <div>{getDisplayName(input)}を削除しますか？</div>
+            <div>
+                <Button onClick={onClickExec}>削除</Button>
+                <Button onClick={onCancel}>キャンセル</Button>
+            </div>
+        </div>
+    ) : (
+        <div>削除するループが見つかりませんでした。</div>
     )
 }
 

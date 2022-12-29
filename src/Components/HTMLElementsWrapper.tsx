@@ -7,19 +7,22 @@ import React, {
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     bgColor?: string
+    width?: string
 }
-export const Button = ({ bgColor, ...props }: ButtonProps) => {
+export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
     let bg = bgColor || 'bg-sky-500'
     if (props.disabled) bg = 'bg-sky-300'
     const px = 'px-4'
     const font = 'font-bold'
     const text = 'text-white'
     const rounded = 'rounded'
-    const className = [bg, px, font, text, rounded].join(' ')
+    const w = width || 'w-auto'
+    const className = [bg, px, font, text, rounded, w].join(' ')
     const [disabled, setDisabled] = useState(false)
     const onClick = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
     ) => {
+        e.preventDefault()
         //連打防止
         setDisabled(true)
         if (props.onClick) await props.onClick(e)

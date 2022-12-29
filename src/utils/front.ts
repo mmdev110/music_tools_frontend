@@ -1,3 +1,4 @@
+import { UserLoopInput } from 'types'
 //front関連のutil
 
 export const validateEmail = (input: string): string => {
@@ -9,4 +10,7 @@ export const validateEmail = (input: string): string => {
 export const validatePassword = (input: string): string => {
     if (input.length < 8) return 'パスワードは8文字以上入力してください'
     return ''
+}
+export const getDisplayName = (input: UserLoopInput): string => {
+    return input.name || input.userLoopAudio.name || ''
 }

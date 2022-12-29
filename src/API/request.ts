@@ -111,6 +111,18 @@ export const saveUserLoop = async (
     )
     return response.data
 }
+type GeneralResponse = {
+    Message: string
+}
+
+export const deleteUserLoop = async (id: number): Promise<GeneralResponse> => {
+    const response = await requestBackend<GeneralResponse>(
+        'delete_loop',
+        'POST',
+        { id: id }
+    )
+    return response.data
+}
 
 type GetUserLoopResponse = {
     userLoopInput: UserLoopInput
@@ -163,7 +175,13 @@ const requestBackend = async <T>(
         },
     }
     let response: AxiosResponse<T>
+    console.log(method)
+    console.log(method === 'POST')
     if (method === 'POST') {
+        console.log('post')
+        console.log(url)
+        console.log(data)
+        console.log(config)
         response = await backend.post(url, data, config)
     } else {
         response = await backend.get(url, config)
