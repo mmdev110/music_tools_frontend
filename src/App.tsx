@@ -90,7 +90,7 @@ const App = () => {
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <Header user={user} isOnline={isOnline} />,
+            element: <Header isOnline={isOnline} />,
             errorElement: <ErrorPage />,
             children: [
                 {

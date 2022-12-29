@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import {
     Route,
     Routes,
@@ -7,17 +7,17 @@ import {
     Outlet,
     useNavigate,
 } from 'react-router-dom'
-
+import { UserContext } from 'App'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import { User } from 'types/'
 import { forEachChild } from 'typescript'
 type props = {
-    user: User | null
     isOnline: boolean
 }
-const Header = ({ user, isOnline }: props) => {
+const Header = ({ isOnline }: props) => {
     const navigate = useNavigate()
+    const user = useContext(UserContext)
     const signOut = async () => {
         window.localStorage.removeItem('access_token')
         navigate('/')
