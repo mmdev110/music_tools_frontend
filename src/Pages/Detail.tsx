@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
 import Modal from 'react-modal'
 import ScaleForm from 'Components/ScaleForm'
@@ -18,6 +18,7 @@ import { UserLoopInput } from 'types'
 import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
 import { isAxiosError } from 'axios'
+import { UserContext } from 'App'
 import lo from 'lodash'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
@@ -80,6 +81,7 @@ const loopInit: UserLoopInput = {
 Modal.setAppElement('#root')
 const Detail = () => {
     let { userLoopId } = useParams()
+    const user = useContext(UserContext)
 
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({
         root: 0,
@@ -300,18 +302,22 @@ const Detail = () => {
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
-                <div>
-                    <Button disabled={!isChanged()} onClick={save}>
-                        save
-                    </Button>
-                </div>
+                {user ? (
+                    <div>
+                        <Button disabled={!isChanged()} onClick={save}>
+                            save
+                        </Button>
+                    </div>
+                ) : null}
+
                 <div className="text-2xl">name</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
                     memo={name}
                     onChange={onNameChange}
                 />
-                <Button onClick={showModal}>タグ編集</Button>
+                {user ? <Button onClick={showModal}>タグ編集</Button> : null}
+
                 <div className="flex flex-row gap-x-4">
                     {tags.map((tag) => (
                         <Button>{tag.name}</Button>

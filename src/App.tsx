@@ -21,6 +21,7 @@ import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
 import { getUser, refreshToken, healthCheck } from 'API/request'
 
+export const UserContext = createContext<User | null>(null)
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
     const [isOnline, setIsOnline] = useState(true)
@@ -48,6 +49,7 @@ const App = () => {
 
             if (me) {
                 setUser(me)
+
                 //アクセストークン更新用のタイマー開始
                 const timer = startRefreshTimer()
                 return () => {
@@ -122,7 +124,11 @@ const App = () => {
             ],
         },
     ])
-    return <RouterProvider router={router} />
+    return (
+        <UserContext.Provider value={user}>
+            <RouterProvider router={router} />
+        </UserContext.Provider>
+    )
 }
 
 export default App
