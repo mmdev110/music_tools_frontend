@@ -1,9 +1,10 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
 import { User, UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'
 import lo from 'lodash'
+import { BACKEND_URL } from 'config/front'
 
 const backend = axios.create({
-    baseURL: 'http://localhost:5000/',
+    baseURL: BACKEND_URL,
     withCredentials: true,
 })
 
