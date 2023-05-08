@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
 import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
+import { MediaRange } from 'types/front'
 
 type Props = {
     droppedFile?: File | undefined
@@ -11,6 +12,7 @@ type Props = {
     mini: boolean
     autoPlay?: boolean
     isHLS: boolean
+    range: MediaRange
 }
 const AudioPlayer = ({
     droppedFile,
@@ -21,6 +23,7 @@ const AudioPlayer = ({
     mini,
     autoPlay,
     isHLS,
+    range,
 }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         if (onDrop) onDrop(acceptedFiles)
@@ -39,10 +42,22 @@ const AudioPlayer = ({
     useEffect(() => {
         if (droppedFile) setFileUrl(URL.createObjectURL(droppedFile))
     }, [droppedFile])
+    const timeupdatefunc = (event: SyntheticEvent<HTMLAudioElement>) => {
+        const { start, end } = range
+        if (event.target instanceof HTMLAudioElement && start > 0 && end > 0) {
+            const currentTime = event.target.currentTime
+            //console.log(currentTime)
+            if (currentTime < start) {
+                event.target.currentTime = start
+            } else if (currentTime > end) {
+                event.target.currentTime = start
+            }
+        }
+    }
     return (
         <div>
             <Dropzone
-                accept={{ 'audio/mpeg': ['.mp3', '.wav'] }}
+                accept={{ 'audio/mpeg': ['.mp3', '.wav', '.m4a'] }}
                 onDrop={processFiles}
                 disabled={dropDisabled}
             >
@@ -58,6 +73,7 @@ const AudioPlayer = ({
                                 <div>
                                     <audio
                                         ref={audioRef}
+                                        onTimeUpdate={timeupdatefunc}
                                         controls
                                         loop={true}
                                         autoPlay={autoPlay}
@@ -68,6 +84,7 @@ const AudioPlayer = ({
                                     <audio
                                         controls
                                         src={fileUrl}
+                                        onTimeUpdate={timeupdatefunc}
                                         loop={true}
                                         autoPlay={true}
                                     />

@@ -1,6 +1,12 @@
 import Note from './Note'
 import * as Constants from '../config/music'
-import { TERMS, CHORD_RE, SCALES, ALL_DEGREES } from '../config/music'
+import {
+    TERMS,
+    CHORD_RE,
+    SCALES,
+    ALL_DEGREES,
+    ALL_NOTES,
+} from '../config/music'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils/music'
 import lo from 'lodash'
 import { NOTE } from '../types/music'
@@ -21,6 +27,7 @@ type ChordDetail = {
     seventh: Seventh
     tensions: Tension[]
 }
+export type NoteIntervals = { noteName: string; interval: string }[]
 //Init値はlodashでコピーして使う
 //NG: const tmp = detailInit
 //スプレッド演算子もダメ(要素が配列またはオブジェクトだった場合はそこが参照渡しになってしまう)
@@ -122,8 +129,14 @@ export default class Chord {
         if (matchSeventh) this._detail.seventh = matchSeventh[0]
 
         const matchTension = chordQuality.match(CHORD_RE.TENSIONS)
-        ////console.log({ matchTension })
+        //console.log({ matchTension })
         if (matchTension) this._detail.tensions = matchTension
+        //テンションがadd系じゃない かつ seventhが無ければseventhを追加してあげる
+        //C9, C13に対して7追加
+        //Cadd9, Cadd13の場合は7追加しない
+        const matchAdd = chordQuality.match(CHORD_RE.ADD)
+        if (!matchAdd && !matchSeventh) this._detail.seventh = '7'
+
         this._detail.root = rootNote.index
     }
     private _analyzeNotes() {
@@ -132,6 +145,7 @@ export default class Chord {
         //Cで考えてからthis._detail.rootにtransposeする
         const { root, on, third, fifth, seventh, tensions } = this._detail
         let C = [0]
+        let interval = ['root']
         switch (third) {
             case 'sus2':
                 C.push(2)
@@ -189,9 +203,6 @@ export default class Chord {
                 case '9':
                     C.push(2)
                     break
-                case '9':
-                    C.push(7)
-                    break
                 case '11':
                     C.push(5)
                     break
@@ -208,12 +219,34 @@ export default class Chord {
                     break
             }
         })
+        //C基準から元のルートにトランスポーズ
         const transposed = C.map((note) => {
             return transposeNote(note, root)
         })
         if (on !== -1) transposed.push(on)
         //昇順ソート
         this._notes = lo.uniq(transposed).sort((a, b) => a - b)
+    }
+    getNoteIntervals(): NoteIntervals {
+        const root =
+            this._detail.on === -1 ? this._detail.root : this._detail.on
+        const notes = this._notes
+        //sortはview側でやることにした
+        //const rootIndex = notes.findIndex((note) => note === root)
+        //const left = notes.slice(0, rootIndex)
+        //const right = notes.slice(rootIndex)
+        const sorted = notes
+
+        console.log('sorted', sorted)
+        const notesInC = sorted.map((note) => transposeNote(note, -root))
+        console.log(notesInC)
+        const intervals = notesInC.map((note, index) => {
+            const noteName = ALL_NOTES[sorted[index]].flat
+            const interval = ALL_DEGREES[note].interval
+            return { noteName: noteName, interval: interval }
+        })
+
+        return intervals
     }
     _calcDegree(key: number) {
         const calcNoteDegree = (note: number, key_: number): number => {
@@ -271,8 +304,8 @@ export default class Chord {
         }
         //if (this._isDominant()) itself.push(TERMS.Dominant)
         if (this._isSubDominantMinor(key)) itself.push(TERMS.SubDominantMinor)
-        if (this._isInversion()) itself.push(TERMS.Inversion)
-        if (this._isOnChordTension()) itself.push(TERMS.OnChordTension)
+        if (this._isInversion()) itself.push(TERMS.OnChordInversion)
+        if (this._isOnChordOther()) itself.push(TERMS.OnChordOther)
         if (this._isSubstituteDominant()) {
             itself.push(TERMS.SubstituteDominant)
             const ind = itself.findIndex(
@@ -335,8 +368,8 @@ export default class Chord {
     //G->C, C->Fなど
     private _isPFourthMove(next: Chord): boolean {
         //console.log('@@@isPFourthMove')
-        const { root } = this._degree
-        const nextRoot = next.degree.root
+        const root = this._getBottomNote().degree
+        const nextRoot = next._getBottomNote().degree
         const diff = intervalUp(root, nextRoot)
         return diff === 5 //四度上(または五度下)
     }
@@ -500,7 +533,7 @@ export default class Chord {
         return false
     }
     //オンコードのルートが構成音外かどうか
-    private _isOnChordTension() {
+    private _isOnChordOther() {
         const { root, on } = this._degree
         if (on === root) return false
         const { quality, third, seventh, fifth, tensions } = this._detail
@@ -550,7 +583,11 @@ const intervalUp = (from: number, to: number): number => {
     return diff > 0 ? diff : diff + 12
 }
 //semitones分の半音だけ上げる
+//note=2, semitones=2なら
+//D(=2)の2半音上なのでEを返す
 const transposeNote = (note: number, semitones: number): number => {
     const sum = note + semitones
-    return sum > 11 ? sum - 12 : sum
+    if (sum > 11) return sum - 12
+    if (sum < 0) return sum + 12
+    return sum
 }

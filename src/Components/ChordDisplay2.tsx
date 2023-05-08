@@ -4,12 +4,15 @@ import * as Types from '../types/music'
 import ChordProgression from '../Classes/ChordProgression'
 import lo from 'lodash'
 import OneChord from './OneChord'
+import OneRelation from './OneRelation'
 import ScaleForm from './ScaleForm'
+import { NoteIntervals } from 'Classes/Chord'
 
 type Props = {
     scaleForm: Types.ScaleFormType
     onProgressionsChange: Function
     progressionNames: string[]
+    onNoteIntervalsClick: (info: NoteIntervals) => void
 }
 const ResetChordNames: string[] = [
     '',
@@ -34,6 +37,7 @@ const ChordDisplay2 = ({
     progressionNames,
     onProgressionsChange,
     scaleForm,
+    onNoteIntervalsClick,
 }: Props) => {
     //console.log('@@@@ChordDisplay')
     const [progression, setProgression] = useState(
@@ -75,7 +79,7 @@ const ChordDisplay2 = ({
             return (
                 <div
                     key={index}
-                    className="flex grow justify-around border-t-4 border-black first:border-t-0 "
+                    className="flex justify-around border-t-4 border-black first:border-t-0 "
                 >
                     {chunk.map((chord, index2) => {
                         const { degree, detail, characteristics } = chord
@@ -88,7 +92,7 @@ const ChordDisplay2 = ({
                                 degreeName +=
                                     '/' + ALL_DEGREES[degree.on].degree
                         }
-                        let transposed = '-'
+                        let transposed = ''
                         if (scaleForm.transposeRoot) {
                             const [newRoot, newOn] = chord.getTransposedRoot(
                                 scaleForm.root,
@@ -98,18 +102,27 @@ const ChordDisplay2 = ({
                             transposed = newRoot + chord.detail.quality
                             if (newOn) transposed += '/' + newOn
                         }
+                        const noteIntervals = chord.getNoteIntervals()
+                        const showNoteIntervals = detail.on === -1
 
                         return (
-                            <OneChord
-                                key={index2}
-                                chord={chord.name}
-                                degree={degreeName}
-                                chara_itself={characteristics.itself}
-                                chara_relation={characteristics.relation}
-                                index={index * 4 + index2}
-                                transposedChord={transposed}
-                                onChange={onChange}
-                            />
+                            <div className="flex basis-1/4 flex-row">
+                                <OneChord
+                                    key={index2}
+                                    chord={chord.name}
+                                    degree={degreeName}
+                                    chara_itself={characteristics.itself}
+                                    index={index * 4 + index2}
+                                    transposedChord={transposed}
+                                    onChange={onChange}
+                                    showNoteIntervals={showNoteIntervals}
+                                    noteIntervals={noteIntervals}
+                                    onNoteIntervalsClick={onNoteIntervalsClick}
+                                />
+                                <OneRelation
+                                    chara_relation={characteristics.relation}
+                                />
+                            </div>
                         )
                     })}
                 </div>

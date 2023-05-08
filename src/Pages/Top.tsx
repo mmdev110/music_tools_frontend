@@ -7,19 +7,13 @@ import * as Utils from 'utils/music'
 import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'
 import { Button } from 'Components/HTMLElementsWrapper'
-import { getUser } from 'API/request'
+import { healthCheck } from 'API/request'
 type props = {
     onVisit: () => void
 }
 const Top = ({ onVisit }: props) => {
     const onClick = async () => {
-        console.log('start')
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log('finished')
-                resolve(1)
-            }, 2000)
-        })
+        await healthCheck()
     }
     return (
         <BasicPage>

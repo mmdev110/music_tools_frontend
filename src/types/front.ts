@@ -31,6 +31,11 @@ type MediaPath = {
         get: string
         put: string
     }
+    range?: MediaRange
+}
+export type MediaRange = {
+    start: number
+    end: number
 }
 export type UserLoopSearchCondition = {
     tagIds?: number[]

@@ -25,8 +25,13 @@ export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
         //e.preventDefault()
         //連打防止
         setDisabled(true)
-        if (props.onClick) await props.onClick(e)
-        setDisabled(false)
+        try {
+            if (props.onClick) await props.onClick(e)
+        } catch (e) {
+            throw e
+        } finally {
+            setDisabled(false)
+        }
     }
     return (
         <button

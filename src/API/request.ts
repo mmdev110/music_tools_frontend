@@ -176,13 +176,8 @@ const requestBackend = async <T>(
         },
     }
     let response: AxiosResponse<T>
-    console.log(method)
     console.log(method === 'POST')
     if (method === 'POST') {
-        console.log('post')
-        console.log(url)
-        console.log(data)
-        console.log(config)
         response = await backend.post(url, data, config)
     } else {
         response = await backend.get(url, config)

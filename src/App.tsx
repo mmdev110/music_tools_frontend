@@ -29,6 +29,7 @@ const App = () => {
         try {
             await healthCheck()
         } catch (e) {
+            console.log(e)
             if (isAxiosError(e)) {
                 if (e.code == 'ERR_NETWORK') setIsOnline(false)
                 return

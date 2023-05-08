@@ -2,7 +2,7 @@ import { iteratee } from 'lodash'
 import { it, describe, expect } from 'vitest'
 import * as Utils from '../utils/music'
 import * as Constants from '../config/music'
-import { TERMS } from '../config/music'
+import { TERMS, ALL_DEGREES, ALL_NOTES } from '../config/music'
 import Chord from './Chord'
 describe('new()', () => {
     it('debugs newFromChordName()', () => {
@@ -20,7 +20,7 @@ describe('new()', () => {
 })
 
 describe('analyzeCharacteristics()', () => {
-    it('can analyze Am7913 in C major', () => {
+    it('can analyze Am7913 as diatonic and tonic in C major', () => {
         const chordName = 'Am7913'
         const C = Utils.findNote('C')
         const A = Utils.findNote('A')
@@ -93,6 +93,41 @@ describe('analyzeCharacteristics()', () => {
             const Am7 = Chord.newFromChordName('Am7')
             const transposed = Am7.getTransposedRoot(0, 2, TERMS.MAJOR)
             expect(transposed[0]).toBe('B')
+        })
+    })
+    describe('getNoteIntervals()', () => {
+        it('Dm7/G, D F A C / G', () => {
+            const chord = Chord.newFromChordName('Dm7/G')
+            const got = chord.getNoteIntervals()
+            console.log(got)
+            const want = [
+                {
+                    noteName: ALL_NOTES[2].flat, //D
+                    interval: ALL_DEGREES[7].interval, ///5th
+                },
+                {
+                    noteName: ALL_NOTES[5].flat, //F
+                    interval: ALL_DEGREES[10].interval, ///7th
+                },
+                {
+                    noteName: ALL_NOTES[9].flat, //A
+                    interval: ALL_DEGREES[2].interval, ///9th
+                },
+                {
+                    noteName: ALL_NOTES[0].flat, //C
+                    interval: ALL_DEGREES[5].interval, ///11th
+                },
+                {
+                    noteName: ALL_NOTES[7].flat, //G
+                    interval: ALL_DEGREES[0].interval, ///root
+                },
+            ]
+            console.log(want)
+            expect(got).toContainEqual(want[0])
+            expect(got).toContainEqual(want[1])
+            expect(got).toContainEqual(want[2])
+            expect(got).toContainEqual(want[3])
+            expect(got).toContainEqual(want[4])
         })
     })
 })

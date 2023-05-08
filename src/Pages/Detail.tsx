@@ -10,10 +10,11 @@ import SequenceAnalyzer from 'Components/SequenceAnalyzer'
 import MidiMonitorDescription from 'Components/MidiMonitorDescription'
 import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
-import TagModal from 'Pages/TagModal'
+import TagModal from 'Pages/Modals/Tag'
+import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType } from 'types'
+import { Tag, ScaleFormType, MediaRange } from 'types'
 import { UserLoopInput } from 'types'
 import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -25,6 +26,7 @@ import { Button, Input } from 'Components/HTMLElementsWrapper'
 import LoopSummary from 'Components/LoopSummary'
 import { scryRenderedDOMComponentsWithClass } from 'react-dom/test-utils'
 import { classicNameResolver, textChangeRangeIsUnchanged } from 'typescript'
+import { NoteIntervals } from 'Classes/Chord'
 
 const DefaultChordNames: string[] = [
     'CM7',
@@ -68,6 +70,7 @@ const loopInit: UserLoopInput = {
             get: '',
             put: '',
         },
+        range: { start: 0, end: 0 },
     },
     userLoopMidi: {
         name: '',
@@ -122,18 +125,21 @@ const Detail = () => {
     const onMemoChange = (str: string) => {
         setMemo(str)
     }
-    //droppedFile
+    //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [audioUrl, setAudioUrl] = useState('')
     const [audioName, setAudioName] = useState('')
     const [isHLS, setIsHLS] = useState(false)
+    const [range, setRange] = useState<MediaRange>({ start: 0, end: 0 })
     const onDropAudio = (acceptedFiles: File[]) => {
         const file: File = acceptedFiles[0]
         setDroppedFile(file)
+        console.log(file)
         setAudioUrl(URL.createObjectURL(file))
         setAudioName(file.name)
         setIsHLS(false)
     }
+
     //MidiFile
     const [midiFile, setMidiFile] = useState<File>()
     const onDropMidi = (acceptedFiles: File[]) => {
@@ -145,7 +151,6 @@ const Detail = () => {
         setMidiRoots(rootIndexes)
     }
     //userLoop
-    //const [loop, setLoop] = useState<UserLoopInput>(loopInit)
     const [oldLoop, setOldLoop] = useState<UserLoopInput>(loopInit)
 
     const save = async () => {
@@ -160,6 +165,7 @@ const Detail = () => {
             userLoopAudio: {
                 name: audioName,
                 url: { get: '', put: '' },
+                range: { start: 0, end: 0 },
             },
             userLoopMidi: {
                 name: midiFile ? midiFile.name : '',
@@ -244,13 +250,24 @@ const Detail = () => {
     }, [])
 
     //tag modal
-    const [modalIsOpen, setIsOpen] = React.useState(false)
-    const showModal = () => {
-        setIsOpen(true)
+    const [tagModalIsOpen, setTagIsOpen] = React.useState(false)
+    const showTagModal = () => {
+        setTagIsOpen(true)
     }
 
-    const closeModal = () => {
-        setIsOpen(false)
+    const closeTagModal = () => {
+        setTagIsOpen(false)
+    }
+    const [chordModalIsOpen, setChordIsOpen] = React.useState(false)
+    const [noteIntervals, setNoteIntervals] = React.useState<NoteIntervals>([])
+    const showChordModal = (info: NoteIntervals) => {
+        setNoteIntervals(info)
+        setChordIsOpen(true)
+    }
+
+    const closeChordModal = () => {
+        setNoteIntervals([])
+        setChordIsOpen(false)
     }
 
     const isChanged = (): boolean => {
@@ -316,7 +333,7 @@ const Detail = () => {
                     memo={name}
                     onChange={onNameChange}
                 />
-                {user ? <Button onClick={showModal}>タグ編集</Button> : null}
+                {user ? <Button onClick={showTagModal}>タグ編集</Button> : null}
 
                 <div className="flex flex-row gap-x-4">
                     {tags.map((tag) => (
@@ -332,6 +349,7 @@ const Detail = () => {
                     isHLS={isHLS}
                     dropDisabled={false}
                     mini={false}
+                    range={range}
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo
@@ -351,6 +369,7 @@ const Detail = () => {
                     progressionNames={progressions}
                     onProgressionsChange={onProgressionsChange}
                     scaleForm={scaleForm}
+                    onNoteIntervalsClick={showChordModal}
                 />
                 <div className="text-2xl">MIDI Analyzer</div>
 
@@ -376,16 +395,29 @@ const Detail = () => {
             </div>
             {/* tag編集*/}
             <Modal
-                isOpen={modalIsOpen}
+                isOpen={tagModalIsOpen}
                 //onAfterOpen={afterOpenModal}
-                onRequestClose={closeModal}
+                onRequestClose={closeTagModal}
                 style={ModalStyle}
                 contentLabel="Example Modal"
             >
                 <TagModal
                     onTagUpdate={onTagsChange}
-                    closeModal={closeModal}
+                    closeModal={closeTagModal}
                     loopTags={tags}
+                />
+            </Modal>
+            {/* コード詳細*/}
+            <Modal
+                isOpen={chordModalIsOpen}
+                //onAfterOpen={afterOpenModal}
+                style={ModalStyle}
+                onRequestClose={closeChordModal}
+                contentLabel="Example Modal"
+            >
+                <ChordModal
+                    closeModal={closeChordModal}
+                    noteIntervals={noteIntervals}
                 />
             </Modal>
         </BasicPage>

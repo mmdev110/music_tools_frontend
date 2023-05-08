@@ -56,8 +56,8 @@ export const TERMS = {
     SecondaryDominant: 'セカンダリードミナント',
     UraChord: '裏コード',
     PassingDiminish: 'パッシングdim',
-    Inversion: 'オンコード(転回形)',
-    OnChordTension: 'オンコード(非転回形)',
+    OnChordInversion: 'オンコード(転回形)',
+    OnChordOther: 'オンコード(非転回形)',
     SubstituteDominant: '代理コード(ドミナント)',
     SubstituteSus4: '代理コード(sus4)',
 }
@@ -361,6 +361,7 @@ export const CHORD_RE = {
     FIFTH: /aug|b5|#5/,
     SEVENTH: /M7|7|6/,
     TENSIONS: /9|b9|11|#11|13|b13/g,
+    ADD: /add/,
 }
 
 export const Sequencer = {
