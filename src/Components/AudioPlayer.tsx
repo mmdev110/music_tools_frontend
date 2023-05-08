@@ -44,13 +44,15 @@ const AudioPlayer = ({
     }, [droppedFile])
     const timeupdatefunc = (event: SyntheticEvent<HTMLAudioElement>) => {
         const { start, end } = range
-        if (event.target instanceof HTMLAudioElement && start > 0 && end > 0) {
-            const currentTime = event.target.currentTime
-            //console.log(currentTime)
-            if (currentTime < start) {
-                event.target.currentTime = start
-            } else if (currentTime > end) {
-                event.target.currentTime = start
+        if (event.target instanceof HTMLAudioElement) {
+            if (start > 0 && end > 0 && end - start > 0) {
+                const currentTime = event.target.currentTime
+                //console.log(currentTime)
+                if (currentTime < start) {
+                    event.target.currentTime = start
+                } else if (currentTime > end) {
+                    event.target.currentTime = start
+                }
             }
         }
     }
