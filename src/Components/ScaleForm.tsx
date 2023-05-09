@@ -25,7 +25,6 @@ const ScaleForm = (props: Props) => {
         }
         for (let i = 0; i < scaleRef.current?.children.length!; i++) {
             const option = scaleRef.current?.children[i] as HTMLOptionElement
-            console.log(option.value)
             if (option.value === props.scaleForm.scale) option.selected = true
         }
     }, [props.scaleForm])
