@@ -237,9 +237,9 @@ export default class Chord {
         //const right = notes.slice(rootIndex)
         const sorted = notes
 
-        console.log('sorted', sorted)
+        //console.log('sorted', sorted)
         const notesInC = sorted.map((note) => transposeNote(note, -root))
-        console.log(notesInC)
+        //console.log(notesInC)
         const intervals = notesInC.map((note, index) => {
             const noteName = ALL_NOTES[sorted[index]].flat
             const interval = ALL_DEGREES[note].interval
