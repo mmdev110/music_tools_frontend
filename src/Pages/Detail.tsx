@@ -13,6 +13,7 @@ import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
 import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
+import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
 import { Tag, ScaleFormType, MediaRange } from 'types'
 import { UserLoopInput } from 'types'
@@ -125,12 +126,16 @@ const Detail = () => {
     const onMemoChange = (str: string) => {
         setMemo(str)
     }
+    const [showAdvancedMemo, setShowAdvancedMemo] = useState(false)
     //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [audioUrl, setAudioUrl] = useState('')
     const [audioName, setAudioName] = useState('')
     const [isHLS, setIsHLS] = useState(false)
     const [range, setRange] = useState<MediaRange>({ start: 0, end: 0 })
+    const onMediaRangeFormChange = (newRange: MediaRange) => {
+        setRange(newRange)
+    }
     const onDropAudio = (acceptedFiles: File[]) => {
         const file: File = acceptedFiles[0]
         setDroppedFile(file)
@@ -138,6 +143,7 @@ const Detail = () => {
         setAudioUrl(URL.createObjectURL(file))
         setAudioName(file.name)
         setIsHLS(false)
+        setRange({ start: 0, end: 0 })
     }
 
     //MidiFile
@@ -327,7 +333,25 @@ const Detail = () => {
                     </div>
                 ) : null}
 
-                <div className="text-2xl">name</div>
+                <div className="text-2xl">title</div>
+                <Memo
+                    className="h-6 w-1/4 border-2 border-sky-400"
+                    memo={name}
+                    onChange={onNameChange}
+                />
+                <div className="text-2xl">artist</div>
+                <Memo
+                    className="h-6 w-1/4 border-2 border-sky-400"
+                    memo={name}
+                    onChange={onNameChange}
+                />
+                <div className="text-2xl">BPM</div>
+                <Memo
+                    className="h-6 w-1/4 border-2 border-sky-400"
+                    memo={name}
+                    onChange={onNameChange}
+                />
+                <div className="text-2xl">section</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
                     memo={name}
@@ -341,6 +365,15 @@ const Detail = () => {
                     ))}
                 </div>
                 <div className="text-2xl">AudioPlayer</div>
+                <div>
+                    mp3, wav, m4aファイルをドロップできます。
+                    <br />
+                    start, endでループ範囲を指定できます。
+                </div>
+                <MediaRangeForm
+                    range={range}
+                    onChange={onMediaRangeFormChange}
+                />
                 <AudioPlayer
                     droppedFile={droppedFile}
                     audioUrl={audioUrl}
@@ -357,6 +390,48 @@ const Detail = () => {
                     memo={memo}
                     onChange={onMemoChange}
                 />
+                <Button
+                    width="w-fit"
+                    onClick={() => {
+                        setShowAdvancedMemo(!showAdvancedMemo)
+                    }}
+                >
+                    メモ詳細{showAdvancedMemo ? '(隠す)' : null}
+                </Button>
+                {showAdvancedMemo ? (
+                    <div>
+                        <div>コード</div>
+                        <Memo
+                            className="h-1/2 w-full border-2 border-sky-400"
+                            memo={memo}
+                            onChange={onMemoChange}
+                        />
+                        <div>リード</div>
+                        <Memo
+                            className="h-1/2 w-full border-2 border-sky-400"
+                            memo={memo}
+                            onChange={onMemoChange}
+                        />
+                        <div>ベース</div>
+                        <Memo
+                            className="h-1/2 w-full border-2 border-sky-400"
+                            memo={memo}
+                            onChange={onMemoChange}
+                        />
+                        <div>リズム</div>
+                        <Memo
+                            className="h-1/2 w-full border-2 border-sky-400"
+                            memo={memo}
+                            onChange={onMemoChange}
+                        />
+                        <div>パート間の繋ぎ</div>
+                        <Memo
+                            className="h-1/2 w-full border-2 border-sky-400"
+                            memo={memo}
+                            onChange={onMemoChange}
+                        />
+                    </div>
+                ) : null}
                 <div className="text-2xl">Scales</div>
                 <ScaleForm
                     scaleForm={scaleForm}
