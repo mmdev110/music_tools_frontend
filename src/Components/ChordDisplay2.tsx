@@ -106,9 +106,11 @@ const ChordDisplay2 = ({
                         const showNoteIntervals = detail.on === -1
 
                         return (
-                            <div className="flex basis-1/4 flex-row">
+                            <div
+                                key={index2}
+                                className="flex basis-1/4 flex-row"
+                            >
                                 <OneChord
-                                    key={index2}
                                     chord={chord.name}
                                     degree={degreeName}
                                     chara_itself={characteristics.itself}
