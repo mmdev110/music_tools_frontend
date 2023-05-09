@@ -68,10 +68,13 @@ const Modes = (props: Props) => {
 
     const renderNotes = (index: number) => {
         if (!intervals) return
-        return intervals.map((elem) => {
+        return intervals.map((elem, index2) => {
             const cell = elem[index]
             return (
-                <div className="min-w-full border-b-2 border-black last:border-b-0">
+                <div
+                    key={index2}
+                    className="min-w-full border-b-2 border-black last:border-b-0"
+                >
                     <Cell style={cell.style}>{cell.value}</Cell>
                 </div>
             )
@@ -97,10 +100,11 @@ const Modes = (props: Props) => {
                                     : TERMS.NATURAL_MINOR
                             ) || '-'
                         return (
-                            <div className="min-w-full border-b-2 border-black first:border-y-2 last:border-b-0">
-                                <Cell key={'aa' + index.toString()} style="">
-                                    {text}
-                                </Cell>
+                            <div
+                                key={index}
+                                className="min-w-full border-b-2 border-black first:border-y-2 last:border-b-0"
+                            >
+                                <Cell style="">{text}</Cell>
                             </div>
                         )
                     })}
@@ -109,7 +113,10 @@ const Modes = (props: Props) => {
                 {Constants.ALL_DEGREES.map((elem, index) => {
                     let text = elem.interval
                     return (
-                        <div className="flex basis-1/12 flex-col items-center justify-evenly border-r-2 border-black last:border-r-0">
+                        <div
+                            key={index}
+                            className="flex basis-1/12 flex-col items-center justify-evenly border-r-2 border-black last:border-r-0"
+                        >
                             <div className="min-w-full border-b-2 border-black last:border-b-0">
                                 <Cell
                                     key={'aa' + index.toString()}
