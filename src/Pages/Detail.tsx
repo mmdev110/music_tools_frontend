@@ -171,7 +171,7 @@ const Detail = () => {
             userLoopAudio: {
                 name: audioName,
                 url: { get: '', put: '' },
-                range: { start: 0, end: 0 },
+                range: range,
             },
             userLoopMidi: {
                 name: midiFile ? midiFile.name : '',
@@ -228,8 +228,10 @@ const Detail = () => {
         setTags(lo.cloneDeep(userLoopInput.userLoopTags))
         setName(userLoopInput.name)
         setMemo(userLoopInput.memo)
+        setRange(userLoopInput.userLoopAudio.range!)
         //setLoop(userLoopInput)
         setOldLoop(userLoopInput)
+        //audio, midiのロード
         try {
             if (audio.url.get) {
                 //const response = await getFromS3(s3Url.mp3)
@@ -280,6 +282,7 @@ const Detail = () => {
         console.log('@@@checkChanged')
         console.log(oldLoop)
         const isAudioChanged = !!droppedFile
+        const isRangeChanged = !lo.isEqual(oldLoop.userLoopAudio.range!, range)
         let isMidiChanged = false
         if (midiFile)
             isMidiChanged = midiFile.name !== oldLoop.userLoopMidi.name
@@ -318,7 +321,8 @@ const Detail = () => {
             scaleForm.scale !== oldLoop.scale ||
             memo !== oldLoop.memo ||
             isAudioChanged ||
-            isMidiChanged
+            isMidiChanged ||
+            isRangeChanged
         )
     }
 
