@@ -80,8 +80,13 @@ const List = () => {
         loadLoops({})
         loadAllTags()
     }, [])
-    const navigateNew = () => {
-        navigate('/edit/new')
+    const navigateNew = (duplicateFromId: number | null) => {
+        if (duplicateFromId) {
+            //パラメータを複製して新規作成
+            navigate('/edit/new', { state: { id: duplicateFromId } })
+        } else {
+            navigate('/edit/new')
+        }
     }
     const move = (input: UserLoopInput) => {
         navigate(`/edit/${input.id}`)
@@ -151,12 +156,27 @@ const List = () => {
         closeModal()
         window.location.reload()
     }
+
+    const MENU_ITEMS = [
+        {
+            name: '設定をコピーして新規作成',
+            onClick: (input: UserLoopInput) => {
+                navigateNew(input.id!)
+            },
+        },
+        {
+            name: '削除',
+            onClick: (input: UserLoopInput) => {
+                toggleConfirmationModal(input)
+            },
+        },
+    ]
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
                 <div>YOUR LOOPS</div>
                 <div>
-                    <Button onClick={navigateNew}>New</Button>
+                    <Button onClick={() => navigateNew(null)}>New</Button>
                 </div>
                 {renderTags()}
                 <div className="flex flex-col gap-y-5">
@@ -169,6 +189,7 @@ const List = () => {
                                     onInfoClick={move}
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
+                                    menuItems={MENU_ITEMS}
                                 />
                             )
                         })

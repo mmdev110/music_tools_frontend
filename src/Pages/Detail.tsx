@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react'
-import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
+import {
+    Route,
+    Routes,
+    BrowserRouter,
+    useParams,
+    useLocation,
+} from 'react-router-dom'
 import Modal from 'react-modal'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
@@ -85,6 +91,9 @@ const loopInit: UserLoopInput = {
 Modal.setAppElement('#root')
 const Detail = () => {
     let { userLoopId } = useParams()
+    let { state } = useLocation()
+    console.log('@@@@@state')
+    console.log(state)
     const user = useContext(UserContext)
 
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({
@@ -250,10 +259,14 @@ const Detail = () => {
         }
     }
     useEffect(() => {
-        if (userLoopId) {
-            const id_int = parseInt(userLoopId)
-            const isNumber = !isNaN(id_int)
-            if (isNumber) load(id_int)
+        const id_int = parseInt(userLoopId!)
+        const isNumber = !isNaN(id_int)
+        if (isNumber) {
+            //edit/:userLoopIdのとき
+            load(id_int)
+        } else if (state.id) {
+            //edit/newで設定をコピーして新規作成する場合
+            load(state.id)
         }
     }, [])
 
