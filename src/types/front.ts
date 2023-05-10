@@ -15,25 +15,42 @@ export type User = {
 export type UserLoopInput = {
     id?: number
     name: string
+    artist: string
     progressions: string[]
     key: number
+    BPM: number
+    section: string
     scale: string
-    midiRoots: number[]
     memo: string
-    userLoopAudio: MediaPath
-    userLoopMidi: MediaPath
+    memoBass: string
+    memoChord: string
+    memoLead: string
+    memoRhythm: string
+    memoTransition: string
+    userLoopAudio: UserLoopAudio
+    userLoopMidi: UserLoopMidi
     userLoopTags: Tag[]
 }
-type MediaPath = {
+type UserLoopAudio = {
     id?: number
     name: string
     url: {
         get: string
         put: string
     }
-    range?: MediaRange
+    range: AudioRange
 }
-export type MediaRange = {
+type UserLoopMidi = {
+    id?: number
+    name: string
+    url: {
+        get: string
+        put: string
+    }
+    midiRoots: number[]
+}
+export type AudioRange = {
+    //audioの再生範囲
     start: number
     end: number
 }

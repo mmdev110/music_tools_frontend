@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
 import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
-import { MediaRange } from 'types/front'
+import { AudioRange } from 'types/front'
 
 type Props = {
     droppedFile?: File | undefined
@@ -12,7 +12,7 @@ type Props = {
     mini: boolean
     autoPlay?: boolean
     isHLS: boolean
-    range: MediaRange
+    range: AudioRange
 }
 const AudioPlayer = ({
     droppedFile,

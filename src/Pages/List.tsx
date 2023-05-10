@@ -10,7 +10,7 @@ import Modal from 'react-modal'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
-import { UserLoopInput, Tag, UserLoopSearchCondition, MediaRange } from 'types/'
+import { UserLoopInput, Tag, UserLoopSearchCondition, AudioRange } from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
 import { getUserLoops, getTags, deleteUserLoop } from 'API/request'
@@ -104,7 +104,7 @@ const List = () => {
             end: userAudio.range?.end || 0,
         })
     }
-    const [mediaRange, setMediaRange] = useState<MediaRange>({
+    const [mediaRange, setMediaRange] = useState<AudioRange>({
         start: 0,
         end: 0,
     })

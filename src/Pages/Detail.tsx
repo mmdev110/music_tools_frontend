@@ -21,7 +21,7 @@ import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType, MediaRange } from 'types'
+import { Tag, ScaleFormType, AudioRange } from 'types'
 import { UserLoopInput } from 'types'
 import { getFromS3, getUserLoop, saveUserLoop, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -64,13 +64,19 @@ const ModalStyle = {
     },
 }
 const loopInit: UserLoopInput = {
-    id: 0,
     name: '',
+    artist: '',
     progressions: DefaultChordNames,
-    key: 0,
+    key: -1,
     scale: '',
-    midiRoots: [],
+    BPM: -1,
+    section: '',
     memo: '',
+    memoBass: '',
+    memoLead: '',
+    memoChord: '',
+    memoRhythm: '',
+    memoTransition: '',
     userLoopAudio: {
         name: '',
         url: {
@@ -85,6 +91,7 @@ const loopInit: UserLoopInput = {
             get: '',
             put: '',
         },
+        midiRoots: [],
     },
     userLoopTags: [],
 }
@@ -114,9 +121,11 @@ const Detail = () => {
     }
     //name
     const [name, setName] = useState('')
-    const onNameChange = (str: string) => {
-        setName(str)
-    }
+    const [artist, setArtist] = useState('')
+    //BPM
+    const [BPM, setBPM] = useState(0)
+    //section
+    const [section, setSection] = useState('')
 
     //tags
     const [tags, setTags] = useState<Tag[]>([])
@@ -132,17 +141,20 @@ const Detail = () => {
     }
     //Memo
     const [memo, setMemo] = useState('')
-    const onMemoChange = (str: string) => {
-        setMemo(str)
-    }
+    const [memoBass, setMemoBass] = useState('')
+    const [memoLead, setMemoLead] = useState('')
+    const [memoChord, setMemoChord] = useState('')
+    const [memoRhythm, setMemoRhythm] = useState('')
+    const [memoTransition, setMemoTransition] = useState('')
+
     const [showAdvancedMemo, setShowAdvancedMemo] = useState(false)
     //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [audioUrl, setAudioUrl] = useState('')
     const [audioName, setAudioName] = useState('')
     const [isHLS, setIsHLS] = useState(false)
-    const [range, setRange] = useState<MediaRange>({ start: 0, end: 0 })
-    const onMediaRangeFormChange = (newRange: MediaRange) => {
+    const [range, setRange] = useState<AudioRange>({ start: 0, end: 0 })
+    const onMediaRangeFormChange = (newRange: AudioRange) => {
         setRange(newRange)
     }
     const onDropAudio = (acceptedFiles: File[]) => {
@@ -165,18 +177,27 @@ const Detail = () => {
     const onMidiRootsChange = (rootIndexes: number[]) => {
         setMidiRoots(rootIndexes)
     }
-    //userLoop
-    const [oldLoop, setOldLoop] = useState<UserLoopInput>(loopInit)
+    //編集前の状態
+    const [oldState, setOldState] = useState<UserLoopInput>(loopInit)
+    //編集中の状態
+    const [userLoopInput, setUserLoopInput] = useState<UserLoopInput>(loopInit)
 
     const save = async () => {
         console.log('save')
         const input: UserLoopInput = {
             progressions: progressions,
             name: name,
+            artist: artist,
+            BPM: BPM,
+            section: section,
             key: scaleForm.root,
             scale: scaleForm.scale,
-            midiRoots: midiRoots,
             memo: memo,
+            memoBass: memoBass,
+            memoChord: memoChord,
+            memoLead: memoLead,
+            memoRhythm: memoRhythm,
+            memoTransition: memoTransition,
             userLoopAudio: {
                 name: audioName,
                 url: { get: '', put: '' },
@@ -185,13 +206,14 @@ const Detail = () => {
             userLoopMidi: {
                 name: midiFile ? midiFile.name : '',
                 url: { get: '', put: '' },
+                midiRoots: midiRoots,
             },
             userLoopTags: tags,
         }
         //保存
         let userLoopResponse: UserLoopInput | undefined
         try {
-            userLoopResponse = await saveUserLoop(input, userLoopId!)
+            userLoopResponse = await saveUserLoop(userLoopInput, userLoopId!)
             console.log(userLoopResponse)
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
@@ -236,10 +258,18 @@ const Detail = () => {
         setProgressions([...userLoopInput.progressions])
         setTags(lo.cloneDeep(userLoopInput.userLoopTags))
         setName(userLoopInput.name)
+        setArtist(userLoopInput.artist)
+        setSection(userLoopInput.section)
+        setBPM(userLoopInput.BPM)
         setMemo(userLoopInput.memo)
+        setMemoBass(userLoopInput.memoBass)
+        setMemoLead(userLoopInput.memoLead)
+        setMemoRhythm(userLoopInput.memoRhythm)
+        setMemoChord(userLoopInput.memoChord)
+        setMemoTransition(userLoopInput.memoTransition)
         setRange(userLoopInput.userLoopAudio.range!)
-        //setLoop(userLoopInput)
-        setOldLoop(userLoopInput)
+        //編集前の状態を保存しておく
+        setOldState(userLoopInput)
         //audio, midiのロード
         try {
             if (audio.url.get) {
@@ -264,7 +294,7 @@ const Detail = () => {
         if (isNumber) {
             //edit/:userLoopIdのとき
             load(id_int)
-        } else if (state.id) {
+        } else if (state && state.id) {
             //edit/newで設定をコピーして新規作成する場合
             load(state.id)
         }
@@ -293,46 +323,46 @@ const Detail = () => {
 
     const isChanged = (): boolean => {
         console.log('@@@checkChanged')
-        console.log(oldLoop)
+        console.log(oldState)
         const isAudioChanged = !!droppedFile
-        const isRangeChanged = !lo.isEqual(oldLoop.userLoopAudio.range!, range)
+        const isRangeChanged = !lo.isEqual(oldState.userLoopAudio.range!, range)
         let isMidiChanged = false
         if (midiFile)
-            isMidiChanged = midiFile.name !== oldLoop.userLoopMidi.name
+            isMidiChanged = midiFile.name !== oldState.userLoopMidi.name
         console.log(progressions)
-        console.log(oldLoop.progressions)
-        console.log('name change :', name !== oldLoop.name)
+        console.log(oldState.progressions)
+        console.log('name change :', name !== oldState.name)
         console.log(
             'progressions change: ',
-            !lo.isEqual(progressions, oldLoop.progressions)
+            !lo.isEqual(progressions, oldState.progressions)
         )
         console.log(
             'tags change :',
             tags,
-            oldLoop.userLoopTags,
-            !lo.isEqual(tags, oldLoop.userLoopTags)
+            oldState.userLoopTags,
+            !lo.isEqual(tags, oldState.userLoopTags)
         )
-        console.log('root change :', scaleForm.root !== oldLoop.key)
+        console.log('root change :', scaleForm.root !== oldState.key)
 
         console.log(
             'scale change :',
             scaleForm.scale,
-            oldLoop.scale,
-            scaleForm.scale !== oldLoop.scale
+            oldState.scale,
+            scaleForm.scale !== oldState.scale
         )
 
-        console.log('memo change :', memo !== oldLoop.memo)
+        console.log('memo change :', memo !== oldState.memo)
 
         console.log('audio change :', isAudioChanged)
         console.log('midi change :', isMidiChanged)
 
         return (
-            name !== oldLoop.name ||
-            !lo.isEqual(progressions, oldLoop.progressions) ||
-            !lo.isEqual(tags, oldLoop.userLoopTags) ||
-            scaleForm.root !== oldLoop.key ||
-            scaleForm.scale !== oldLoop.scale ||
-            memo !== oldLoop.memo ||
+            name !== oldState.name ||
+            !lo.isEqual(progressions, oldState.progressions) ||
+            !lo.isEqual(tags, oldState.userLoopTags) ||
+            scaleForm.root !== oldState.key ||
+            scaleForm.scale !== oldState.scale ||
+            memo !== oldState.memo ||
             isAudioChanged ||
             isMidiChanged ||
             isRangeChanged
@@ -354,25 +384,33 @@ const Detail = () => {
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
                     memo={name}
-                    onChange={onNameChange}
+                    onChange={(str) => {
+                        setName(str)
+                    }}
                 />
                 <div className="text-2xl">artist</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={name}
-                    onChange={onNameChange}
+                    memo={artist}
+                    onChange={(str) => {
+                        setArtist(str)
+                    }}
                 />
                 <div className="text-2xl">BPM</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={name}
-                    onChange={onNameChange}
+                    memo={BPM.toString()}
+                    onChange={(str) => {
+                        if (!isNaN(Number(str))) setBPM(Number(str))
+                    }}
                 />
                 <div className="text-2xl">section</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={name}
-                    onChange={onNameChange}
+                    memo={section}
+                    onChange={(str) => {
+                        setSection(str)
+                    }}
                 />
                 {user ? <Button onClick={showTagModal}>タグ編集</Button> : null}
 
@@ -405,7 +443,7 @@ const Detail = () => {
                 <Memo
                     className="h-1/2 w-full border-2 border-sky-400"
                     memo={memo}
-                    onChange={onMemoChange}
+                    onChange={(str) => setMemo(str)}
                 />
                 <Button
                     width="w-fit"
@@ -420,32 +458,32 @@ const Detail = () => {
                         <div>コード</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memo}
-                            onChange={onMemoChange}
+                            memo={memoChord}
+                            onChange={(str) => setMemoChord(str)}
                         />
                         <div>リード</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memo}
-                            onChange={onMemoChange}
+                            memo={memoLead}
+                            onChange={(str) => setMemoLead(str)}
                         />
                         <div>ベース</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memo}
-                            onChange={onMemoChange}
+                            memo={memoBass}
+                            onChange={(str) => setMemoBass(str)}
                         />
                         <div>リズム</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memo}
-                            onChange={onMemoChange}
+                            memo={memoRhythm}
+                            onChange={(str) => setMemoRhythm(str)}
                         />
                         <div>パート間の繋ぎ</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memo}
-                            onChange={onMemoChange}
+                            memo={memoTransition}
+                            onChange={(str) => setMemoTransition(str)}
                         />
                     </div>
                 ) : null}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
-import { MediaRange } from 'types/front'
+import { AudioRange } from 'types/front'
 
 type Props = {
-    range: MediaRange
-    onChange: (newRange: MediaRange) => void
+    range: AudioRange
+    onChange: (newrange: AudioRange) => void
 }
 const MediaRangeForm = ({ range, onChange }: Props) => {
     const onStartChange = (event: React.ChangeEvent<HTMLInputElement>) => {

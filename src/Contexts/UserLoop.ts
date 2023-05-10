@@ -1,6 +1,6 @@
 //userloop関連のcontext
 import { createContext } from 'react'
-import { MediaRange } from 'types/front'
+import { AudioRange } from 'types/front'
 
 //オーディオファイルまたはyoutubeのループ範囲
-export const MediaRangeContext = createContext<MediaRange>({ start: 0, end: 0 })
+export const MediaRangeContext = createContext<AudioRange>({ start: 0, end: 0 })

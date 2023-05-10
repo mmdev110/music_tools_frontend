@@ -4,7 +4,7 @@ export type {
     User,
     UserLoopInput,
     UserLoopSearchCondition,
-    MediaRange,
+    AudioRange,
 } from './front'
 export type {
     SequencerNote,
