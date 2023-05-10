@@ -69,7 +69,7 @@ const loopInit: UserLoopInput = {
     progressions: DefaultChordNames,
     key: -1,
     scale: '',
-    BPM: -1,
+    bpm: -1,
     section: '',
     memo: '',
     memoBass: '',
@@ -103,6 +103,11 @@ const Detail = () => {
     console.log(state)
     const user = useContext(UserContext)
 
+    //編集前の状態
+    const [oldState, setOldState] = useState<UserLoopInput>(loopInit)
+    //編集中の状態
+    const [userLoopInput, setUserLoopInput] = useState<UserLoopInput>(loopInit)
+
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({
         root: 0,
         scale: TERMS.MAJOR,
@@ -119,52 +124,26 @@ const Detail = () => {
         }
         setScaleForm(newScaleForm)
     }
-    //name
-    const [name, setName] = useState('')
-    const [artist, setArtist] = useState('')
-    //BPM
-    const [BPM, setBPM] = useState(0)
-    //section
-    const [section, setSection] = useState('')
-
-    //tags
-    const [tags, setTags] = useState<Tag[]>([])
-    const onTagsChange = (selectedTags: Tag[]) => {
-        setTags(selectedTags)
-    }
-    const [progressions, setProgressions] = useState(DefaultChordNames)
-    //Progressions
-    const onProgressionsChange = (newInput: string[]) => {
-        console.log('onProgressionsChange')
-        console.log(newInput)
-        setProgressions([...newInput])
-    }
-    //Memo
-    const [memo, setMemo] = useState('')
-    const [memoBass, setMemoBass] = useState('')
-    const [memoLead, setMemoLead] = useState('')
-    const [memoChord, setMemoChord] = useState('')
-    const [memoRhythm, setMemoRhythm] = useState('')
-    const [memoTransition, setMemoTransition] = useState('')
 
     const [showAdvancedMemo, setShowAdvancedMemo] = useState(false)
     //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
-    const [audioUrl, setAudioUrl] = useState('')
-    const [audioName, setAudioName] = useState('')
     const [isHLS, setIsHLS] = useState(false)
-    const [range, setRange] = useState<AudioRange>({ start: 0, end: 0 })
-    const onMediaRangeFormChange = (newRange: AudioRange) => {
-        setRange(newRange)
-    }
+
     const onDropAudio = (acceptedFiles: File[]) => {
         const file: File = acceptedFiles[0]
         setDroppedFile(file)
         console.log(file)
-        setAudioUrl(URL.createObjectURL(file))
-        setAudioName(file.name)
         setIsHLS(false)
-        setRange({ start: 0, end: 0 })
+
+        setUserLoopInput({
+            ...userLoopInput,
+            userLoopAudio: {
+                name: file.name,
+                url: { get: URL.createObjectURL(file), put: '' },
+                range: { start: 0, end: 0 },
+            },
+        })
     }
 
     //MidiFile
@@ -177,44 +156,15 @@ const Detail = () => {
     const onMidiRootsChange = (rootIndexes: number[]) => {
         setMidiRoots(rootIndexes)
     }
-    //編集前の状態
-    const [oldState, setOldState] = useState<UserLoopInput>(loopInit)
-    //編集中の状態
-    const [userLoopInput, setUserLoopInput] = useState<UserLoopInput>(loopInit)
 
     const save = async () => {
         console.log('save')
-        const input: UserLoopInput = {
-            progressions: progressions,
-            name: name,
-            artist: artist,
-            BPM: BPM,
-            section: section,
-            key: scaleForm.root,
-            scale: scaleForm.scale,
-            memo: memo,
-            memoBass: memoBass,
-            memoChord: memoChord,
-            memoLead: memoLead,
-            memoRhythm: memoRhythm,
-            memoTransition: memoTransition,
-            userLoopAudio: {
-                name: audioName,
-                url: { get: '', put: '' },
-                range: range,
-            },
-            userLoopMidi: {
-                name: midiFile ? midiFile.name : '',
-                url: { get: '', put: '' },
-                midiRoots: midiRoots,
-            },
-            userLoopTags: tags,
-        }
         //保存
         let userLoopResponse: UserLoopInput | undefined
         try {
             userLoopResponse = await saveUserLoop(userLoopInput, userLoopId!)
             console.log(userLoopResponse)
+            if (userLoopResponse) setUserLoopInput(userLoopResponse)
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
         }
@@ -245,37 +195,22 @@ const Detail = () => {
         }
     }
     const load = async (id: number) => {
-        const { userLoopInput } = await getUserLoop(id)
-        console.log('@@URI', userLoopInput)
-        const audio = userLoopInput.userLoopAudio
-        const midi = userLoopInput.userLoopMidi
+        const response = await getUserLoop(id)
+        console.log('@@URI', response.userLoopInput)
+        //編集前の状態を保存しておく
+        setOldState(response.userLoopInput)
+        setUserLoopInput(response.userLoopInput)
+
         setScaleForm({
-            root: userLoopInput.key,
-            scale: userLoopInput.scale,
+            root: response.userLoopInput.key,
+            scale: response.userLoopInput.scale,
             transposeRoot: null,
         })
-        console.log(userLoopInput)
-        setProgressions([...userLoopInput.progressions])
-        setTags(lo.cloneDeep(userLoopInput.userLoopTags))
-        setName(userLoopInput.name)
-        setArtist(userLoopInput.artist)
-        setSection(userLoopInput.section)
-        setBPM(userLoopInput.BPM)
-        setMemo(userLoopInput.memo)
-        setMemoBass(userLoopInput.memoBass)
-        setMemoLead(userLoopInput.memoLead)
-        setMemoRhythm(userLoopInput.memoRhythm)
-        setMemoChord(userLoopInput.memoChord)
-        setMemoTransition(userLoopInput.memoTransition)
-        setRange(userLoopInput.userLoopAudio.range!)
-        //編集前の状態を保存しておく
-        setOldState(userLoopInput)
+        const audio = response.userLoopInput.userLoopAudio
+        const midi = response.userLoopInput.userLoopMidi
         //audio, midiのロード
         try {
             if (audio.url.get) {
-                //const response = await getFromS3(s3Url.mp3)
-                setAudioUrl(audio.url.get)
-                setAudioName(audio.name)
                 setIsHLS(true)
             }
             if (midi.url.get) {
@@ -324,6 +259,8 @@ const Detail = () => {
     const isChanged = (): boolean => {
         console.log('@@@checkChanged')
         console.log(oldState)
+        return !lo.isEqual(oldState, userLoopInput)
+        /*
         const isAudioChanged = !!droppedFile
         const isRangeChanged = !lo.isEqual(oldState.userLoopAudio.range!, range)
         let isMidiChanged = false
@@ -367,6 +304,7 @@ const Detail = () => {
             isMidiChanged ||
             isRangeChanged
         )
+        */
     }
 
     return (
@@ -383,39 +321,43 @@ const Detail = () => {
                 <div className="text-2xl">title</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={name}
+                    memo={userLoopInput.name}
                     onChange={(str) => {
-                        setName(str)
+                        setUserLoopInput({ ...userLoopInput, name: str })
                     }}
                 />
                 <div className="text-2xl">artist</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={artist}
+                    memo={userLoopInput.artist}
                     onChange={(str) => {
-                        setArtist(str)
+                        setUserLoopInput({ ...userLoopInput, artist: str })
                     }}
                 />
-                <div className="text-2xl">BPM</div>
+                <div className="text-2xl">bpm</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={BPM.toString()}
+                    memo={userLoopInput.bpm.toString()}
                     onChange={(str) => {
-                        if (!isNaN(Number(str))) setBPM(Number(str))
+                        if (!isNaN(Number(str)))
+                            setUserLoopInput({
+                                ...userLoopInput,
+                                bpm: Number(str),
+                            })
                     }}
                 />
                 <div className="text-2xl">section</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={section}
+                    memo={userLoopInput.section}
                     onChange={(str) => {
-                        setSection(str)
+                        setUserLoopInput({ ...userLoopInput, section: str })
                     }}
                 />
                 {user ? <Button onClick={showTagModal}>タグ編集</Button> : null}
 
                 <div className="flex flex-row gap-x-4">
-                    {tags.map((tag) => (
+                    {userLoopInput.userLoopTags.map((tag) => (
                         <Button>{tag.name}</Button>
                     ))}
                 </div>
@@ -426,24 +368,32 @@ const Detail = () => {
                     start, endでループ範囲を指定できます。
                 </div>
                 <MediaRangeForm
-                    range={range}
-                    onChange={onMediaRangeFormChange}
+                    range={userLoopInput.userLoopAudio.range}
+                    onChange={(newRange) => {
+                        const audio = userLoopInput.userLoopAudio
+                        setUserLoopInput({
+                            ...userLoopInput,
+                            userLoopAudio: { ...audio, range: newRange },
+                        })
+                    }}
                 />
                 <AudioPlayer
                     droppedFile={droppedFile}
-                    audioUrl={audioUrl}
-                    audioName={audioName}
+                    audioUrl={userLoopInput.userLoopAudio.url.get}
+                    audioName={userLoopInput.userLoopAudio.name}
                     onDrop={onDropAudio}
                     isHLS={isHLS}
                     dropDisabled={false}
                     mini={false}
-                    range={range}
+                    range={userLoopInput.userLoopAudio.range}
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo
                     className="h-1/2 w-full border-2 border-sky-400"
-                    memo={memo}
-                    onChange={(str) => setMemo(str)}
+                    memo={userLoopInput.memo}
+                    onChange={(str) =>
+                        setUserLoopInput({ ...userLoopInput, memo: str })
+                    }
                 />
                 <Button
                     width="w-fit"
@@ -458,32 +408,57 @@ const Detail = () => {
                         <div>コード</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memoChord}
-                            onChange={(str) => setMemoChord(str)}
+                            memo={userLoopInput.memoChord}
+                            onChange={(str) =>
+                                setUserLoopInput({
+                                    ...userLoopInput,
+                                    memoChord: str,
+                                })
+                            }
                         />
                         <div>リード</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memoLead}
-                            onChange={(str) => setMemoLead(str)}
+                            memo={userLoopInput.memoLead}
+                            onChange={(str) =>
+                                setUserLoopInput({
+                                    ...userLoopInput,
+                                    memoLead: str,
+                                })
+                            }
                         />
                         <div>ベース</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memoBass}
-                            onChange={(str) => setMemoBass(str)}
+                            memo={userLoopInput.memoBass}
+                            onChange={(str) =>
+                                setUserLoopInput({
+                                    ...userLoopInput,
+                                    memoBass: str,
+                                })
+                            }
                         />
                         <div>リズム</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memoRhythm}
-                            onChange={(str) => setMemoRhythm(str)}
+                            memo={userLoopInput.memoRhythm}
+                            onChange={(str) =>
+                                setUserLoopInput({
+                                    ...userLoopInput,
+                                    memoRhythm: str,
+                                })
+                            }
                         />
                         <div>パート間の繋ぎ</div>
                         <Memo
                             className="h-1/2 w-full border-2 border-sky-400"
-                            memo={memoTransition}
-                            onChange={(str) => setMemoTransition(str)}
+                            memo={userLoopInput.memoTransition}
+                            onChange={(str) =>
+                                setUserLoopInput({
+                                    ...userLoopInput,
+                                    memoTransition: str,
+                                })
+                            }
                         />
                     </div>
                 ) : null}
@@ -496,8 +471,13 @@ const Detail = () => {
                 <ScaleDisplay scaleForm={scaleForm} />
                 <div className="text-2xl">Chord Display</div>
                 <ChordDisplay
-                    progressionNames={progressions}
-                    onProgressionsChange={onProgressionsChange}
+                    progressionNames={userLoopInput.progressions}
+                    onProgressionsChange={(progressions) =>
+                        setUserLoopInput({
+                            ...userLoopInput,
+                            progressions: progressions,
+                        })
+                    }
                     scaleForm={scaleForm}
                     onNoteIntervalsClick={showChordModal}
                 />
@@ -532,9 +512,14 @@ const Detail = () => {
                 contentLabel="Example Modal"
             >
                 <TagModal
-                    onTagUpdate={onTagsChange}
+                    onTagUpdate={(tags) =>
+                        setUserLoopInput({
+                            ...userLoopInput,
+                            userLoopTags: tags,
+                        })
+                    }
                     closeModal={closeTagModal}
-                    loopTags={tags}
+                    loopTags={userLoopInput.userLoopTags}
                 />
             </Modal>
             {/* コード詳細*/}

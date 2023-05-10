@@ -10,7 +10,7 @@ import { NoteIntervals } from 'Classes/Chord'
 
 type Props = {
     scaleForm: Types.ScaleFormType
-    onProgressionsChange: Function
+    onProgressionsChange: (progressions: string[]) => void
     progressionNames: string[]
     onNoteIntervalsClick: (info: NoteIntervals) => void
 }

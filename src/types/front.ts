@@ -18,7 +18,7 @@ export type UserLoopInput = {
     artist: string
     progressions: string[]
     key: number
-    BPM: number
+    bpm: number
     section: string
     scale: string
     memo: string
