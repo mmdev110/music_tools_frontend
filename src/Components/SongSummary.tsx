@@ -8,7 +8,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import MoreIcon from '@mui/icons-material/MoreVert'
 
-import { UserLoopInput } from 'types'
+import { UserSong } from 'types'
 import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import { Button } from 'Components/HTMLElementsWrapper'
 import Chord from 'Classes/Chord'
@@ -16,31 +16,26 @@ import lo from 'lodash'
 import { getDisplayName } from 'utils/front'
 
 type Props = {
-    input: UserLoopInput
-    onPlayButtonClick: (input: UserLoopInput) => void
-    onInfoClick: (input: UserLoopInput) => void
-    onClickX: (input: UserLoopInput) => void
-    menuItems: { name: string; onClick: (input: UserLoopInput) => void }[]
+    song: UserSong
+    onPlayButtonClick: (song: UserSong) => void
+    onInfoClick: (song: UserSong) => void
+    onClickX: (song: UserSong) => void
+    menuItems: { name: string; onClick: (song: UserSong) => void }[]
 }
-const LoopSummary = ({
-    input,
+const SongSummary = ({
+    song,
     onPlayButtonClick,
     onInfoClick,
     menuItems,
 }: Props) => {
-    const note = ALL_NOTES[input.key]
+    const note = ALL_NOTES[song.sections[0].key]
     const onButtonClick = () => {
-        onPlayButtonClick(input)
+        onPlayButtonClick(song)
     }
     const onClick = () => {
-        onInfoClick(input)
+        onInfoClick(song)
     }
-    const degrees = input.progressions.map((name) => {
-        if (name === '') return name
-        const chord = Chord.newFromChordName(name)
-        chord._calcDegree(input.key)
-        return chord.getDegreeName()
-    })
+
     const formatProgressions = (progressions: string[]): string => {
         let str = ''
         const chunkBy4 = lo.chunk(progressions, 4)
@@ -68,7 +63,7 @@ const LoopSummary = ({
         <div className="flex w-full flex-col rounded-md border-2 border-black">
             <div className="flex justify-between">
                 <div className="overflow-x-clip break-words">
-                    {getDisplayName(input)}
+                    {getDisplayName(song)}
                 </div>
                 {/*削除複製メニュー*/}
                 <div className="border-blacks w-12 justify-between border-l-2">
@@ -102,7 +97,7 @@ const LoopSummary = ({
                             {menuItems.map((item, index) => (
                                 <MenuItem
                                     key={index}
-                                    onClick={() => item.onClick(input)}
+                                    onClick={() => item.onClick(song)}
                                 >
                                     <Typography textAlign="center">
                                         {item.name}
@@ -120,23 +115,16 @@ const LoopSummary = ({
                     className="flex h-full w-full justify-between"
                     onClick={onClick}
                 >
-                    <div className="w-1/12 border-r-2 border-black">
-                        <div>{note.flat}</div>
-                        <div>{input.scale}</div>
-                    </div>
-                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black">
-                        <div>{formatProgressions(input.progressions)}</div>
-                    </div>
-                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black">
-                        <div>{formatProgressions(degrees)}</div>
-                    </div>
+                    <div className="w-1/12 border-r-2 border-black"></div>
+                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
+                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
                     <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">
-                        {input.memo || ''}
+                        {song.memo || ''}
                     </div>
                 </div>
                 {/**オーディオ再生ボタン */}
                 <div className="min-h-full w-12">
-                    {!input.userLoopAudio ? (
+                    {!song.audio ? (
                         <Button className="h-full w-full rounded bg-red-400 font-bold text-white">
                             ×
                         </Button>
@@ -154,4 +142,4 @@ const LoopSummary = ({
     )
 }
 
-export default LoopSummary
+export default SongSummary

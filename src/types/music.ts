@@ -1,5 +1,3 @@
-import internal from 'stream'
-
 //Miditypes.Noteを加工したもの
 export type SequencerNote = {
     style: string

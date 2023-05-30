@@ -1,9 +1,10 @@
-//export type { User, UserLoopInput, Tag } from './front'
+//export type { User, UserSong, Tag } from './front'
 export type {
     Tag,
     User,
-    UserLoopInput,
-    UserLoopSearchCondition,
+    UserSong,
+    UserSongSection,
+    UserSongSearchCondition,
     AudioRange,
 } from './front'
 export type {

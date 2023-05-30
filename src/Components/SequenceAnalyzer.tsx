@@ -13,7 +13,7 @@ import RootForm from './RootForm'
 type Props = {
     scaleForm: Types.ScaleFormType
     onDrop: (acceptedFiles: File[]) => void
-    midiFile: File | undefined
+    midiFile: File | null
     rootIndexes: number[]
     onMidiNoteClick: (index: number[]) => void
 }

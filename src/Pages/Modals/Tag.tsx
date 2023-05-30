@@ -65,7 +65,7 @@ const TagModal = ({ onTagUpdate, closeModal, loopTags }: Props) => {
             //id: 0,
             //userId: 0,
             name: nameInput,
-            //sortOrder: 0,
+            sortOrder: tags.length + 1,
             isSelected: false,
             //userLoops: [],
         }

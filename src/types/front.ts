@@ -1,60 +1,73 @@
 import internal from 'stream'
 
-export type Tag = {
-    id?: number
-    userId?: number
-    name: string
-    sortOrder?: number
-    userLoops?: UserLoopInput[]
-}
 export type User = {
     userId: number
     email: string
     token: string
 }
-export type UserLoopInput = {
+export type UserSong = {
     id?: number
-    name: string
+    title: string
     artist: string
+    memo: string
+    sections: UserSongSection[]
+    audio: UserSongAudio | null
+    genres: Genre[]
+    tags: Tag[]
+}
+export type UserSongSection = {
+    id?: number
     progressions: string[]
+    progressionsCSV: string //API通信用
     key: number
     bpm: number
     section: string
     scale: string
     memo: string
-    memoBass: string
-    memoChord: string
-    memoLead: string
-    memoRhythm: string
-    memoTransition: string
-    userLoopAudio: UserLoopAudio | null
-    userLoopMidi: UserLoopMidi | null
-    userLoopTags: Tag[]
+    audioPlaybackRange: AudioRange
+    midi: UserSectionMidi | null
+    sortOrder: number
 }
-type UserLoopAudio = {
+type UserSongAudio = {
     id?: number
+    userSongId?: number
     name: string
     url: {
         get: string
         put: string
     }
-    range: AudioRange
 }
-type UserLoopMidi = {
+type UserSectionMidi = {
     id?: number
+    userSongSectionId: number
     name: string
     url: {
         get: string
         put: string
     }
     midiRoots: number[]
+    midiRootsCSV: string //API通信用
 }
 export type AudioRange = {
     //audioの再生範囲
     start: number
     end: number
 }
-export type UserLoopSearchCondition = {
+export type Genre = {
+    id?: number
+    userId: number
+    name: string
+    sortOrder?: number
+    userSongs?: UserSong[]
+}
+export type Tag = {
+    id?: number
+    userId?: number
+    name: string
+    sortOrder: number
+    userSongs?: UserSong[]
+}
+export type UserSongSearchCondition = {
     tagIds?: number[]
     subString?: string
 }

@@ -10,14 +10,14 @@ import Modal from 'react-modal'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
-import { UserLoopInput, Tag, UserLoopSearchCondition, AudioRange } from 'types/'
+import { UserSong, Tag, UserSongSearchCondition, AudioRange } from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
-import { getUserLoops, getTags, deleteUserLoop } from 'API/request'
+import { getUserSongs, getTags, deleteUserSong } from 'API/request'
 import { isAxiosError } from 'axios'
 import BasicPage from 'Components/BasicPage'
 import { Button } from 'Components/HTMLElementsWrapper'
-import LoopSummary from 'Components/LoopSummary'
+import SongSummary from 'Components/SongSummary'
 import AudioPlayer from 'Components/AudioPlayer'
 import { getDisplayName } from 'utils/front'
 const ModalStyle = {
@@ -39,23 +39,23 @@ type TagUI = Tag & {
 }
 const List = () => {
     const navigate = useNavigate()
-    const [userLoops, setUserLoops] = useState<UserLoopInput[]>([])
+    const [userSongs, setUserSongs] = useState<UserSong[]>([])
     const [allTags, setAllTags] = useState<TagUI[]>([])
     const [isFiltering, setIsFiltering] = useState(false)
     const selectTag = async (index: number) => {
         const newTags = [...allTags]
         newTags[index].isSelected = !newTags[index].isSelected
         setAllTags(newTags)
-        //loopsを再検索
+        //songsを再検索
         const selected = newTags.filter((tag) => tag.isSelected)
         setIsFiltering(selected.length > 0)
         const selectedTagIds = selected.map((tag) => tag.id!)
-        await loadLoops({ tagIds: selectedTagIds })
+        await loadSongs({ tagIds: selectedTagIds })
     }
-    const loadLoops = async (condition: UserLoopSearchCondition) => {
+    const loadSongs = async (condition: UserSongSearchCondition) => {
         try {
-            const data = await getUserLoops(condition)
-            if (data) setUserLoops(data)
+            const data = await getUserSongs(condition)
+            if (data) setUserSongs(data)
             //console.log(data)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
@@ -77,7 +77,7 @@ const List = () => {
         }
     }
     useEffect(() => {
-        loadLoops({})
+        loadSongs({})
         loadAllTags()
     }, [])
     const navigateNew = (duplicateFromId: number | null) => {
@@ -88,21 +88,22 @@ const List = () => {
             navigate('/edit/new')
         }
     }
-    const move = (input: UserLoopInput) => {
-        navigate(`/edit/${input.id}`)
+    const move = (song: UserSong) => {
+        navigate(`/edit/${song.id}`)
     }
-    const play = (input: UserLoopInput) => {
+    const play = (song: UserSong) => {
         console.log('play')
-        console.log(input)
-        const userAudio = input.userLoopAudio
+        console.log(song)
+        const userAudio = song.audio
         if (!userAudio) return
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,
         })
         setMediaRange({
-            start: userAudio.range?.start || 0,
-            end: userAudio.range?.end || 0,
+            //listページではrange無効
+            start: 0,
+            end: 0,
         })
     }
     const [mediaRange, setMediaRange] = useState<AudioRange>({
@@ -130,9 +131,9 @@ const List = () => {
         )
     }
     const isTagUsed = (tag: Tag): boolean => {
-        //tagが、現在のuserloopsに使われているものを探す
-        for (const loop of userLoops) {
-            const tags = loop.userLoopTags
+        //tagが、現在のuserSongsに使われているものを探す
+        for (const song of userSongs) {
+            const tags = song.tags
             const found = tags.find((ult) => ult.id === tag.id)
             if (found) return true
         }
@@ -145,15 +146,15 @@ const List = () => {
     const closeModal = () => {
         setIsOpen(false)
     }
-    const [loopToDelete, setLoopToDelete] = useState<UserLoopInput>()
-    const toggleConfirmationModal = (selectedLoop: UserLoopInput) => {
-        setLoopToDelete(selectedLoop)
+    const [songToDelete, setSongToDelete] = useState<UserSong>()
+    const toggleConfirmationModal = (selectedSong: UserSong) => {
+        setSongToDelete(selectedSong)
         setIsOpen(true)
     }
-    const execDelete = async (input: UserLoopInput) => {
+    const execDelete = async (input: UserSong) => {
         console.log(input)
         //console.log(window.localStorage.getItem('access_token'))
-        const data = await deleteUserLoop(input.id!)
+        const data = await deleteUserSong(input.id!)
         closeModal()
         window.location.reload()
     }
@@ -161,13 +162,13 @@ const List = () => {
     const MENU_ITEMS = [
         {
             name: '設定をコピーして新規作成',
-            onClick: (input: UserLoopInput) => {
+            onClick: (input: UserSong) => {
                 navigateNew(input.id!)
             },
         },
         {
             name: '削除',
-            onClick: (input: UserLoopInput) => {
+            onClick: (input: UserSong) => {
                 toggleConfirmationModal(input)
             },
         },
@@ -181,12 +182,12 @@ const List = () => {
                 </div>
                 {renderTags()}
                 <div className="flex flex-col gap-y-5">
-                    {userLoops.length ? (
-                        userLoops.map((userLoop) => {
+                    {userSongs.length ? (
+                        userSongs.map((song) => {
                             return (
-                                <LoopSummary
-                                    key={`userLoop${userLoop.id!.toString()}`}
-                                    input={userLoop}
+                                <SongSummary
+                                    key={`song${song.id!.toString()}`}
+                                    song={song}
                                     onInfoClick={move}
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
@@ -219,16 +220,16 @@ const List = () => {
                 <Confirmation
                     onOK={execDelete}
                     onCancel={closeModal}
-                    input={loopToDelete}
+                    input={songToDelete}
                 />
             </Modal>
         </BasicPage>
     )
 }
 type ConfirmationProps = {
-    input?: UserLoopInput
+    input?: UserSong
     onCancel: () => void
-    onOK: (input: UserLoopInput) => void
+    onOK: (input: UserSong) => void
 }
 const Confirmation = ({ input, onCancel, onOK }: ConfirmationProps) => {
     const onClickExec = () => {

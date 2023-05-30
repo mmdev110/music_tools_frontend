@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
-import { User, UserLoopInput, Tag, UserLoopSearchCondition } from 'types/'
+import { User, UserSong, Tag, UserSongSearchCondition } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
 
@@ -96,57 +96,43 @@ export const signUp = async (
     console.log(response)
     return response.data
 }
-type S3Url = {
-    mp3: string
-    midi: string
-}
 
-export const saveUserLoop = async (
-    input: UserLoopInput,
-    userLoopId: string
-): Promise<UserLoopInput> => {
-    const response = await requestBackend<UserLoopInput>(
-        `loop/${userLoopId}`,
+export const saveUserSong = async (
+    song: UserSong,
+    userSongId: string
+): Promise<UserSong> => {
+    const b = conversionToBackend(song)
+    const response = await requestBackend<UserSong>(
+        `song/${userSongId}`,
         'POST',
-        input
+        b
     )
-    return response.data
+
+    return conversionFromBackend(response.data)
 }
 type GeneralResponse = {
     Message: string
 }
 
-export const deleteUserLoop = async (id: number): Promise<GeneralResponse> => {
+export const deleteUserSong = async (id: number): Promise<GeneralResponse> => {
     const response = await requestBackend<GeneralResponse>(
-        'delete_loop',
+        'delete_song',
         'POST',
         { id: id }
     )
     return response.data
 }
 
-type GetUserLoopResponse = {
-    userLoopInput: UserLoopInput
-    s3Url: S3Url
+export const getUserSong = async (userSongId: number): Promise<UserSong> => {
+    const response = await requestBackend<UserSong>(`song/${userSongId}`, 'GET')
+    return conversionFromBackend(response.data)
 }
-export const getUserLoop = async (
-    userLoopId: number
-): Promise<GetUserLoopResponse> => {
-    const response = await requestBackend<GetUserLoopResponse>(
-        `loop/${userLoopId}`,
-        'GET'
-    )
-    return response.data
-}
-export const getUserLoops = async (
-    condition: UserLoopSearchCondition
-): Promise<UserLoopInput[]> => {
-    const response = await requestBackend<UserLoopInput[]>(
-        'list',
-        'POST',
-        condition
-    )
-    return response.data
+export const getUserSongs = async (
+    condition: UserSongSearchCondition
+): Promise<UserSong[]> => {
+    const response = await requestBackend<UserSong[]>('list', 'POST', condition)
+    const resp = response.data.map((song) => conversionFromBackend(song))
+    return resp
 }
 //疎通確認
 export const healthCheck = async (): Promise<boolean> => {
@@ -242,4 +228,59 @@ export const getTags = async (): Promise<Tag[]> => {
 export const saveTags = async (data: Tag[]): Promise<Tag[]> => {
     const response = await requestBackend<Tag[]>('tags', 'POST', data)
     return response.data
+}
+
+//sectionのprogressions, midiのrootsをCSVに変換する
+//上の値はバックエンドではCSV(文字列)として扱っているため
+const conversionToBackend = (song: UserSong) => {
+    //progressionsの変換
+    if (song.sections.length > 0) {
+        for (let i = 0; i < song.sections.length; i++) {
+            const sec = song.sections[i]
+            const progressions = sec.progressions
+            song.sections[i].progressionsCSV = arrayToCSV(progressions)
+
+            if (sec.midi) {
+                song.sections[i].progressionsCSV = arrayToCSV(
+                    sec.midi.midiRoots
+                )
+            }
+        }
+    }
+    return song
+}
+//sectionのprogressions, midiのrootsをCSVから戻す
+//conversionToBackendの逆操作
+const conversionFromBackend = (song: UserSong) => {
+    //progressionsの変換
+    if (song.sections.length > 0) {
+        for (let i = 0; i < song.sections.length; i++) {
+            const sec = song.sections[i]
+            const progressionsCSV = sec.progressionsCSV
+            song.sections[i].progressions = CSVToArray(
+                progressionsCSV
+            ) as string[]
+
+            if (sec.midi) {
+                song.sections[i].midi!.midiRoots = CSVToArray(
+                    sec.midi.midiRootsCSV
+                ) as number[]
+            }
+        }
+    }
+    return song
+}
+
+const arrayToCSV = (arr: any[]): string => {
+    return arr.join(',')
+}
+const CSVToArray = (csv: string): string[] | number[] => {
+    const array = csv.split(',')
+    if (typeof parseInt(array[0], 10) === 'number') {
+        return array.map((elem) => {
+            return parseInt(elem, 10)
+        })
+    } else {
+        return array
+    }
 }
