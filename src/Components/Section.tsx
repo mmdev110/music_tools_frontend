@@ -116,7 +116,22 @@ const Section = ({
         setChordIsOpen(false)
     }
     return (
-        <div className="flex gap-x-6 text-2xl">
+        <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
+            <div className="text-2xl">section name</div>
+            <Memo
+                className="h-6 w-1/4 border-2 border-sky-400"
+                memo={section.section}
+                onChange={(str) => {
+                    onSectionChange(sectionIndex, { ...section, section: str })
+                }}
+            />
+            <div className="text-2xl">Key, Scales</div>
+            <ScaleForm
+                scaleForm={scaleForm}
+                onChange={onScaleFormChange}
+                showTranspose={true}
+            />
+            <ScaleDisplay scaleForm={scaleForm} />
             <div className="text-2xl">bpm</div>
             <Memo
                 className="h-6 w-1/4 border-2 border-sky-400"
@@ -129,14 +144,7 @@ const Section = ({
                         })
                 }}
             />
-            <div className="text-2xl">section</div>
-            <Memo
-                className="h-6 w-1/4 border-2 border-sky-400"
-                memo={section.section}
-                onChange={(str) => {
-                    onSectionChange(sectionIndex, { ...section, section: str })
-                }}
-            />
+
             <MediaRangeForm
                 range={
                     section.audioPlaybackRange || {
@@ -151,22 +159,6 @@ const Section = ({
                     })
                 }}
             />
-            <div className="text-2xl">Memo</div>
-            <Memo
-                className="h-1/2 w-full border-2 border-sky-400"
-                memo={section.memo}
-                onChange={(str) =>
-                    onSectionChange(sectionIndex, { ...section, memo: str })
-                }
-            />
-
-            <div className="text-2xl">Scales</div>
-            <ScaleForm
-                scaleForm={scaleForm}
-                onChange={onScaleFormChange}
-                showTranspose={true}
-            />
-            <ScaleDisplay scaleForm={scaleForm} />
 
             <div className="text-2xl">Chord Display</div>
             <ChordDisplay
@@ -181,6 +173,14 @@ const Section = ({
                 onNoteIntervalsClick={showChordModal}
             />
 
+            <div className="text-2xl">Memo</div>
+            <Memo
+                className="h-1/2 w-full border-2 border-sky-400"
+                memo={section.memo}
+                onChange={(str) =>
+                    onSectionChange(sectionIndex, { ...section, memo: str })
+                }
+            />
             <div className="text-2xl">MIDI Analyzer</div>
             <SequenceAnalyzer
                 scaleForm={scaleForm}
@@ -189,18 +189,6 @@ const Section = ({
                 rootIndexes={midiRoots}
                 onMidiNoteClick={onMidiRootsChange}
             />
-            <div className="text-2xl">Intervals</div>
-
-            <Intervals />
-            <div className="text-2xl">Modes</div>
-
-            <Modes scaleForm={scaleForm} />
-
-            <div className="text-2xl">MIDI Monitor</div>
-
-            <MidiMonitorDescription />
-            <MidiMonitor />
-            <div style={{ marginTop: '10em' }}></div>
         </div>
     )
 }

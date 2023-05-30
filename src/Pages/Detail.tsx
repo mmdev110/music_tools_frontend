@@ -311,7 +311,7 @@ const Detail = () => {
                     memo={userSong.memo}
                     onChange={(str) => setUserSong({ ...userSong, memo: str })}
                 />
-                <div className="text-2xl">Intervals</div>
+                <div className="text-2xl">sections</div>
                 {userSong.sections.map((section, index) => (
                     <Section
                         sectionIndex={index}
@@ -322,6 +322,7 @@ const Detail = () => {
                     />
                 ))}
 
+                <div className="text-2xl">Intervals</div>
                 <Intervals />
                 <div className="text-2xl">Modes</div>
 
