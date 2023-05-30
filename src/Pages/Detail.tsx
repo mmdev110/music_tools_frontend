@@ -67,9 +67,9 @@ const loopInit: UserLoopInput = {
     name: '',
     artist: '',
     progressions: DefaultChordNames,
-    key: -1,
-    scale: '',
-    bpm: -1,
+    key: 0,
+    scale: TERMS.MAJOR,
+    bpm: 0,
     section: '',
     memo: '',
     memoBass: '',
@@ -77,22 +77,24 @@ const loopInit: UserLoopInput = {
     memoChord: '',
     memoRhythm: '',
     memoTransition: '',
-    userLoopAudio: {
+    userLoopAudio: null,
+    /*{
         name: '',
         url: {
             get: '',
             put: '',
         },
         range: { start: 0, end: 0 },
-    },
-    userLoopMidi: {
+    },*/
+    userLoopMidi: null,
+    /*{
         name: '',
         url: {
             get: '',
             put: '',
         },
         midiRoots: [],
-    },
+    },*/
     userLoopTags: [],
 }
 Modal.setAppElement('#root')
@@ -158,7 +160,8 @@ const Detail = () => {
     }
 
     const save = async () => {
-        console.log('save')
+        console.log('@@@@save')
+        console.log(userLoopInput)
         //保存
         let userLoopResponse: UserLoopInput | undefined
         try {
@@ -173,7 +176,7 @@ const Detail = () => {
             try {
                 const audio = userLoopResponse.userLoopAudio
                 console.log(droppedFile)
-                if (audio.url.put && droppedFile) {
+                if (audio && audio.url.put && droppedFile) {
                     console.log('upload audio')
                     const response = await uploadToS3(
                         audio.url.put,
@@ -184,7 +187,7 @@ const Detail = () => {
                 const midi = userLoopResponse.userLoopMidi
                 //TODO:常にアップロードされるので対策考える
                 //S3から拾ったものとドロップされたもの両方midiFileに格納してしまうため
-                if (midi.url.put && midiFile) {
+                if (midi && midi.url.put && midiFile) {
                     console.log('upload midi')
                     await uploadToS3(midi.url.put, midiFile)
                 }
@@ -197,6 +200,12 @@ const Detail = () => {
     const load = async (id: number) => {
         const response = await getUserLoop(id)
         console.log('@@URI', response.userLoopInput)
+        //idを消す
+        response.userLoopInput.id = 0
+        if (response.userLoopInput.userLoopAudio)
+            response.userLoopInput.userLoopAudio.id = 0
+        if (response.userLoopInput.userLoopMidi)
+            response.userLoopInput.userLoopMidi.id = 0
         //編集前の状態を保存しておく
         setOldState(response.userLoopInput)
         setUserLoopInput(response.userLoopInput)
@@ -210,10 +219,10 @@ const Detail = () => {
         const midi = response.userLoopInput.userLoopMidi
         //audio, midiのロード
         try {
-            if (audio.url.get) {
+            if (audio && audio.url.get) {
                 setIsHLS(true)
             }
-            if (midi.url.get) {
+            if (midi && midi.url.get) {
                 const response = await getFromS3(midi.url.get)
                 const blob = await response.blob()
                 const file = new File([blob], midi.name)
@@ -368,24 +377,35 @@ const Detail = () => {
                     start, endでループ範囲を指定できます。
                 </div>
                 <MediaRangeForm
-                    range={userLoopInput.userLoopAudio.range}
+                    range={
+                        userLoopInput.userLoopAudio?.range || {
+                            start: 0,
+                            end: 0,
+                        }
+                    }
                     onChange={(newRange) => {
                         const audio = userLoopInput.userLoopAudio
-                        setUserLoopInput({
-                            ...userLoopInput,
-                            userLoopAudio: { ...audio, range: newRange },
-                        })
+                        if (audio)
+                            setUserLoopInput({
+                                ...userLoopInput,
+                                userLoopAudio: { ...audio, range: newRange },
+                            })
                     }}
                 />
                 <AudioPlayer
                     droppedFile={droppedFile}
-                    audioUrl={userLoopInput.userLoopAudio.url.get}
-                    audioName={userLoopInput.userLoopAudio.name}
+                    audioUrl={userLoopInput.userLoopAudio?.url.get || ''}
+                    audioName={userLoopInput.userLoopAudio?.name || ''}
                     onDrop={onDropAudio}
                     isHLS={isHLS}
                     dropDisabled={false}
                     mini={false}
-                    range={userLoopInput.userLoopAudio.range}
+                    range={
+                        userLoopInput.userLoopAudio?.range || {
+                            start: 0,
+                            end: 0,
+                        }
+                    }
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo

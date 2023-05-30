@@ -45,7 +45,7 @@ const AudioPlayer = ({
     const timeupdatefunc = (event: SyntheticEvent<HTMLAudioElement>) => {
         const { start, end } = range
         if (event.target instanceof HTMLAudioElement) {
-            if (start > 0 && end > 0 && end - start > 0) {
+            if (start >= 0 && end > 0 && end - start > 0) {
                 const currentTime = event.target.currentTime
                 //console.log(currentTime)
                 if (currentTime < start) {

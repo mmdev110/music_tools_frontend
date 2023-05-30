@@ -136,7 +136,7 @@ const LoopSummary = ({
                 </div>
                 {/**オーディオ再生ボタン */}
                 <div className="min-h-full w-12">
-                    {input.userLoopAudio.url.get === '' ? (
+                    {!input.userLoopAudio ? (
                         <Button className="h-full w-full rounded bg-red-400 font-bold text-white">
                             ×
                         </Button>

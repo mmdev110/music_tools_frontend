@@ -27,8 +27,8 @@ export type UserLoopInput = {
     memoLead: string
     memoRhythm: string
     memoTransition: string
-    userLoopAudio: UserLoopAudio
-    userLoopMidi: UserLoopMidi
+    userLoopAudio: UserLoopAudio | null
+    userLoopMidi: UserLoopMidi | null
     userLoopTags: Tag[]
 }
 type UserLoopAudio = {

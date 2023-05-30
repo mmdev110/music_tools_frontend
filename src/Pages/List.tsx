@@ -95,6 +95,7 @@ const List = () => {
         console.log('play')
         console.log(input)
         const userAudio = input.userLoopAudio
+        if (!userAudio) return
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,

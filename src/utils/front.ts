@@ -12,5 +12,5 @@ export const validatePassword = (input: string): string => {
     return ''
 }
 export const getDisplayName = (input: UserLoopInput): string => {
-    return input.name || input.userLoopAudio.name || ''
+    return input.name || input.userLoopAudio?.name || ''
 }
