@@ -246,11 +246,10 @@ const Detail = () => {
     }
     const onSectionChange = (index: number, newSection: UserSongSection) => {
         console.log('@@@onsectionchange')
-        const sections = userSong.sections
-        const newSections = [...sections]
-        newSections[index] = newSection
-        console.log(newSections)
-        setUserSong({ ...userSong, sections: newSections })
+        const sections = [...userSong.sections]
+        sections[index] = newSection
+        console.log(sections)
+        setUserSong({ ...userSong, sections })
     }
     const appendNewSection = (index: number) => {
         console.log('@@@appendnew')
