@@ -71,6 +71,7 @@ type Props = {
     onDropMidi: (index: number, file: File) => void
     midiFile: File | null
     onSectionChange: (index: number, newSection: UserSongSection) => void
+    onDeleteButtonClick: (index: number) => void
 }
 const Section = ({
     sectionIndex,
@@ -78,6 +79,7 @@ const Section = ({
     onDropMidi,
     midiFile,
     onSectionChange,
+    onDeleteButtonClick,
 }: Props) => {
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({
         root: 0,
@@ -117,6 +119,12 @@ const Section = ({
     }
     return (
         <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
+            <Button
+                className="h-full w-full rounded bg-red-400 font-bold text-white"
+                onClick={() => onDeleteButtonClick(sectionIndex)}
+            >
+                ×
+            </Button>
             <div className="text-2xl">section name</div>
             <Memo
                 className="h-6 w-1/4 border-2 border-sky-400"

@@ -61,26 +61,25 @@ const ModalStyle = {
         transform: 'translate(-50%, -50%)',
     },
 }
+const sectionInit: UserSongSection = {
+    section: '',
+    progressions: DefaultChordNames,
+    progressionsCSV: '',
+    key: 0,
+    scale: TERMS.MAJOR,
+    bpm: 0,
+    memo: '',
+    audioPlaybackRange: {
+        start: 0,
+        end: 0,
+    },
+    midi: null,
+    sortOrder: 0,
+}
 const songInit: UserSong = {
     title: '',
     artist: '',
-    sections: [
-        {
-            section: '',
-            progressions: DefaultChordNames,
-            progressionsCSV: '',
-            key: 0,
-            scale: TERMS.MAJOR,
-            bpm: 0,
-            memo: '',
-            audioPlaybackRange: {
-                start: 0,
-                end: 0,
-            },
-            midi: null,
-            sortOrder: 0,
-        },
-    ],
+    sections: [lo.clone(sectionInit)],
     memo: '',
     audio: null,
     tags: [],
@@ -246,10 +245,40 @@ const Detail = () => {
         return !lo.isEqual(oldState, userSong)
     }
     const onSectionChange = (index: number, newSection: UserSongSection) => {
+        console.log('@@@onsectionchange')
         const sections = userSong.sections
         const newSections = [...sections]
         newSections[index] = newSection
+        console.log(newSections)
         setUserSong({ ...userSong, sections: newSections })
+    }
+    const appendNewSection = (index: number) => {
+        console.log('@@@appendnew')
+        //indexの後ろにsection追加
+        const sections = [...userSong.sections]
+        const newSection = structuredClone(sectionInit) as UserSongSection
+        //ある程度の情報は引き継ぐ
+        newSection.bpm = sections[index].bpm
+        newSection.key = sections[index].key
+        newSection.scale = sections[index].scale
+        newSection.sortOrder = sections[index].sortOrder + 1
+        newSection.audioPlaybackRange.start =
+            sections[index].audioPlaybackRange.end
+        newSection.audioPlaybackRange.end =
+            newSection.audioPlaybackRange.start + 100
+
+        sections.splice(index + 1, 0, newSection)
+        setUserSong({
+            ...userSong,
+            sections: sections,
+        })
+    }
+    const deleteSection = (index: number) => {
+        console.log('delete')
+        if (userSong.sections.length <= 1) return
+        const sections = [...userSong.sections]
+        sections.splice(index, 1)
+        setUserSong({ ...userSong, sections })
     }
 
     return (
@@ -313,13 +342,19 @@ const Detail = () => {
                 />
                 <div className="text-2xl">sections</div>
                 {userSong.sections.map((section, index) => (
-                    <Section
-                        sectionIndex={index}
-                        section={section}
-                        onDropMidi={onDropMidi}
-                        midiFile={null}
-                        onSectionChange={onSectionChange}
-                    />
+                    <div key={index}>
+                        <Section
+                            sectionIndex={index}
+                            section={section}
+                            onDropMidi={onDropMidi}
+                            midiFile={null}
+                            onSectionChange={onSectionChange}
+                            onDeleteButtonClick={deleteSection}
+                        />
+                        <Button onClick={() => appendNewSection(index)}>
+                            +
+                        </Button>
+                    </div>
                 ))}
 
                 <div className="text-2xl">Intervals</div>
