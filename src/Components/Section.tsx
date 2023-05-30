@@ -124,7 +124,7 @@ const Section = ({
     return (
         <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
             <Button
-                className="h-full w-full rounded bg-red-400 font-bold text-white"
+                className="rounded bg-red-400 font-bold text-white"
                 onClick={() => onDeleteButtonClick(sectionIndex)}
             >
                 ×

@@ -169,16 +169,18 @@ const SequenceAnalyzer = ({
                             <div style={{}} {...getRootProps()}>
                                 <input {...getInputProps()} />
                                 <div className="rounded-lg border-2 border-black">
-                                    <div>
-                                        {fileName
-                                            ? fileName
-                                            : 'Drag n Drop midi file here'}
-                                    </div>
-                                    <Sequencer
-                                        setting={setting}
-                                        notes={notes}
-                                        onClick={onClick}
-                                    />
+                                    {fileName ? (
+                                        <div>
+                                            <div>fileName</div>
+                                            <Sequencer
+                                                setting={setting}
+                                                notes={notes}
+                                                onClick={onClick}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div>Drag n Drop midi file here</div>
+                                    )}
                                 </div>
                             </div>
                         </section>
