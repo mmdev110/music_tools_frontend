@@ -81,21 +81,25 @@ const Section = ({
     onSectionChange,
     onDeleteButtonClick,
 }: Props) => {
-    const [scaleForm, setScaleForm] = useState<ScaleFormType>({
-        root: 0,
-        scale: TERMS.MAJOR,
-        transposeRoot: null,
-    })
+    const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
+
+    const scaleForm = {
+        root: section.key,
+        scale: section.scale,
+        transposeRoot: transposeRoot,
+    }
     const onScaleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const name = event.target.name
         let value = event.target.value
         let newScaleForm: ScaleFormType
         if (name === 'root') {
-            newScaleForm = { ...scaleForm, root: parseInt(value) }
-        } else {
-            newScaleForm = { ...scaleForm, [name]: value }
+            section.key = parseInt(value)
+        } else if (name === 'scale') {
+            section.scale = value
+        } else if (name === 'transposeRoot') {
+            setTransposeRoot(parseInt(value))
         }
-        setScaleForm(newScaleForm)
+        onSectionChange(sectionIndex, { ...section })
     }
     //MidiFile
     const onDrop = (acceptedFiles: File[]) => {
