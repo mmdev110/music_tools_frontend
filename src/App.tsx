@@ -19,6 +19,8 @@ import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
 import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
+import OtherTools from 'Pages/OtherTools'
+import Builder from 'Pages/Builder'
 import { getUser, refreshToken, healthCheck } from 'API/request'
 
 export const UserContext = createContext<User | null>(null)
@@ -121,6 +123,14 @@ const App = () => {
                 {
                     path: 'reset_password/new',
                     element: <ResetNew />,
+                },
+                {
+                    path: 'other_tools',
+                    element: <OtherTools />,
+                },
+                {
+                    path: 'build',
+                    element: <Builder />,
                 },
             ],
         },

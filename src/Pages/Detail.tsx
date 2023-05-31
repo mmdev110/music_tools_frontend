@@ -380,16 +380,6 @@ const Detail = () => {
                     </div>
                 ))}
 
-                <div className="text-2xl">Intervals</div>
-                <Intervals />
-                <div className="text-2xl">Modes</div>
-
-                <Modes scaleForm={scaleForm} />
-
-                <div className="text-2xl">MIDI Monitor</div>
-
-                <MidiMonitorDescription />
-                <MidiMonitor />
                 <div style={{ marginTop: '10em' }}></div>
             </div>
             {/* tag編集*/}
