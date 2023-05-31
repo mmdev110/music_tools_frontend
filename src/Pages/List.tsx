@@ -208,6 +208,7 @@ const List = () => {
                     autoPlay
                     isHLS={true}
                     range={mediaRange}
+                    toggle={false}
                 />
             )}
             <Modal

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useRef } from 'react'
 import {
     Route,
     Routes,
@@ -112,10 +112,10 @@ const Detail = () => {
         setScaleForm(newScaleForm)
     }
 
-    const [showAdvancedMemo, setShowAdvancedMemo] = useState(false)
     //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [isHLS, setIsHLS] = useState(false)
+    const [isAudioLoaded, setIsAudioLoaded] = useState(false)
 
     const onDropAudio = (acceptedFiles: File[]) => {
         const file: File = acceptedFiles[0]
@@ -130,6 +130,7 @@ const Detail = () => {
                 url: { get: URL.createObjectURL(file), put: '' },
             },
         })
+        setIsAudioLoaded(true)
     }
 
     //MidiFile
@@ -195,6 +196,7 @@ const Detail = () => {
         try {
             if (audio && audio.url.get) {
                 setIsHLS(true)
+                setIsAudioLoaded(true)
             }
             for (let i = 0; i < response.sections.length; i++) {
                 const midi = response.sections[i].midi
@@ -279,6 +281,24 @@ const Detail = () => {
         sections.splice(index, 1)
         setUserSong({ ...userSong, sections })
     }
+    const [audioPlaybackRange, setAudioPlaybackRange] = useState<AudioRange>({
+        start: 0,
+        end: 0,
+    })
+    const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
+    const playAudioWithRange = (range: AudioRange) => {
+        if (!isAudioLoaded) return
+        const isSameRange = lo.isEqual(audioPlaybackRange, range)
+
+        if (isSameRange) {
+            //再生停止を切り替え
+            setToggleAudioFlag(!toggleAudioFlag)
+        } else {
+            //rangeを変更して再生
+            setAudioPlaybackRange(range)
+            setToggleAudioFlag(true)
+        }
+    }
 
     return (
         <BasicPage>
@@ -328,10 +348,8 @@ const Detail = () => {
                     isHLS={isHLS}
                     dropDisabled={false}
                     mini={false}
-                    range={{
-                        start: 0,
-                        end: 0,
-                    }}
+                    range={audioPlaybackRange}
+                    toggle={toggleAudioFlag}
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo
@@ -347,8 +365,14 @@ const Detail = () => {
                             section={section}
                             onDropMidi={onDropMidi}
                             midiFile={null}
-                            onSectionChange={onSectionChange}
-                            onDeleteButtonClick={deleteSection}
+                            onSectionChange={(newSection: UserSongSection) =>
+                                onSectionChange(index, newSection)
+                            }
+                            onDeleteButtonClick={() => deleteSection(index)}
+                            onClickPlayButton={() =>
+                                playAudioWithRange(section.audioPlaybackRange)
+                            }
+                            showAudioRange={isAudioLoaded}
                         />
                         <Button onClick={() => appendNewSection(index)}>
                             +

@@ -13,6 +13,7 @@ type Props = {
     autoPlay?: boolean
     isHLS: boolean
     range: AudioRange
+    toggle: boolean
 }
 const AudioPlayer = ({
     droppedFile,
@@ -24,20 +25,32 @@ const AudioPlayer = ({
     autoPlay,
     isHLS,
     range,
+    toggle,
 }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         if (onDrop) onDrop(acceptedFiles)
     }
     const audioRef = useRef<HTMLMediaElement>(null)
+
+    //const audioRef = useRef<HTMLMediaElement>(null)
     useEffect(() => {
         if (HLS.isSupported()) {
             console.log(audioUrl)
             const hls = new HLS()
             hls.loadSource(audioUrl)
-            hls.attachMedia(audioRef.current!)
+            if (audioRef) hls.attachMedia(audioRef.current!)
         }
     }, [audioUrl])
 
+    useEffect(() => {
+        if (audioRef.current) {
+            if (toggle) {
+                audioRef.current.play()
+            } else {
+                audioRef.current.pause()
+            }
+        }
+    }, [toggle])
     const [fileUrl, setFileUrl] = useState('')
     useEffect(() => {
         if (droppedFile) setFileUrl(URL.createObjectURL(droppedFile))
@@ -89,6 +102,7 @@ const AudioPlayer = ({
                                         onTimeUpdate={timeupdatefunc}
                                         loop={true}
                                         autoPlay={true}
+                                        ref={audioRef}
                                     />
                                 </div>
                             )}

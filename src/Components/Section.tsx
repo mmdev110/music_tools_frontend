@@ -70,8 +70,10 @@ type Props = {
     section: UserSongSection
     onDropMidi: (index: number, file: File) => void
     midiFile: File | null
-    onSectionChange: (index: number, newSection: UserSongSection) => void
-    onDeleteButtonClick: (index: number) => void
+    onSectionChange: (newSection: UserSongSection) => void
+    onDeleteButtonClick: () => void
+    showAudioRange: boolean
+    onClickPlayButton: () => void
 }
 const Section = ({
     sectionIndex,
@@ -80,6 +82,8 @@ const Section = ({
     midiFile,
     onSectionChange,
     onDeleteButtonClick,
+    onClickPlayButton,
+    showAudioRange,
 }: Props) => {
     const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
 
@@ -99,7 +103,7 @@ const Section = ({
         } else if (name === 'transposeRoot') {
             setTransposeRoot(parseInt(value))
         }
-        onSectionChange(sectionIndex, { ...section })
+        onSectionChange({ ...section })
     }
     //MidiFile
     const onDrop = (acceptedFiles: File[]) => {
@@ -125,7 +129,7 @@ const Section = ({
         <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
             <Button
                 className="rounded bg-red-400 font-bold text-white"
-                onClick={() => onDeleteButtonClick(sectionIndex)}
+                onClick={onDeleteButtonClick}
             >
                 ×
             </Button>
@@ -134,7 +138,7 @@ const Section = ({
                 className="h-6 w-1/4 border-2 border-sky-400"
                 memo={section.section}
                 onChange={(str) => {
-                    onSectionChange(sectionIndex, { ...section, section: str })
+                    onSectionChange({ ...section, section: str })
                 }}
             />
             <div className="text-2xl">Key, Scales</div>
@@ -150,33 +154,38 @@ const Section = ({
                 memo={section.bpm.toString()}
                 onChange={(str) => {
                     if (!isNaN(Number(str)))
-                        onSectionChange(sectionIndex, {
+                        onSectionChange({
                             ...section,
                             bpm: Number(str),
                         })
                 }}
             />
-
-            <MediaRangeForm
-                range={
-                    section.audioPlaybackRange || {
-                        start: 0,
-                        end: 0,
-                    }
-                }
-                onChange={(newRange) => {
-                    onSectionChange(sectionIndex, {
-                        ...section,
-                        audioPlaybackRange: { ...newRange },
-                    })
-                }}
-            />
+            {showAudioRange ? (
+                <div>
+                    <div className="text-2xl">audio playback range</div>
+                    <MediaRangeForm
+                        range={
+                            section.audioPlaybackRange || {
+                                start: 0,
+                                end: 0,
+                            }
+                        }
+                        onChange={(newRange) => {
+                            onSectionChange({
+                                ...section,
+                                audioPlaybackRange: { ...newRange },
+                            })
+                        }}
+                    />
+                    <Button onClick={onClickPlayButton}>▷</Button>
+                </div>
+            ) : null}
 
             <div className="text-2xl">Chord Display</div>
             <ChordDisplay
                 progressionNames={section.progressions}
                 onProgressionsChange={(progressions) =>
-                    onSectionChange(sectionIndex, {
+                    onSectionChange({
                         ...section,
                         progressions: progressions,
                     })
@@ -189,9 +198,7 @@ const Section = ({
             <Memo
                 className="h-1/2 w-full border-2 border-sky-400"
                 memo={section.memo}
-                onChange={(str) =>
-                    onSectionChange(sectionIndex, { ...section, memo: str })
-                }
+                onChange={(str) => onSectionChange({ ...section, memo: str })}
             />
             <div className="text-2xl">MIDI Analyzer</div>
             <SequenceAnalyzer
