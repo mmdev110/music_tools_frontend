@@ -111,7 +111,7 @@ const App = () => {
                     element: <List />,
                 },
                 {
-                    path: 'edit/:userLoopId',
+                    path: 'edit/:userSongId',
                     element: <Detail />,
                 },
                 {

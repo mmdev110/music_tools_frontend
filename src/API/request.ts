@@ -101,14 +101,15 @@ export const saveUserSong = async (
     song: UserSong,
     userSongId: string
 ): Promise<UserSong> => {
-    const b = conversionToBackend(song)
+    const b = toBackend(song)
+    console.log(b)
     const response = await requestBackend<UserSong>(
         `song/${userSongId}`,
         'POST',
         b
     )
 
-    return conversionFromBackend(response.data)
+    return fromBackend(response.data)
 }
 type GeneralResponse = {
     Message: string
@@ -125,19 +126,20 @@ export const deleteUserSong = async (id: number): Promise<GeneralResponse> => {
 
 export const getUserSong = async (userSongId: number): Promise<UserSong> => {
     const response = await requestBackend<UserSong>(`song/${userSongId}`, 'GET')
-    return conversionFromBackend(response.data)
+    return fromBackend(response.data)
 }
 export const getUserSongs = async (
     condition: UserSongSearchCondition
 ): Promise<UserSong[]> => {
+    console.log('@@@@getUserSongs')
     const response = await requestBackend<UserSong[]>('list', 'POST', condition)
-    const resp = response.data.map((song) => conversionFromBackend(song))
+    const resp = response.data.map((song) => fromBackend(song))
+    console.log(resp)
     return resp
 }
 //疎通確認
 export const healthCheck = async (): Promise<boolean> => {
     const response = await requestBackend<boolean>('_chk', 'GET')
-    console.log(response.data)
     return response.data
 }
 
@@ -162,7 +164,6 @@ const requestBackend = async <T>(
         },
     }
     let response: AxiosResponse<T>
-    console.log(method === 'POST')
     if (method === 'POST') {
         response = await backend.post(url, data, config)
     } else {
@@ -230,40 +231,35 @@ export const saveTags = async (data: Tag[]): Promise<Tag[]> => {
     return response.data
 }
 
-//sectionのprogressions, midiのrootsをCSVに変換する
-//上の値はバックエンドではCSV(文字列)として扱っているため
-const conversionToBackend = (song: UserSong) => {
+//sectionのprogressions, midiのrootsをCsvに変換する
+//上の値はバックエンドではCsv(文字列)として扱っているため
+const toBackend = (song: UserSong) => {
     //progressionsの変換
     if (song.sections.length > 0) {
         for (let i = 0; i < song.sections.length; i++) {
             const sec = song.sections[i]
             const progressions = sec.progressions
-            song.sections[i].progressionsCSV = arrayToCSV(progressions)
+            song.sections[i].progressionsCsv = AToC(progressions)
 
             if (sec.midi) {
-                song.sections[i].progressionsCSV = arrayToCSV(
-                    sec.midi.midiRoots
-                )
+                song.sections[i].progressionsCsv = AToC(sec.midi.midiRoots)
             }
         }
     }
     return song
 }
-//sectionのprogressions, midiのrootsをCSVから戻す
-//conversionToBackendの逆操作
-const conversionFromBackend = (song: UserSong) => {
+//sectionのprogressions, midiのrootsをCsvから戻す
+//toBackendの逆操作
+const fromBackend = (song: UserSong) => {
     //progressionsの変換
     if (song.sections.length > 0) {
         for (let i = 0; i < song.sections.length; i++) {
             const sec = song.sections[i]
-            const progressionsCSV = sec.progressionsCSV
-            song.sections[i].progressions = CSVToArray(
-                progressionsCSV
-            ) as string[]
-
+            const progressionsCsv = sec.progressionsCsv
+            song.sections[i].progressions = CToA(progressionsCsv) as string[]
             if (sec.midi) {
-                song.sections[i].midi!.midiRoots = CSVToArray(
-                    sec.midi.midiRootsCSV
+                song.sections[i].midi!.midiRoots = CToA(
+                    sec.midi.midiRootsCsv
                 ) as number[]
             }
         }
@@ -271,12 +267,12 @@ const conversionFromBackend = (song: UserSong) => {
     return song
 }
 
-const arrayToCSV = (arr: any[]): string => {
+const AToC = (arr: any[]): string => {
     return arr.join(',')
 }
-const CSVToArray = (csv: string): string[] | number[] => {
+const CToA = (csv: string): string[] | number[] => {
     const array = csv.split(',')
-    if (typeof parseInt(array[0], 10) === 'number') {
+    if (!isNaN(parseInt(array[0], 10))) {
         return array.map((elem) => {
             return parseInt(elem, 10)
         })

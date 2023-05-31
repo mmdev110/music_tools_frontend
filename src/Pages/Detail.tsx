@@ -64,7 +64,7 @@ const ModalStyle = {
 const sectionInit: UserSongSection = {
     section: '',
     progressions: DefaultChordNames,
-    progressionsCSV: '',
+    progressionsCsv: '',
     key: 0,
     scale: TERMS.MAJOR,
     bpm: 0,
@@ -157,6 +157,7 @@ const Detail = () => {
             try {
                 const audio = response.audio
                 console.log(droppedFile)
+                console.log(audio)
                 if (audio && audio.url.put && droppedFile) {
                     //s3へのアップロード
                     const response = await uploadToS3(
@@ -176,17 +177,12 @@ const Detail = () => {
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
-            await load(response.id!)
+            //await load(response.id!)
         }
     }
     const load = async (id: number) => {
         const response = await getUserSong(id)
         console.log('@@URI', response)
-        //idを消す
-        response.id = 0
-        if (response.audio) response.audio.id = 0
-        //if (response.userLoopMidi)
-        //    response.userLoopMidi.id = 0
         //編集前の状態を保存しておく
         setOldState(response)
         setUserSong(response)
@@ -195,6 +191,7 @@ const Detail = () => {
         //audio, midiのロード
         try {
             if (audio && audio.url.get) {
+                console.log(audio.url.get)
                 setIsHLS(true)
                 setIsAudioLoaded(true)
             }
@@ -299,10 +296,13 @@ const Detail = () => {
             setToggleAudioFlag(true)
         }
     }
-
+    const test = () => {
+        console.log(userSongId)
+    }
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
+                <Button onClick={test}>test</Button>
                 {user ? (
                     <div>
                         <Button disabled={!isChanged()} onClick={save}>

@@ -28,7 +28,6 @@ const SongSummary = ({
     onInfoClick,
     menuItems,
 }: Props) => {
-    const note = ALL_NOTES[song.sections[0].key]
     const onButtonClick = () => {
         onPlayButtonClick(song)
     }
@@ -119,7 +118,7 @@ const SongSummary = ({
                     <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
                     <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
                     <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">
-                        {song.memo || ''}
+                        {'仮置き'}
                     </div>
                 </div>
                 {/**オーディオ再生ボタン */}

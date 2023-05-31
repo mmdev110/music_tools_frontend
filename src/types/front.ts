@@ -18,7 +18,7 @@ export type UserSong = {
 export type UserSongSection = {
     id?: number
     progressions: string[]
-    progressionsCSV: string //API通信用
+    progressionsCsv: string //API通信用
     key: number
     bpm: number
     section: string
@@ -46,7 +46,7 @@ type UserSectionMidi = {
         put: string
     }
     midiRoots: number[]
-    midiRootsCSV: string //API通信用
+    midiRootsCsv: string //API通信用
 }
 export type AudioRange = {
     //audioの再生範囲

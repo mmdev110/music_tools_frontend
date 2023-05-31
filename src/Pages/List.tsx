@@ -56,7 +56,7 @@ const List = () => {
         try {
             const data = await getUserSongs(condition)
             if (data) setUserSongs(data)
-            //console.log(data)
+            console.log(data)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }

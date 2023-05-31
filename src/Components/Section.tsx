@@ -53,7 +53,7 @@ const DefaultChordNames: string[] = [
 const sectionInit: UserSongSection = {
     section: '',
     progressions: DefaultChordNames,
-    progressionsCSV: '',
+    progressionsCsv: '',
     key: 0,
     scale: TERMS.MAJOR,
     bpm: 0,
