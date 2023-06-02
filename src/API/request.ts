@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
-import { User, UserSong, Tag, UserSongSearchCondition } from 'types/'
+import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
 
@@ -228,6 +228,16 @@ export const getTags = async (): Promise<Tag[]> => {
 //ユーザーのtag更新
 export const saveTags = async (data: Tag[]): Promise<Tag[]> => {
     const response = await requestBackend<Tag[]>('tags', 'POST', data)
+    return response.data
+}
+//ユーザーのgenre一覧の取得
+export const getGenres = async (): Promise<Genre[]> => {
+    const response = await requestBackend<Genre[]>('genres', 'GET')
+    return response.data
+}
+//ユーザーのgenre更新
+export const saveGenres = async (data: Genre[]): Promise<Genre[]> => {
+    const response = await requestBackend<Genre[]>('genres', 'POST', data)
     return response.data
 }
 

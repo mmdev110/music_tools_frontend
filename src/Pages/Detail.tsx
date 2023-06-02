@@ -18,11 +18,12 @@ import MidiMonitorDescription from 'Components/MidiMonitorDescription'
 import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
+import GenreModal from 'Pages/Modals/Genre'
 import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType, AudioRange, UserSongSection } from 'types'
+import { Tag, ScaleFormType, AudioRange, UserSongSection, Genre } from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -226,6 +227,14 @@ const Detail = () => {
     const closeTagModal = () => {
         setTagIsOpen(false)
     }
+    //genre modal
+    const [genreModalIsOpen, setGenreIsOpen] = React.useState(false)
+    const showGenreModal = () => {
+        setGenreIsOpen(true)
+    }
+    const closeGenreModal = () => {
+        setGenreIsOpen(false)
+    }
     const [chordModalIsOpen, setChordIsOpen] = React.useState(false)
     const [noteIntervals, setNoteIntervals] = React.useState<NoteIntervals>([])
     const showChordModal = (info: NoteIntervals) => {
@@ -240,7 +249,6 @@ const Detail = () => {
 
     const isChanged = (): boolean => {
         console.log('@@@checkChanged')
-        console.log(oldState)
         return !lo.isEqual(oldState, userSong)
     }
     const onSectionChange = (index: number, newSection: UserSongSection) => {
@@ -327,8 +335,15 @@ const Detail = () => {
                         setUserSong({ ...userSong, artist: str })
                     }}
                 />
+                {user ? (
+                    <Button onClick={showGenreModal}>ジャンル編集</Button>
+                ) : null}
+                <div className="flex flex-row gap-x-4">
+                    {userSong.genres.map((genre) => (
+                        <Button>{genre.name}</Button>
+                    ))}
+                </div>
                 {user ? <Button onClick={showTagModal}>タグ編集</Button> : null}
-
                 <div className="flex flex-row gap-x-4">
                     {userSong.tags.map((tag) => (
                         <Button>{tag.name}</Button>
@@ -399,6 +414,25 @@ const Detail = () => {
                     }
                     closeModal={closeTagModal}
                     songTags={userSong.tags}
+                />
+            </Modal>
+            {/* genre編集*/}
+            <Modal
+                isOpen={genreModalIsOpen}
+                //onAfterOpen={afterOpenModal}
+                onRequestClose={closeGenreModal}
+                style={ModalStyle}
+                contentLabel="Example Modal"
+            >
+                <GenreModal
+                    onGenreUpdate={(genres) =>
+                        setUserSong({
+                            ...userSong,
+                            genres: genres,
+                        })
+                    }
+                    closeModal={closeGenreModal}
+                    songGenres={userSong.genres}
                 />
             </Modal>
             {/* コード詳細*/}
