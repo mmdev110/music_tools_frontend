@@ -297,7 +297,7 @@ const Detail = () => {
         }
     }
     const test = () => {
-        console.log(userSongId)
+        console.log(userSong)
     }
     return (
         <BasicPage>
@@ -398,7 +398,7 @@ const Detail = () => {
                         })
                     }
                     closeModal={closeTagModal}
-                    loopTags={userSong.tags}
+                    songTags={userSong.tags}
                 />
             </Modal>
             {/* コード詳細*/}
