@@ -53,6 +53,11 @@ export type AudioRange = {
     start: number
     end: number
 }
+export type AudioState = {
+    //再生中のaudioの状態
+    currentTime_sec: number
+    duration_sec: number
+}
 export type Genre = {
     id?: number
     userId: number

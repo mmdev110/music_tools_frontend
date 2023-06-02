@@ -21,7 +21,7 @@ import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType, AudioRange, UserSongSection } from 'types'
+import { Tag, ScaleFormType, AudioState, UserSongSection } from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -74,6 +74,7 @@ type Props = {
     onDeleteButtonClick: () => void
     showAudioRange: boolean
     onClickPlayButton: () => void
+    audioState: AudioState
 }
 const Section = ({
     sectionIndex,
@@ -84,6 +85,7 @@ const Section = ({
     onDeleteButtonClick,
     onClickPlayButton,
     showAudioRange,
+    audioState,
 }: Props) => {
     const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
 
@@ -124,6 +126,18 @@ const Section = ({
     const closeChordModal = () => {
         setNoteIntervals([])
         setChordIsOpen(false)
+    }
+    const onClickRangeTap = (action: string) => {
+        const newRange = { ...section.audioPlaybackRange }
+        if (action === 'set-start') {
+            newRange.start = audioState.currentTime_sec
+        } else if (action === 'set-end') {
+            newRange.end = audioState.currentTime_sec
+        }
+        onSectionChange({
+            ...section,
+            audioPlaybackRange: { ...newRange },
+        })
     }
     return (
         <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
@@ -178,6 +192,12 @@ const Section = ({
                         }}
                     />
                     <Button onClick={onClickPlayButton}>▷</Button>
+                    <Button onClick={() => onClickRangeTap('set-start')}>
+                        tap
+                    </Button>
+                    <Button onClick={() => onClickRangeTap('set-end')}>
+                        tap
+                    </Button>
                 </div>
             ) : null}
 

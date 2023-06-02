@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useContext, useRef } from 'react'
+import React, {
+    useEffect,
+    useState,
+    useContext,
+    useRef,
+    SyntheticEvent,
+} from 'react'
 import {
     Route,
     Routes,
@@ -23,7 +29,13 @@ import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType, AudioRange, UserSongSection, Genre } from 'types'
+import {
+    Tag,
+    ScaleFormType,
+    AudioRange,
+    UserSongSection,
+    AudioState,
+} from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -96,27 +108,14 @@ const Detail = () => {
     //編集中の状態
     const [userSong, setUserSong] = useState<UserSong>(songInit)
 
-    const [scaleForm, setScaleForm] = useState<ScaleFormType>({
-        root: 0,
-        scale: TERMS.MAJOR,
-        transposeRoot: null,
-    })
-    const onScaleFormChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const name = event.target.name
-        let value = event.target.value
-        let newScaleForm: ScaleFormType
-        if (name === 'root') {
-            newScaleForm = { ...scaleForm, root: parseInt(value) }
-        } else {
-            newScaleForm = { ...scaleForm, [name]: value }
-        }
-        setScaleForm(newScaleForm)
-    }
-
     //audio, droppedFile
     const [droppedFile, setDroppedFile] = useState<File>()
     const [isHLS, setIsHLS] = useState(false)
     const [isAudioLoaded, setIsAudioLoaded] = useState(false)
+    const [audioState, setAudioState] = useState<AudioState>({
+        currentTime_sec: 0,
+        duration_sec: 0,
+    })
 
     const onDropAudio = (acceptedFiles: File[]) => {
         const file: File = acceptedFiles[0]
@@ -132,6 +131,16 @@ const Detail = () => {
             },
         })
         setIsAudioLoaded(true)
+    }
+    const onMetadataLoaded = (event: any) => {
+        const duration = Math.floor(event.target.duration as number)
+        setAudioState({ ...audioState, duration_sec: duration })
+    }
+    const onTimeUpdate = (currentTime: number) => {
+        setAudioState({
+            ...audioState,
+            currentTime_sec: Math.floor(currentTime),
+        })
     }
 
     //MidiFile
@@ -270,8 +279,7 @@ const Detail = () => {
         newSection.sortOrder = sections[index].sortOrder + 1
         newSection.audioPlaybackRange.start =
             sections[index].audioPlaybackRange.end
-        newSection.audioPlaybackRange.end =
-            newSection.audioPlaybackRange.start + 100
+        newSection.audioPlaybackRange.end = audioState.duration_sec
 
         sections.splice(index + 1, 0, newSection)
         setUserSong({
@@ -305,7 +313,7 @@ const Detail = () => {
         }
     }
     const test = () => {
-        console.log(userSong)
+        console.log(audioState)
     }
     return (
         <BasicPage>
@@ -365,6 +373,8 @@ const Detail = () => {
                     mini={false}
                     range={audioPlaybackRange}
                     toggle={toggleAudioFlag}
+                    onTimeUpdate={onTimeUpdate}
+                    onMetadataLoaded={onMetadataLoaded}
                 />
                 <div className="text-2xl">Memo</div>
                 <Memo
@@ -388,6 +398,7 @@ const Detail = () => {
                                 playAudioWithRange(section.audioPlaybackRange)
                             }
                             showAudioRange={isAudioLoaded}
+                            audioState={audioState}
                         />
                         <Button onClick={() => appendNewSection(index)}>
                             +

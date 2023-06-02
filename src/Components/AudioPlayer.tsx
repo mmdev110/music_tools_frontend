@@ -14,6 +14,8 @@ type Props = {
     isHLS: boolean
     range: AudioRange
     toggle: boolean
+    onTimeUpdate?: (currentTime: number) => void
+    onMetadataLoaded?: (event: any) => void
 }
 const AudioPlayer = ({
     droppedFile,
@@ -26,6 +28,8 @@ const AudioPlayer = ({
     isHLS,
     range,
     toggle,
+    onTimeUpdate,
+    onMetadataLoaded,
 }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         if (onDrop) onDrop(acceptedFiles)
@@ -58,8 +62,9 @@ const AudioPlayer = ({
     const timeupdatefunc = (event: SyntheticEvent<HTMLAudioElement>) => {
         const { start, end } = range
         if (event.target instanceof HTMLAudioElement) {
+            const currentTime = event.target.currentTime
+            if (onTimeUpdate) onTimeUpdate(currentTime)
             if (start >= 0 && end > 0 && end - start > 0) {
-                const currentTime = event.target.currentTime
                 //console.log(currentTime)
                 if (currentTime < start) {
                     event.target.currentTime = start
@@ -69,9 +74,7 @@ const AudioPlayer = ({
             }
         }
     }
-    const test = (event: any) => {
-        console.log(event.target.duration)
-    }
+
     return (
         <div>
             <Dropzone
@@ -95,7 +98,7 @@ const AudioPlayer = ({
                                         controls
                                         loop={true}
                                         autoPlay={autoPlay}
-                                        onLoadedMetadata={test}
+                                        onLoadedMetadata={onMetadataLoaded}
                                     />
                                 </div>
                             ) : (
@@ -107,7 +110,7 @@ const AudioPlayer = ({
                                         loop={true}
                                         autoPlay={true}
                                         ref={audioRef}
-                                        onLoadedMetadata={test}
+                                        onLoadedMetadata={onMetadataLoaded}
                                     />
                                 </div>
                             )}

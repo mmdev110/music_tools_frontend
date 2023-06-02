@@ -6,6 +6,7 @@ export type {
     UserSongSection,
     UserSongSearchCondition,
     AudioRange,
+    AudioState,
     Genre,
 } from './front'
 export type {
