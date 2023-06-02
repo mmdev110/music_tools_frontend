@@ -69,6 +69,9 @@ const AudioPlayer = ({
             }
         }
     }
+    const test = (event: any) => {
+        console.log(event.target.duration)
+    }
     return (
         <div>
             <Dropzone
@@ -92,6 +95,7 @@ const AudioPlayer = ({
                                         controls
                                         loop={true}
                                         autoPlay={autoPlay}
+                                        onLoadedMetadata={test}
                                     />
                                 </div>
                             ) : (
@@ -103,6 +107,7 @@ const AudioPlayer = ({
                                         loop={true}
                                         autoPlay={true}
                                         ref={audioRef}
+                                        onLoadedMetadata={test}
                                     />
                                 </div>
                             )}
