@@ -194,7 +194,7 @@ const analyzeNotes = (
     notes: SequencerNote[],
     scaleForm: Types.ScaleFormType
 ) => {
-    console.log('@@@@@analyzeNotes')
+    //console.log('@@@@@analyzeNotes')
     //console.log(rootForm)
     //console.log(scaleForm)
     const analyzed: SequencerNote[] = []

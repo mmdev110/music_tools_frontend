@@ -39,7 +39,6 @@ const ChordDisplay2 = ({
     scaleForm,
     onNoteIntervalsClick,
 }: Props) => {
-    //console.log('@@@@ChordDisplay')
     const [progression, setProgression] = useState(
         ChordProgression.newFromChordNames(
             ResetChordNames,
@@ -48,6 +47,7 @@ const ChordDisplay2 = ({
         )
     )
     const onChange = (index: number, chords: string) => {
+        console.log('onChange')
         let newInput = progressionNames
         newInput[index] = chords
         //親のstate更新
@@ -57,13 +57,20 @@ const ChordDisplay2 = ({
     }
     useEffect(() => {
         updateProgression(progressionNames)
-    }, [scaleForm, progressionNames])
+    }, [
+        scaleForm.root, //scaleFormを入れるとrender毎に走ってしまうので、分解している
+        scaleForm.scale,
+        scaleForm.transposeRoot,
+        progressionNames,
+    ])
     const onReset = () => {
+        console.log('onReset')
         const reset = lo.cloneDeep(ResetChordNames)
         onProgressionsChange(reset)
         updateProgression(reset)
     }
     const updateProgression = (chordNames: string[]) => {
+        console.log('updateprogression')
         const { root, scale } = scaleForm
         const newProgression = ChordProgression.newFromChordNames(
             chordNames,

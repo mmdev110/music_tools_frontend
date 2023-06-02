@@ -252,10 +252,10 @@ const Detail = () => {
         return !lo.isEqual(oldState, userSong)
     }
     const onSectionChange = (index: number, newSection: UserSongSection) => {
-        console.log('@@@onsectionchange')
+        //console.log('@@@onsectionchange')
         const sections = [...userSong.sections]
         sections[index] = newSection
-        console.log(sections)
+        //console.log(sections)
         setUserSong({ ...userSong, sections })
     }
     const appendNewSection = (index: number) => {
