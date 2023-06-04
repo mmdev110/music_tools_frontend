@@ -270,9 +270,9 @@ const Song = ({
                     </div>
                 ) : null}
 
-                <div className="text-2xl">AudioPlayer</div>
                 {showAudio ? (
                     <div>
+                        <div className="text-2xl">AudioPlayer</div>
                         <div>
                             mp3, wav, m4aファイルをドロップできます。
                             <br />
