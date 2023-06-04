@@ -68,13 +68,15 @@ const sectionInit: UserSongSection = {
 type Props = {
     sectionIndex: number
     section: UserSongSection
-    onDropMidi: (index: number, file: File) => void
+    onDropMidi?: (index: number, file: File) => void
     midiFile: File | null
     onSectionChange: (newSection: UserSongSection) => void
     onDeleteButtonClick: () => void
     showAudioRange: boolean
     onClickPlayButton: () => void
-    audioState: AudioState
+    onRangeClick: (btn: string) => void
+    showMidi: boolean
+    onClickChordInfo: (intervals: NoteIntervals) => void
 }
 const Section = ({
     sectionIndex,
@@ -85,7 +87,9 @@ const Section = ({
     onDeleteButtonClick,
     onClickPlayButton,
     showAudioRange,
-    audioState,
+    onRangeClick,
+    showMidi,
+    onClickChordInfo,
 }: Props) => {
     const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
 
@@ -109,36 +113,14 @@ const Section = ({
     }
     //MidiFile
     const onDrop = (acceptedFiles: File[]) => {
-        onDropMidi(sectionIndex, acceptedFiles[0])
+        if (onDropMidi) onDropMidi(sectionIndex, acceptedFiles[0])
     }
     //rootIndexes
     const [midiRoots, setMidiRoots] = useState<number[]>([])
     const onMidiRootsChange = (rootIndexes: number[]) => {
         setMidiRoots(rootIndexes)
     }
-    const [chordModalIsOpen, setChordIsOpen] = React.useState(false)
-    const [noteIntervals, setNoteIntervals] = React.useState<NoteIntervals>([])
-    const showChordModal = (info: NoteIntervals) => {
-        setNoteIntervals(info)
-        setChordIsOpen(true)
-    }
 
-    const closeChordModal = () => {
-        setNoteIntervals([])
-        setChordIsOpen(false)
-    }
-    const onClickRangeTap = (action: string) => {
-        const newRange = { ...section.audioPlaybackRange }
-        if (action === 'set-start') {
-            newRange.start = audioState.currentTime_sec
-        } else if (action === 'set-end') {
-            newRange.end = audioState.currentTime_sec
-        }
-        onSectionChange({
-            ...section,
-            audioPlaybackRange: { ...newRange },
-        })
-    }
     return (
         <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
             <Button
@@ -192,12 +174,10 @@ const Section = ({
                         }}
                     />
                     <Button onClick={onClickPlayButton}>▷</Button>
-                    <Button onClick={() => onClickRangeTap('set-start')}>
+                    <Button onClick={() => onRangeClick('set-start')}>
                         tap
                     </Button>
-                    <Button onClick={() => onClickRangeTap('set-end')}>
-                        tap
-                    </Button>
+                    <Button onClick={() => onRangeClick('set-end')}>tap</Button>
                 </div>
             ) : null}
 
@@ -211,7 +191,7 @@ const Section = ({
                     })
                 }
                 scaleForm={scaleForm}
-                onNoteIntervalsClick={showChordModal}
+                onNoteIntervalsClick={onClickChordInfo}
             />
 
             <div className="text-2xl">Memo</div>
@@ -220,14 +200,18 @@ const Section = ({
                 memo={section.memo}
                 onChange={(str) => onSectionChange({ ...section, memo: str })}
             />
-            <div className="text-2xl">MIDI Analyzer</div>
-            <SequenceAnalyzer
-                scaleForm={scaleForm}
-                onDrop={onDrop}
-                midiFile={midiFile}
-                rootIndexes={midiRoots}
-                onMidiNoteClick={onMidiRootsChange}
-            />
+            {showMidi ? (
+                <div>
+                    <div className="text-2xl">MIDI Analyzer</div>
+                    <SequenceAnalyzer
+                        scaleForm={scaleForm}
+                        onDrop={onDrop}
+                        midiFile={midiFile}
+                        rootIndexes={midiRoots}
+                        onMidiNoteClick={onMidiRootsChange}
+                    />
+                </div>
+            ) : null}
         </div>
     )
 }
