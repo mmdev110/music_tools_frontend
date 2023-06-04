@@ -34,10 +34,21 @@ import {
     ScaleFormType,
     AudioRange,
     UserSongSection,
+    Genre,
     AudioState,
+    TagUI,
 } from 'types'
 import { UserSong } from 'types'
-import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
+import {
+    getFromS3,
+    getUserSong,
+    saveUserSong,
+    uploadToS3,
+    getTags,
+    getGenres,
+    saveTags,
+    saveGenres,
+} from 'API/request'
 import * as Utils from 'utils/music'
 import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
@@ -204,6 +215,8 @@ const Detail = () => {
         if (isNumber) {
             //edit/:userSongIdのとき
             load(id_int)
+            loadAllTags()
+            loadAllGenres()
         }
     }, [])
 
@@ -222,7 +235,99 @@ const Detail = () => {
     const onSongChange = (newSong: UserSong) => {
         setUserSong({ ...newSong })
     }
+    const [tags, setTags] = useState<Tag[]>([])
+    const loadAllTags = async () => {
+        try {
+            const tags = await getTags()
+            setTags(tags)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const onSaveTags = async (tagUIs: TagUI[]) => {
+        //TagUIからtagsをビルド
+        let newTags: Tag[] = tagUIs.map((tagui, index): Tag => {
+            const existingTag = tags.find((t) => tagui.name === t.name)
+            return (
+                existingTag || {
+                    userId: user!.userId,
+                    name: tagui.name,
+                    sortOrder: index,
+                }
+            )
+        })
+        const isTagsChanged = (): boolean => {
+            const A = newTags.map((e) => e.name)
+            const B = tags.map((e) => e.name)
+            console.log(A)
+            console.log(B)
+            return !lo.isEqual(A, B)
+        }
+        //tagsに存在しないものがあれば保存
+        if (isTagsChanged()) {
+            try {
+                newTags = await saveTags(newTags)
+                //tags更新
+                setTags(newTags)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        //userSongの更新
+        const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
+        //全てのタグの中から、isSelectedのものをuserSongに追加
+        const songTags = newTags.filter((tag) => {
+            const isSelected = selectedUIs.find((ui) => ui.name === tag.name)
+            return isSelected
+        })
+        setUserSong({ ...userSong, tags: songTags })
+    }
 
+    const [genres, setGenres] = useState<Genre[]>([])
+    const loadAllGenres = async () => {
+        try {
+            const genres = await getGenres()
+            setGenres(genres)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    const onSaveGenres = async (tagUIs: TagUI[]) => {
+        //TagUIからgenresをビルド
+        let newGenres: Genre[] = tagUIs.map((genreui, index): Genre => {
+            const existinGgenre = genres.find((g) => genreui.name === g.name)
+            return (
+                existinGgenre || {
+                    userId: user!.userId,
+                    name: genreui.name,
+                    sortOrder: index,
+                }
+            )
+        })
+        const isGenresChanged = (): boolean => {
+            const A = newGenres.map((e) => e.name)
+            const B = genres.map((e) => e.name)
+            return !lo.isEqual(A, B)
+        }
+        //genresに存在しないものがあれば保存
+        if (isGenresChanged()) {
+            try {
+                newGenres = await saveGenres(newGenres)
+                //genres更新
+                setGenres(newGenres)
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        //userSongの更新
+        const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
+        //全てのタグの中から、isSelectedのものをuserSongに追加
+        const songGenres = newGenres.filter((genre) => {
+            const isSelected = selectedUIs.find((ui) => ui.name === genre.name)
+            return isSelected
+        })
+        setUserSong({ ...userSong, genres: songGenres })
+    }
     return (
         <BasicPage>
             <div className="text-2xl">Song Editor</div>
@@ -236,6 +341,10 @@ const Detail = () => {
             <Song
                 user={user || undefined}
                 song={userSong}
+                tags={tags}
+                onSaveTags={onSaveTags}
+                genres={genres}
+                onSaveGenres={onSaveGenres}
                 showAudio={true}
                 showGenres={true}
                 showTags={true}

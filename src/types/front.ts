@@ -72,6 +72,11 @@ export type Tag = {
     sortOrder: number
     userSongs?: UserSong[]
 }
+export type TagUI = {
+    //Tag表示用
+    name: string
+    isSelected: boolean
+}
 export type UserSongSearchCondition = {
     tagIds?: number[]
     subString?: string

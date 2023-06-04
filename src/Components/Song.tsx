@@ -31,11 +31,13 @@ import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
 import {
     Tag,
+    Genre,
     User,
     ScaleFormType,
     AudioRange,
     UserSongSection,
     AudioState,
+    TagUI,
 } from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
@@ -102,6 +104,8 @@ const songInit: UserSong = {
 type Props = {
     user?: User
     song: UserSong
+    tags?: Tag[]
+    genres?: Genre[]
     showGenres: boolean
     showTags: boolean
     showAudio: boolean
@@ -113,11 +117,15 @@ type Props = {
     onSectionChange: (index: number, newSection: UserSongSection) => void
     onSectionAppendButtonClick?: (index: number) => void
     onSectionDeleteButtonClick?: (index: number) => void
+    onSaveTags?: (tagUIs: TagUI[]) => void
+    onSaveGenres?: (genreUIs: TagUI[]) => void
 }
 Modal.setAppElement('#root')
 const Song = ({
     user,
     song,
+    tags,
+    genres,
     showGenres,
     showTags,
     showAudio,
@@ -127,6 +135,8 @@ const Song = ({
     onSongChange,
     onSectionChange,
     onDropMidi,
+    onSaveTags,
+    onSaveGenres,
 }: Props) => {
     //tag modal
     const [tagModalIsOpen, setTagIsOpen] = React.useState(false)
@@ -354,14 +364,13 @@ const Song = ({
                 contentLabel="Example Modal"
             >
                 <TagModal
-                    onTagUpdate={(tags) =>
-                        onSongChange({
-                            ...song,
-                            tags: tags,
-                        })
-                    }
+                    onSaveTags={(tagUIs: TagUI[]) => {
+                        if (onSaveTags) onSaveTags(tagUIs)
+                        closeTagModal()
+                    }}
                     closeModal={closeTagModal}
                     songTags={song.tags}
+                    allTags={tags || []}
                 />
             </Modal>
             {/* genre編集*/}
@@ -373,14 +382,13 @@ const Song = ({
                 contentLabel="Example Modal"
             >
                 <GenreModal
-                    onGenreUpdate={(genres) =>
-                        onSongChange({
-                            ...song,
-                            genres: genres,
-                        })
-                    }
+                    onSaveGenres={(tagUIs: TagUI[]) => {
+                        if (onSaveGenres) onSaveGenres(tagUIs)
+                        closeGenreModal()
+                    }}
                     closeModal={closeGenreModal}
                     songGenres={song.genres}
+                    allGenres={genres || []}
                 />
             </Modal>
             {/* コード詳細*/}
