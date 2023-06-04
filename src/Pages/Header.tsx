@@ -39,13 +39,16 @@ const Header = ({ isOnline }: props) => {
                     ) : (
                         'You are not logged in. |'
                     )}
+                    <div>
+                        <Link to="build">Build |</Link>
+                    </div>
+                    <div>
+                        <Link to="other_tools">Tools |</Link>
+                    </div>
                     {user ? (
                         <div className="flex">
                             <div>
                                 <Link to="list">List |</Link>
-                            </div>
-                            <div>
-                                <Link to="build">Build |</Link>
                             </div>
                             <div
                                 className="hover:cursor-pointer"
@@ -56,9 +59,6 @@ const Header = ({ isOnline }: props) => {
                         </div>
                     ) : (
                         <div className="flex">
-                            <div>
-                                <Link to="other_tools">Tools |</Link>
-                            </div>
                             <div>
                                 <Link to="signin">SignIn |</Link>
                             </div>
