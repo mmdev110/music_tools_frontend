@@ -4,6 +4,7 @@ import React, {
     useContext,
     useRef,
     SyntheticEvent,
+    useCallback,
 } from 'react'
 import {
     Route,
@@ -28,16 +29,27 @@ import GenreModal from 'Pages/Modals/Genre'
 import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
+import Drawer from '@mui/material/Drawer'
 import { TERMS } from 'config/music'
 import {
     Tag,
+    Genre,
     ScaleFormType,
     AudioRange,
     UserSongSection,
     AudioState,
+    UserSongSearchCondition,
 } from 'types'
 import { UserSong } from 'types'
-import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
+import {
+    getFromS3,
+    getUserSong,
+    saveUserSong,
+    uploadToS3,
+    getUserSongs,
+    getTags,
+    getGenres,
+} from 'API/request'
 import * as Utils from 'utils/music'
 import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
@@ -46,7 +58,13 @@ import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
 import Song from 'Components/Song'
+import SongSummary from 'Components/SongSummary'
+import { resolve } from 'dns/promises'
 
+type Audio = {
+    name: string
+    url: string
+}
 const DefaultChordNames: string[] = [
     'CM7',
     'Am7',
@@ -99,158 +117,23 @@ const songInit: UserSong = {
     tags: [],
     genres: [],
 }
+const defaultDrawerHeight = 240
+const minDrawerHeight = 50
+const maxDrawerHeight = 1000
 //Modal.setAppElement('#root')
 const Builder = () => {
     let { userSongId } = useParams()
     const user = useContext(UserContext)
 
-    //編集前の状態
-    const [oldState, setOldState] = useState<UserSong>(songInit)
-    //編集中の状態
+    //編集中のsong
     const [userSong, setUserSong] = useState<UserSong>(songInit)
+    //参照用のsong
+    const [songs, setSongs] = useState<UserSong[]>([])
+    //タグ
+    const [allTags, setAllTags] = useState<Tag[]>([])
+    //ジャンル
+    const [allGenres, setAllGenres] = useState<Genre[]>([])
 
-    //audio, droppedFile
-    const [droppedFile, setDroppedFile] = useState<File>()
-    const [isHLS, setIsHLS] = useState(false)
-    const [isAudioLoaded, setIsAudioLoaded] = useState(false)
-    const [audioState, setAudioState] = useState<AudioState>({
-        currentTime_sec: 0,
-        duration_sec: 0,
-    })
-
-    const onDropAudio = (acceptedFiles: File[]) => {
-        const file: File = acceptedFiles[0]
-        setDroppedFile(file)
-        console.log(file)
-        setIsHLS(false)
-
-        setUserSong({
-            ...userSong,
-            audio: {
-                name: file.name,
-                url: { get: URL.createObjectURL(file), put: '' },
-            },
-        })
-        setIsAudioLoaded(true)
-    }
-
-    //MidiFile
-    const [midiFiles, setMidiFiles] = useState<File[]>([])
-    const onDropMidi = (sectionIndex: number, file: File) => {
-        const newFiles = [...midiFiles]
-        newFiles[sectionIndex] = file
-        setMidiFiles(newFiles)
-    }
-
-    const save = async () => {
-        console.log('@@@@save')
-        console.log(userSong)
-        //保存
-        let response: UserSong | undefined
-        try {
-            response = await saveUserSong(userSong, userSongId!)
-            console.log(response)
-            if (response) setUserSong(response)
-        } catch (err) {
-            if (isAxiosError(err)) console.log(err)
-        }
-        if (response) {
-            try {
-                const audio = response.audio
-                console.log(droppedFile)
-                console.log(audio)
-                if (audio && audio.url.put && droppedFile) {
-                    //s3へのアップロード
-                    const response = await uploadToS3(
-                        audio.url.put,
-                        droppedFile
-                    )
-                    console.log(response)
-                }
-                //midiアップロード
-                //const midi = response.userLoopMidi
-                ////TODO:常にアップロードされるので対策考える
-                ////S3から拾ったものとドロップされたもの両方midiFileに格納してしまうため
-                //if (midi && midi.url.put && midiFile) {
-                //    console.log('upload midi')
-                //    await uploadToS3(midi.url.put, midiFile)
-                //}
-            } catch (err) {
-                if (isAxiosError(err)) console.log(err)
-            }
-            //await load(response.id!)
-        }
-    }
-    const load = async (id: number) => {
-        const response = await getUserSong(id)
-        console.log('@@URI', response)
-        //編集前の状態を保存しておく
-        setOldState(response)
-        setUserSong(response)
-
-        const audio = response.audio
-        //audio, midiのロード
-        try {
-            if (audio && audio.url.get) {
-                console.log(audio.url.get)
-                setIsHLS(true)
-                setIsAudioLoaded(true)
-            }
-            for (let i = 0; i < response.sections.length; i++) {
-                const midi = response.sections[i].midi
-                if (midi && midi.url.get) {
-                    const response = await getFromS3(midi.url.get)
-                    const blob = await response.blob()
-                    const file = new File([blob], midi.name)
-                    onDropMidi(i, file)
-                }
-            }
-        } catch (err) {
-            console.log(err)
-        }
-    }
-    useEffect(() => {
-        const id_int = parseInt(userSongId!)
-        const isNumber = !isNaN(id_int)
-        if (isNumber) {
-            //edit/:userSongIdのとき
-            load(id_int)
-        }
-    }, [])
-
-    //tag modal
-    const [tagModalIsOpen, setTagIsOpen] = React.useState(false)
-    const showTagModal = () => {
-        setTagIsOpen(true)
-    }
-
-    const closeTagModal = () => {
-        setTagIsOpen(false)
-    }
-    //genre modal
-    const [genreModalIsOpen, setGenreIsOpen] = React.useState(false)
-    const showGenreModal = () => {
-        setGenreIsOpen(true)
-    }
-    const closeGenreModal = () => {
-        setGenreIsOpen(false)
-    }
-    const [chordModalIsOpen, setChordIsOpen] = React.useState(false)
-    const [noteIntervals, setNoteIntervals] = React.useState<NoteIntervals>([])
-    const showChordModal = (info: NoteIntervals) => {
-        setNoteIntervals(info)
-        setChordIsOpen(true)
-    }
-
-    const closeChordModal = () => {
-        setNoteIntervals([])
-        setChordIsOpen(false)
-    }
-
-    const isChanged = (): boolean => {
-        console.log('@@@checkChanged')
-        return !lo.isEqual(oldState, userSong)
-    }
     const onSectionChange = (index: number, newSection: UserSongSection) => {
         //console.log('@@@onsectionchange')
         const sections = [...userSong.sections]
@@ -262,14 +145,123 @@ const Builder = () => {
         setUserSong({ ...newSong })
     }
 
-    const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
+    const loadSongs = async (condition: UserSongSearchCondition) => {
+        try {
+            const data = await getUserSongs(condition)
+            if (data) setSongs(data)
+            console.log(data)
+        } catch (err) {
+            if (isAxiosError(err)) console.log(err.response)
+        }
+    }
+    const loadAllTags = async () => {
+        try {
+            const res = await getTags()
+            setAllTags(res)
+        } catch (err) {
+            if (isAxiosError(err)) console.log(err.response)
+        }
+    }
+    const loadAllGenres = async () => {
+        try {
+            const res = await getGenres()
+            setAllGenres(res)
+        } catch (err) {
+            if (isAxiosError(err)) console.log(err.response)
+        }
+    }
+    useEffect(() => {
+        loadSongs({})
+        loadAllTags()
+        loadAllGenres()
+    }, [])
 
     const test = () => {
-        console.log(audioState)
+        console.log(userSong)
     }
+    const [mediaRange, setMediaRange] = useState<AudioRange>({
+        start: 0,
+        end: 0,
+    })
+    const [audio, setAudio] = useState<Audio>({ name: '', url: '' })
+    const play = (song: UserSong) => {
+        console.log('play')
+        console.log(song)
+        const userAudio = song.audio
+        if (!userAudio) return
+        setAudio({
+            name: userAudio.name,
+            url: userAudio.url.get,
+        })
+        setMediaRange({
+            //listページではrange無効
+            start: 0,
+            end: 0,
+        })
+    }
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const tmpList = ['song1', 'song2', 'song3']
+
+    const [drawerHeight, setDrawerHeight] = React.useState(defaultDrawerHeight)
+    const handleMouseDown = () => {
+        document.addEventListener('mouseup', handleMouseUp, true)
+        document.addEventListener('mousemove', handleMouseMove, true)
+    }
+
+    const handleMouseUp = () => {
+        document.removeEventListener('mouseup', handleMouseUp, true)
+        document.removeEventListener('mousemove', handleMouseMove, true)
+    }
+
+    const handleMouseMove = useCallback((e: any) => {
+        const newHeight =
+            document.body.offsetHeight - (e.clientY - document.body.offsetTop)
+        if (newHeight > minDrawerHeight && newHeight < maxDrawerHeight) {
+            setDrawerHeight(newHeight)
+        }
+    }, [])
     return (
         <BasicPage>
             <div className="text-2xl">Song Builder</div>
+            <React.Fragment>
+                <div className="fixed">
+                    <Button onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
+                        Open Songs
+                    </Button>
+                </div>
+
+                <Drawer
+                    anchor={'bottom'}
+                    open={isDrawerOpen}
+                    //hideBackdrop={true}
+                    variant="persistent"
+                    onClose={() => setIsDrawerOpen(false)}
+                    PaperProps={{ style: { height: drawerHeight } }}
+                >
+                    <div
+                        onMouseDown={(e) => handleMouseDown()}
+                        className="absolute h-1.5 w-full cursor-ns-resize bg-black"
+                    />
+
+                    {songs.length ? (
+                        songs.map((song) => {
+                            return (
+                                <SongSummary
+                                    key={`song${song.id!.toString()}`}
+                                    song={song}
+                                    onInfoClick={() => {}}
+                                    onPlayButtonClick={play}
+                                    onClickX={() => {}}
+                                    menuItems={[]}
+                                />
+                            )
+                        })
+                    ) : (
+                        <div>NO LOOPS. LET'S CREATE ONE!!</div>
+                    )}
+                </Drawer>
+            </React.Fragment>
             <Song
                 song={userSong}
                 showAudio={false}
