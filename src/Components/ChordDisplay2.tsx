@@ -39,7 +39,7 @@ const ChordDisplay2 = ({
     scaleForm,
     onNoteIntervalsClick,
 }: Props) => {
-    const [progression, setProgression] = useState(
+    const [progression, setProgression] = useState<ChordProgression>(
         ChordProgression.newFromChordNames(
             ResetChordNames,
             scaleForm.root,

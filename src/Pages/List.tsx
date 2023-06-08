@@ -41,18 +41,12 @@ type Audio = {
     name: string
     url: string
 }
-const InitialViewTypes: TagUI[] = [
-    { name: 'overview', isSelected: true },
-    { name: 'chords', isSelected: false },
-    { name: 'memo', isSelected: false },
-]
 
 const List = () => {
     const navigate = useNavigate()
     const [userSongs, setUserSongs] = useState<UserSong[]>([])
     const [allTags, setAllTags] = useState<TagUI[]>([])
     const [allGenres, setAllGenres] = useState<TagUI[]>([])
-    const [viewTypes, setViewTypes] = useState<TagUI[]>(InitialViewTypes)
     const [isFiltering, setIsFiltering] = useState(false)
 
     const loadSongs = async (condition: UserSongSearchCondition) => {
@@ -73,7 +67,6 @@ const List = () => {
                     isSelected: false,
                 }
             })
-            console.log(t)
             setAllTags(t)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
@@ -89,7 +82,6 @@ const List = () => {
                     isSelected: false,
                 }
             })
-            console.log(t)
             setAllGenres(t)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)

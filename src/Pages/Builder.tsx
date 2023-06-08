@@ -29,6 +29,7 @@ import GenreModal from 'Pages/Modals/Genre'
 import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
+import SearchField from 'Components/SearchField'
 import Drawer from '@mui/material/Drawer'
 import { TERMS } from 'config/music'
 import {
@@ -39,6 +40,7 @@ import {
     UserSongSection,
     AudioState,
     UserSongSearchCondition,
+    TagUI,
 } from 'types'
 import { UserSong } from 'types'
 import {
@@ -120,6 +122,11 @@ const songInit: UserSong = {
 const defaultDrawerHeight = 240
 const minDrawerHeight = 50
 const maxDrawerHeight = 1000
+const InitialViewTypes: TagUI[] = [
+    { name: 'overview', isSelected: true },
+    { name: 'chords', isSelected: false },
+    { name: 'memo', isSelected: false },
+]
 //Modal.setAppElement('#root')
 const Builder = () => {
     let { userSongId } = useParams()
@@ -130,9 +137,11 @@ const Builder = () => {
     //参照用のsong
     const [songs, setSongs] = useState<UserSong[]>([])
     //タグ
-    const [allTags, setAllTags] = useState<Tag[]>([])
+    const [allTags, setAllTags] = useState<TagUI[]>([])
     //ジャンル
-    const [allGenres, setAllGenres] = useState<Genre[]>([])
+    const [allGenres, setAllGenres] = useState<TagUI[]>([])
+    //リストの表示切り替え
+    const [viewTypes, setViewTypes] = useState<TagUI[]>(InitialViewTypes)
 
     const onSectionChange = (index: number, newSection: UserSongSection) => {
         //console.log('@@@onsectionchange')
@@ -149,7 +158,6 @@ const Builder = () => {
         try {
             const data = await getUserSongs(condition)
             if (data) setSongs(data)
-            console.log(data)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -157,7 +165,13 @@ const Builder = () => {
     const loadAllTags = async () => {
         try {
             const res = await getTags()
-            setAllTags(res)
+            const t: TagUI[] = res.map((tag) => {
+                return {
+                    name: tag.name,
+                    isSelected: false,
+                }
+            })
+            setAllTags(t)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -165,7 +179,13 @@ const Builder = () => {
     const loadAllGenres = async () => {
         try {
             const res = await getGenres()
-            setAllGenres(res)
+            const t: TagUI[] = res.map((tag) => {
+                return {
+                    name: tag.name,
+                    isSelected: false,
+                }
+            })
+            setAllGenres(t)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -180,7 +200,7 @@ const Builder = () => {
     }, [user])
 
     const test = () => {
-        console.log(user)
+        console.log(viewTypes)
     }
     const [mediaRange, setMediaRange] = useState<AudioRange>({
         start: 0,
@@ -206,7 +226,6 @@ const Builder = () => {
     }
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const tmpList = ['song1', 'song2', 'song3']
 
     const [drawerHeight, setDrawerHeight] = React.useState(defaultDrawerHeight)
     const handleMouseDown = () => {
@@ -249,7 +268,15 @@ const Builder = () => {
                         onMouseDown={(e) => handleMouseDown()}
                         className="absolute h-1.5 w-full cursor-ns-resize bg-black"
                     />
-
+                    <div className="mt-4" />
+                    <SearchField
+                        viewType={viewTypes}
+                        onViewTypeChange={(newState) => setViewTypes(newState)}
+                        tags={allTags}
+                        genres={allGenres}
+                        onTagsChange={(newTags) => setAllTags(newTags)}
+                        onGenresChange={(newGenres) => setAllGenres(newGenres)}
+                    />
                     {songs.length ? (
                         songs.map((song) => {
                             return (
@@ -259,8 +286,11 @@ const Builder = () => {
                                     onInfoClick={() => {}}
                                     onPlayButtonClick={play}
                                     onClickX={() => {}}
-                                    menuItems={[]}
-                                    viewType="overview"
+                                    viewType={
+                                        viewTypes.find(
+                                            (v) => v.isSelected === true
+                                        )?.name || 'overview'
+                                    }
                                 />
                             )
                         })

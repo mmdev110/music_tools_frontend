@@ -156,7 +156,10 @@ const Detail = () => {
         try {
             response = await saveUserSong(userSong, userSongId!)
             console.log(response)
-            if (response) setUserSong(response)
+            if (response) {
+                setUserSong(structuredClone(response))
+                setOldState(structuredClone(response))
+            }
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
         }

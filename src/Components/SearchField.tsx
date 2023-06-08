@@ -31,7 +31,6 @@ const SearchField = ({
         onChange: (newUIs: TagUI[]) => void,
         exclusiveMode: boolean
     ) => {
-        console.log(tagUIs)
         return (
             <div className="flex flex-row gap-x-1">
                 {tagUIs.map((tag, index) => (
@@ -61,7 +60,6 @@ const SearchField = ({
 
     return (
         <div>
-            <div>Search Field</div>
             {!hideViewType ? (
                 <div>
                     <div>表示内容</div>

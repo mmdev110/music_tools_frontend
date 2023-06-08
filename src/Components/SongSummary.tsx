@@ -1,6 +1,7 @@
 import react, { memo, useState } from 'react'
 //MUI
 import Box from '@mui/material/Box'
+import ChordProgression from 'Classes/ChordProgression'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import Menu from '@mui/material/Menu'
@@ -19,7 +20,7 @@ type Props = {
     onPlayButtonClick: (song: UserSong) => void
     onInfoClick: (song: UserSong) => void
     onClickX: (song: UserSong) => void
-    menuItems: { name: string; onClick: (song: UserSong) => void }[]
+    menuItems?: { name: string; onClick: (song: UserSong) => void }[]
     viewType: string
 }
 const allowedViewTypes = ['overview', 'chords', 'memo']
@@ -37,19 +38,6 @@ const SongSummary = ({
         onInfoClick(song)
     }
 
-    const formatProgressions = (progressions: string[]): string => {
-        let str = ''
-        const chunkBy4 = lo.chunk(progressions, 4)
-        chunkBy4.forEach((chord4) => {
-            const containsChord = chord4.find((chord) => chord !== '')
-            if (containsChord) {
-                str += '['
-                str += chord4.join(', ')
-                str += ']\n'
-            }
-        })
-        return str
-    }
     //削除、複製ボタン
     //https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
 
@@ -95,45 +83,47 @@ const SongSummary = ({
                 </div>
                 {/*削除複製メニュー*/}
                 <div className="w-12">
-                    <Box sx={{ flexGrow: 0 }}>
-                        {/*メニューアイコン*/}
-                        <Tooltip title="Actions">
-                            <IconButton
-                                onClick={handleOpenUserMenu}
-                                sx={{ p: 0 }}
-                            >
-                                <MoreIcon />
-                            </IconButton>
-                        </Tooltip>
-                        {/*メニュー内容*/}
-                        <Menu
-                            sx={{ mt: '45px' }}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {menuItems.map((item, index) => (
-                                <MenuItem
-                                    key={index}
-                                    onClick={() => item.onClick(song)}
+                    {menuItems ? (
+                        <Box sx={{ flexGrow: 0 }}>
+                            {/*メニューアイコン*/}
+                            <Tooltip title="Actions">
+                                <IconButton
+                                    onClick={handleOpenUserMenu}
+                                    sx={{ p: 0 }}
                                 >
-                                    <Typography textAlign="center">
-                                        {item.name}
-                                    </Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
+                                    <MoreIcon />
+                                </IconButton>
+                            </Tooltip>
+                            {/*メニュー内容*/}
+                            <Menu
+                                sx={{ mt: '45px' }}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                {menuItems.map((item, index) => (
+                                    <MenuItem
+                                        key={index}
+                                        onClick={() => item.onClick(song)}
+                                    >
+                                        <Typography textAlign="center">
+                                            {item.name}
+                                        </Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </Box>
+                    ) : null}
                 </div>
             </div>
             <div className="flex justify-start gap-x-2 border-t-2 border-black">
@@ -221,7 +211,69 @@ const ViewOverview = ({ song }: ViewOverviewProps) => {
     )
 }
 const ViewChords = ({ song }: ViewOverviewProps) => {
-    return <div>ViewChords</div>
+    const formatProgressions = (index: number): string => {
+        const progressions = song.sections[index].progressions
+        if (progressions.length === 0) return ''
+        let str = ''
+        const chunkBy4 = lo.chunk(progressions, 4)
+        chunkBy4.forEach((chord4) => {
+            const containsChord = chord4.find((chord) => chord !== '')
+            if (containsChord) {
+                str += '['
+                str += chord4.join(', ')
+                str += ']\n'
+            }
+        })
+        return str
+    }
+    const formatProgressionsDegree = (index: number): string => {
+        const section = song.sections[index]
+        if (section.progressions.length === 0) return ''
+        const progression = ChordProgression.newFromChordNames(
+            section.progressions,
+            section.key,
+            section.scale
+        )
+        let str = ''
+        const degreeNames = progression.chords.map((chord) =>
+            chord.getDegreeName()
+        )
+        console.log(degreeNames)
+        const chunkBy4 = lo.chunk(degreeNames, 4)
+        chunkBy4.forEach((chord4) => {
+            const containsChord = chord4.find((chord) => chord !== '')
+            if (containsChord) {
+                str += '['
+                str += chord4.join(', ')
+                str += ']\n'
+            }
+        })
+        return str
+    }
+    return (
+        <div className="flex">
+            <div className="basis-3/4">
+                {song.sections.map((sec, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className="flex border-b-2 border-black last:border-transparent"
+                        >
+                            <div className="basis-1/2 border-r-2 border-black">
+                                {sec.section}
+                            </div>
+                            <div className="basis-1/2 border-r-2 border-black">{`${formatProgressionsDegree(
+                                index
+                            )}`}</div>
+                            <div className="basis-1/2 border-r-2 border-black">{`${formatProgressions(
+                                index
+                            )}`}</div>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
 }
 const ViewMemo = ({ song }: ViewOverviewProps) => {
     return <div>ViewMemo</div>
