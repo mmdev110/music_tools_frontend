@@ -73,11 +73,11 @@ const SongSummary = ({
     }
     const renderByViewType = () => {
         if (viewType === 'overview') {
-            return <ViewOverview onClick={onClick} />
+            return <ViewOverview song={song} />
         } else if (viewType === 'chords') {
-            return <ViewChords />
+            return <ViewChords song={song} />
         } else if (viewType === 'memo') {
-            return <ViewMemo />
+            return <ViewMemo song={song} />
         }
     }
 
@@ -88,13 +88,13 @@ const SongSummary = ({
                     {getDisplayName(song)}
                 </div>
                 {/*genre */}
-                <div>
+                <div className="flex gap-x-2">
                     {song.genres.map((tag) => (
                         <Button>{tag.name}</Button>
                     ))}
                 </div>
                 {/*削除複製メニュー*/}
-                <div className="border-blacks w-12 justify-between border-l-2">
+                <div className="w-12">
                     <Box sx={{ flexGrow: 0 }}>
                         {/*メニューアイコン*/}
                         <Tooltip title="Actions">
@@ -136,7 +136,7 @@ const SongSummary = ({
                     </Box>
                 </div>
             </div>
-            <div className="border-t-2 border-black">
+            <div className="flex justify-start gap-x-2 border-t-2 border-black">
                 {/*タグ */}
                 {song.tags.length > 0
                     ? song.tags.map((tag) => <Button>{tag.name}</Button>)
@@ -145,16 +145,18 @@ const SongSummary = ({
 
             <div className="flex justify-between border-t-2 border-black">
                 {/**コード進行、ディグリー、メモ */}
-                {renderByViewType()}
+                <div onClick={onClick} className="h-full grow border-black">
+                    {renderByViewType()}
+                </div>
                 {/**オーディオ再生ボタン */}
-                <div className="min-h-full w-12">
+                <div className="h-hull w-12 self-center">
                     {!song.audio?.url.get ? (
-                        <Button className="h-full w-full rounded bg-red-400 font-bold text-white">
+                        <Button className="h-10 w-full rounded bg-red-400 font-bold text-white">
                             ×
                         </Button>
                     ) : (
                         <Button
-                            className="h-full w-full rounded bg-sky-500 px-4 font-bold text-white"
+                            className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
                             onClick={onButtonClick}
                         >
                             ▷
@@ -167,24 +169,56 @@ const SongSummary = ({
 }
 
 type ViewOverviewProps = {
-    onClick: () => void
+    song: UserSong
 }
-const ViewOverview = ({ onClick }: ViewOverviewProps) => {
+const ViewOverview = ({ song }: ViewOverviewProps) => {
+    const getBasicInfoString = (index: number): string => {
+        if (!song.sections) return ''
+        const sections = song.sections
+        const keyName = ALL_NOTES[sections[index].key].flat
+        const scale = sections[index].scale
+        const bpm = sections[index].bpm
+        let returnStr = `${keyName}${scale} ${bpm}BPM`
+        if (index > 0) {
+            const prevKeyName = ALL_NOTES[sections[index - 1].key].flat
+            const prevScale = sections[index - 1].scale
+            const prevBPM = sections[index - 1].bpm
+            if (
+                keyName === prevKeyName &&
+                scale === prevScale &&
+                bpm === prevBPM
+            )
+                returnStr = ``
+        }
+        return returnStr
+    }
+
     return (
-        <div className="flex h-full w-full justify-between" onClick={onClick}>
-            <div className="w-1/12 border-r-2 border-black">Overview</div>
-            <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
-            <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
-            <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">
-                {'仮置き'}
+        <div className="flex">
+            <div className="basis-1/3">
+                {song.sections.map((sec, index) => {
+                    return (
+                        <div className="flex border-b-2 border-black last:border-transparent">
+                            <div className="basis-1/2 border-r-2 border-black">
+                                {sec.section}
+                            </div>
+                            <div className="basis-1/2 border-r-2 border-black">{`${getBasicInfoString(
+                                index
+                            )}`}</div>
+                        </div>
+                    )
+                })}
+            </div>
+            <div className="grow overflow-y-clip border-r-2 border-black">
+                {song.memo}
             </div>
         </div>
     )
 }
-const ViewChords = () => {
+const ViewChords = ({ song }: ViewOverviewProps) => {
     return <div>ViewChords</div>
 }
-const ViewMemo = () => {
+const ViewMemo = ({ song }: ViewOverviewProps) => {
     return <div>ViewMemo</div>
 }
 

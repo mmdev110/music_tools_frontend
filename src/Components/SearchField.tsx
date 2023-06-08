@@ -56,9 +56,12 @@ const SearchField = ({
     return (
         <div>
             <div>Search Field</div>
+            <div>表示内容</div>
             {renderTagUI(viewType, onViewTypeChange, true)}
-            {renderTagUI(tags, onTagsChange, false)}
+            <div>ジャンル</div>
             {renderTagUI(genres, onGenresChange, false)}
+            <div>タグ</div>
+            {renderTagUI(tags, onTagsChange, false)}
         </div>
     )
 }
