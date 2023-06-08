@@ -116,9 +116,13 @@ const Detail = () => {
     const user = useContext(UserContext)
 
     //編集前の状態
-    const [oldState, setOldState] = useState<UserSong>(songInit)
+    const [oldState, setOldState] = useState<UserSong>(
+        structuredClone(songInit)
+    )
     //編集中の状態
-    const [userSong, setUserSong] = useState<UserSong>(songInit)
+    const [userSong, setUserSong] = useState<UserSong>(
+        structuredClone(songInit)
+    )
 
     //audio, droppedAudio
     const [droppedAudio, setDroppedAudio] = useState<File>()
@@ -187,8 +191,8 @@ const Detail = () => {
         const response = await getUserSong(id)
         console.log('@@URI', response)
         //編集前の状態を保存しておく
-        setOldState(response)
-        setUserSong(response)
+        setOldState(structuredClone(response))
+        setUserSong(structuredClone(response))
 
         const audio = response.audio
         //audio, midiのロード
@@ -328,9 +332,15 @@ const Detail = () => {
         })
         setUserSong({ ...userSong, genres: songGenres })
     }
+    const test = () => {
+        console.log(oldState)
+        console.log(userSong)
+        console.log(isChanged())
+    }
     return (
         <BasicPage>
             <div className="text-2xl">Song Editor</div>
+            <Button onClick={test}>test</Button>
             {user ? (
                 <div>
                     <Button disabled={!isChanged()} onClick={save}>
