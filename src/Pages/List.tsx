@@ -183,8 +183,7 @@ const List = () => {
                     <Button onClick={() => navigateNew(null)}>New</Button>
                 </div>
                 <SearchField
-                    viewType={viewTypes}
-                    onViewTypeChange={(newState) => setViewTypes(newState)}
+                    hideViewType={true}
                     tags={allTags}
                     genres={allGenres}
                     onTagsChange={(newTags) => setAllTags(newTags)}
@@ -201,10 +200,7 @@ const List = () => {
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
                                     menuItems={MENU_ITEMS}
-                                    viewType={
-                                        viewTypes.find((v) => v.isSelected)
-                                            ?.name || 'overview'
-                                    }
+                                    viewType="overview"
                                 />
                             )
                         })

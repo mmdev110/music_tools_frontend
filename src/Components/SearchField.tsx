@@ -5,17 +5,23 @@ import { AudioRange, TagUI } from 'types/'
 import { Button } from 'Components/HTMLElementsWrapper'
 
 type Props = {
-    viewType: TagUI[]
-    onViewTypeChange: (newState: TagUI[]) => void
-    tags: TagUI[]
-    onTagsChange: (newTags: TagUI[]) => void
-    genres: TagUI[]
-    onGenresChange: (newGenres: TagUI[]) => void
+    hideViewType?: boolean
+    viewType?: TagUI[]
+    onViewTypeChange?: (newState: TagUI[]) => void
+    hideTags?: boolean
+    tags?: TagUI[]
+    onTagsChange?: (newTags: TagUI[]) => void
+    hideGenres?: boolean
+    genres?: TagUI[]
+    onGenresChange?: (newGenres: TagUI[]) => void
 }
 const SearchField = ({
     tags,
     genres,
     viewType,
+    hideViewType,
+    hideTags,
+    hideGenres,
     onViewTypeChange,
     onTagsChange,
     onGenresChange,
@@ -56,12 +62,24 @@ const SearchField = ({
     return (
         <div>
             <div>Search Field</div>
-            <div>表示内容</div>
-            {renderTagUI(viewType, onViewTypeChange, true)}
-            <div>ジャンル</div>
-            {renderTagUI(genres, onGenresChange, false)}
-            <div>タグ</div>
-            {renderTagUI(tags, onTagsChange, false)}
+            {!hideViewType ? (
+                <div>
+                    <div>表示内容</div>
+                    {renderTagUI(viewType!, onViewTypeChange!, true)}
+                </div>
+            ) : null}
+            {!hideGenres ? (
+                <div>
+                    <div>ジャンル</div>
+                    {renderTagUI(genres!, onGenresChange!, false)}
+                </div>
+            ) : null}
+            {!hideTags ? (
+                <div>
+                    <div>タグ</div>
+                    {renderTagUI(tags!, onTagsChange!, false)}
+                </div>
+            ) : null}
         </div>
     )
 }
