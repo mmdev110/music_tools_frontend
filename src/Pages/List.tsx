@@ -191,10 +191,10 @@ const List = () => {
                 />
                 <div className="flex flex-col gap-y-5">
                     {userSongs.length ? (
-                        userSongs.map((song) => {
+                        userSongs.map((song, index) => {
                             return (
                                 <SongSummary
-                                    key={`song${song.id!.toString()}`}
+                                    key={index}
                                     song={song}
                                     onInfoClick={move}
                                     onPlayButtonClick={play}

@@ -89,8 +89,8 @@ const SongSummary = ({
                 </div>
                 {/*genre */}
                 <div className="flex gap-x-2">
-                    {song.genres.map((tag) => (
-                        <Button>{tag.name}</Button>
+                    {song.genres.map((tag, index) => (
+                        <Button key={index}>{tag.name}</Button>
                     ))}
                 </div>
                 {/*削除複製メニュー*/}
@@ -139,7 +139,9 @@ const SongSummary = ({
             <div className="flex justify-start gap-x-2 border-t-2 border-black">
                 {/*タグ */}
                 {song.tags.length > 0
-                    ? song.tags.map((tag) => <Button>{tag.name}</Button>)
+                    ? song.tags.map((tag, index) => (
+                          <Button key={index}>{tag.name}</Button>
+                      ))
                     : 'tag'}
             </div>
 
@@ -198,7 +200,10 @@ const ViewOverview = ({ song }: ViewOverviewProps) => {
             <div className="basis-1/3">
                 {song.sections.map((sec, index) => {
                     return (
-                        <div className="flex border-b-2 border-black last:border-transparent">
+                        <div
+                            key={index}
+                            className="flex border-b-2 border-black last:border-transparent"
+                        >
                             <div className="basis-1/2 border-r-2 border-black">
                                 {sec.section}
                             </div>
