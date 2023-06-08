@@ -134,7 +134,7 @@ export const getUserSongs = async (
     console.log('@@@@getUserSongs')
     const response = await requestBackend<UserSong[]>('list', 'POST', condition)
     const resp = response.data.map((song) => fromBackend(song))
-    console.log(resp)
+    //console.log(resp)
     return resp
 }
 //疎通確認
@@ -245,17 +245,13 @@ export const saveGenres = async (data: Genre[]): Promise<Genre[]> => {
 //上の値はバックエンドではCsv(文字列)として扱っているため
 const toBackend = (song: UserSong) => {
     //progressionsの変換
-    if (song.sections.length > 0) {
-        for (let i = 0; i < song.sections.length; i++) {
-            const sec = song.sections[i]
-            const progressions = sec.progressions
-            song.sections[i].progressionsCsv = AToC(progressions)
-
-            if (sec.midi) {
-                song.sections[i].progressionsCsv = AToC(sec.midi.midiRoots)
-            }
+    song.sections.forEach((section) => {
+        const progressions = section.progressions
+        section.progressionsCsv = AToC(progressions)
+        if (section.midi) {
+            section.midi.midiRootsCsv = AToC(section.midi.midiRoots)
         }
-    }
+    })
     return song
 }
 //sectionのprogressions, midiのrootsをCsvから戻す
