@@ -19,7 +19,7 @@ import {
 } from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
-import { getUserSongs, getTags, deleteUserSong } from 'API/request'
+import { getUserSongs, getTags, deleteUserSong, getGenres } from 'API/request'
 import { isAxiosError } from 'axios'
 import BasicPage from 'Components/BasicPage'
 import { Button } from 'Components/HTMLElementsWrapper'
@@ -41,17 +41,18 @@ type Audio = {
     name: string
     url: string
 }
+const InitialViewTypes: TagUI[] = [
+    { name: 'overview', isSelected: true },
+    { name: 'chords', isSelected: false },
+    { name: 'memo', isSelected: false },
+]
 
 const List = () => {
     const navigate = useNavigate()
     const [userSongs, setUserSongs] = useState<UserSong[]>([])
     const [allTags, setAllTags] = useState<TagUI[]>([])
     const [allGenres, setAllGenres] = useState<TagUI[]>([])
-    const [viewTypes, setViewTypes] = useState<TagUI[]>(
-        ['overview', 'chords', 'memo'].map((str) => {
-            return { name: str, isSelected: false }
-        })
-    )
+    const [viewTypes, setViewTypes] = useState<TagUI[]>(InitialViewTypes)
     const [isFiltering, setIsFiltering] = useState(false)
 
     const loadSongs = async (condition: UserSongSearchCondition) => {
@@ -78,9 +79,26 @@ const List = () => {
             if (isAxiosError(err)) console.log(err.response)
         }
     }
+    const loadAllGenres = async () => {
+        try {
+            const responseTags = await getGenres()
+
+            const t: TagUI[] = responseTags.map((tag) => {
+                return {
+                    name: tag.name,
+                    isSelected: false,
+                }
+            })
+            console.log(t)
+            setAllGenres(t)
+        } catch (err) {
+            if (isAxiosError(err)) console.log(err.response)
+        }
+    }
     useEffect(() => {
         loadSongs({})
         loadAllTags()
+        loadAllGenres()
     }, [])
     const navigateNew = (duplicateFromId: number | null) => {
         if (duplicateFromId) {
