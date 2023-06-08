@@ -10,7 +10,13 @@ import Modal from 'react-modal'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
-import { UserSong, Tag, UserSongSearchCondition, AudioRange } from 'types/'
+import {
+    UserSong,
+    Tag,
+    UserSongSearchCondition,
+    AudioRange,
+    TagUI,
+} from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
 import { getUserSongs, getTags, deleteUserSong } from 'API/request'
@@ -20,6 +26,7 @@ import { Button } from 'Components/HTMLElementsWrapper'
 import SongSummary from 'Components/SongSummary'
 import AudioPlayer from 'Components/AudioPlayer'
 import { getDisplayName } from 'utils/front'
+import SearchField from 'Components/SearchField'
 const ModalStyle = {
     content: {
         top: '50%',
@@ -34,29 +41,23 @@ type Audio = {
     name: string
     url: string
 }
-type TagUI = Tag & {
-    isSelected: boolean
-}
+
 const List = () => {
     const navigate = useNavigate()
     const [userSongs, setUserSongs] = useState<UserSong[]>([])
     const [allTags, setAllTags] = useState<TagUI[]>([])
+    const [allGenres, setAllGenres] = useState<TagUI[]>([])
+    const [viewTypes, setViewTypes] = useState<TagUI[]>(
+        ['overview', 'chords', 'memo'].map((str) => {
+            return { name: str, isSelected: false }
+        })
+    )
     const [isFiltering, setIsFiltering] = useState(false)
-    const selectTag = async (index: number) => {
-        const newTags = [...allTags]
-        newTags[index].isSelected = !newTags[index].isSelected
-        setAllTags(newTags)
-        //songsを再検索
-        const selected = newTags.filter((tag) => tag.isSelected)
-        setIsFiltering(selected.length > 0)
-        const selectedTagIds = selected.map((tag) => tag.id!)
-        await loadSongs({ tagIds: selectedTagIds })
-    }
+
     const loadSongs = async (condition: UserSongSearchCondition) => {
         try {
             const data = await getUserSongs(condition)
             if (data) setUserSongs(data)
-            console.log(data)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -67,10 +68,11 @@ const List = () => {
 
             const t: TagUI[] = responseTags.map((tag) => {
                 return {
-                    ...tag,
+                    name: tag.name,
                     isSelected: false,
                 }
             })
+            console.log(t)
             setAllTags(t)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
@@ -111,25 +113,7 @@ const List = () => {
         end: 0,
     })
     const [audio, setAudio] = useState<Audio>({ url: '', name: '' })
-    const renderTags = () => {
-        return (
-            <div className="flex flex-row gap-x-1">
-                {allTags.map((tag, index) => {
-                    return isTagUsed(tag) ? (
-                        <Button
-                            key={'tagbtn' + index.toString()}
-                            bgColor={
-                                tag.isSelected ? 'bg-sky-500' : 'bg-sky-300'
-                            }
-                            onClick={() => selectTag(index)}
-                        >
-                            {tag.name}
-                        </Button>
-                    ) : null
-                })}
-            </div>
-        )
-    }
+
     const isTagUsed = (tag: Tag): boolean => {
         //tagが、現在のuserSongsに使われているものを探す
         for (const song of userSongs) {
@@ -180,7 +164,14 @@ const List = () => {
                 <div>
                     <Button onClick={() => navigateNew(null)}>New</Button>
                 </div>
-                {renderTags()}
+                <SearchField
+                    viewType={viewTypes}
+                    onViewTypeChange={(newState) => setViewTypes(newState)}
+                    tags={allTags}
+                    genres={allGenres}
+                    onTagsChange={(newTags) => setAllTags(newTags)}
+                    onGenresChange={(newGenres) => setAllGenres(newGenres)}
+                />
                 <div className="flex flex-col gap-y-5">
                     {userSongs.length ? (
                         userSongs.map((song) => {
@@ -192,6 +183,10 @@ const List = () => {
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
                                     menuItems={MENU_ITEMS}
+                                    viewType={
+                                        viewTypes.find((v) => v.isSelected)
+                                            ?.name || 'overview'
+                                    }
                                 />
                             )
                         })

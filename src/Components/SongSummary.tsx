@@ -13,7 +13,6 @@ import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import { Button } from 'Components/HTMLElementsWrapper'
 import Chord from 'Classes/Chord'
 import lo from 'lodash'
-import { getDisplayName } from 'utils/front'
 
 type Props = {
     song: UserSong
@@ -21,12 +20,15 @@ type Props = {
     onInfoClick: (song: UserSong) => void
     onClickX: (song: UserSong) => void
     menuItems: { name: string; onClick: (song: UserSong) => void }[]
+    viewType: string
 }
+const allowedViewTypes = ['overview', 'chords', 'memo']
 const SongSummary = ({
     song,
     onPlayButtonClick,
     onInfoClick,
     menuItems,
+    viewType,
 }: Props) => {
     const onButtonClick = () => {
         onPlayButtonClick(song)
@@ -58,6 +60,27 @@ const SongSummary = ({
     const handleCloseUserMenu = () => {
         setAnchorElUser(null)
     }
+    const getDisplayName = (song: UserSong): string => {
+        if (song.title && song.artist) {
+            return `${song.title} - ${song.artist}`
+        } else if (song.title) {
+            return `${song.title}`
+        } else if (song.audio?.name) {
+            return song.audio?.name
+        } else {
+            return ''
+        }
+    }
+    const renderByViewType = () => {
+        if (viewType === 'overview') {
+            return <ViewOverview onClick={onClick} />
+        } else if (viewType === 'chords') {
+            return <ViewChords />
+        } else if (viewType === 'memo') {
+            return <ViewMemo />
+        }
+    }
+
     return (
         <div className="flex w-full flex-col rounded-md border-2 border-black">
             <div className="flex justify-between">
@@ -110,20 +133,10 @@ const SongSummary = ({
 
             <div className="flex justify-between border-t-2 border-black">
                 {/**コード進行、ディグリー、メモ */}
-                <div
-                    className="flex h-full w-full justify-between"
-                    onClick={onClick}
-                >
-                    <div className="w-1/12 border-r-2 border-black"></div>
-                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
-                    <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
-                    <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">
-                        {'仮置き'}
-                    </div>
-                </div>
+                {renderByViewType()}
                 {/**オーディオ再生ボタン */}
                 <div className="min-h-full w-12">
-                    {!song.audio ? (
+                    {!song.audio?.url.get ? (
                         <Button className="h-full w-full rounded bg-red-400 font-bold text-white">
                             ×
                         </Button>
@@ -139,6 +152,28 @@ const SongSummary = ({
             </div>
         </div>
     )
+}
+
+type ViewOverviewProps = {
+    onClick: () => void
+}
+const ViewOverview = ({ onClick }: ViewOverviewProps) => {
+    return (
+        <div className="flex h-full w-full justify-between" onClick={onClick}>
+            <div className="w-1/12 border-r-2 border-black">Overview</div>
+            <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
+            <div className="w-1/5 whitespace-pre-wrap border-r-2 border-black"></div>
+            <div className="w-1/3 overflow-y-clip whitespace-pre-wrap break-words border-r-2 border-black">
+                {'仮置き'}
+            </div>
+        </div>
+    )
+}
+const ViewChords = () => {
+    return <div>ViewChords</div>
+}
+const ViewMemo = () => {
+    return <div>ViewMemo</div>
 }
 
 export default SongSummary

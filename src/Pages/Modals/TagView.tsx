@@ -33,7 +33,7 @@ const TagView = <T extends Taglike>({
     //編集前のタグ
     const [oldTags, setOldTags] = useState<TagUI[]>([])
     useEffect(() => {
-        const tagUIs = allTags.map((tag) => {
+        const tagUIs: TagUI[] = allTags.map((tag) => {
             const tagUI = {
                 name: tag.name,
                 isSelected: false,

@@ -171,24 +171,28 @@ const Builder = () => {
         }
     }
     useEffect(() => {
-        loadSongs({})
-        loadAllTags()
-        loadAllGenres()
-    }, [])
+        if (user) {
+            console.log('effect')
+            loadSongs({})
+            loadAllTags()
+            loadAllGenres()
+        }
+    }, [user])
 
     const test = () => {
-        console.log(userSong)
+        console.log(user)
     }
     const [mediaRange, setMediaRange] = useState<AudioRange>({
         start: 0,
         end: 0,
     })
     const [audio, setAudio] = useState<Audio>({ name: '', url: '' })
+    const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
     const play = (song: UserSong) => {
         console.log('play')
         console.log(song)
         const userAudio = song.audio
-        if (!userAudio) return
+        if (!userAudio?.url.get) return
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,
@@ -198,6 +202,7 @@ const Builder = () => {
             start: 0,
             end: 0,
         })
+        setToggleAudioFlag(!toggleAudioFlag)
     }
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -224,6 +229,7 @@ const Builder = () => {
     return (
         <BasicPage>
             <div className="text-2xl">Song Builder</div>
+            <Button onClick={test}>test</Button>
             <React.Fragment>
                 <div className="fixed">
                     <Button onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
@@ -254,6 +260,7 @@ const Builder = () => {
                                     onPlayButtonClick={play}
                                     onClickX={() => {}}
                                     menuItems={[]}
+                                    viewType="overview"
                                 />
                             )
                         })
@@ -262,6 +269,20 @@ const Builder = () => {
                     )}
                 </Drawer>
             </React.Fragment>
+            {audio.url !== '' ? (
+                <div className="pt-4">
+                    <AudioPlayer
+                        audioUrl={audio.url || ''}
+                        audioName={audio.name || ''}
+                        isHLS={true}
+                        dropDisabled={true}
+                        mini={true}
+                        range={mediaRange}
+                        toggle={toggleAudioFlag}
+                    />
+                </div>
+            ) : null}
+
             <Song
                 song={userSong}
                 showAudio={false}
