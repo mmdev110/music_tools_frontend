@@ -87,6 +87,12 @@ const SongSummary = ({
                 <div className="overflow-x-clip break-words">
                     {getDisplayName(song)}
                 </div>
+                {/*genre */}
+                <div>
+                    {song.genres.map((tag) => (
+                        <Button>{tag.name}</Button>
+                    ))}
+                </div>
                 {/*削除複製メニュー*/}
                 <div className="border-blacks w-12 justify-between border-l-2">
                     <Box sx={{ flexGrow: 0 }}>
@@ -129,6 +135,12 @@ const SongSummary = ({
                         </Menu>
                     </Box>
                 </div>
+            </div>
+            <div className="border-t-2 border-black">
+                {/*タグ */}
+                {song.tags.length > 0
+                    ? song.tags.map((tag) => <Button>{tag.name}</Button>)
+                    : 'tag'}
             </div>
 
             <div className="flex justify-between border-t-2 border-black">
