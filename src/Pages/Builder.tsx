@@ -207,22 +207,22 @@ const Builder = () => {
         end: 0,
     })
     const [audio, setAudio] = useState<Audio>({ name: '', url: '' })
-    const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
-    const play = (song: UserSong) => {
+    const [isPlayingAudio, setIsPlayingAudio] = useState(false) //このstateを変化させることで再生停止を切り替える
+    const play = (song: UserSong, range: AudioRange) => {
         console.log('play')
         console.log(song)
         const userAudio = song.audio
-        if (!userAudio?.url.get) return
+        if (!userAudio) return
+        const audioChanged = audio.url !== userAudio.url.get
+        const rangeChanged = !lo.isEqual(mediaRange, range)
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,
         })
-        setMediaRange({
-            //listページではrange無効
-            start: 0,
-            end: 0,
-        })
-        setToggleAudioFlag(!toggleAudioFlag)
+        setMediaRange(range)
+        //変更があれば再生、変更がなければ再生停止を切り替え
+        const newFlag = audioChanged || rangeChanged ? true : !isPlayingAudio
+        setIsPlayingAudio(newFlag)
     }
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -283,7 +283,6 @@ const Builder = () => {
                                 <SongSummary
                                     key={`song${song.id!.toString()}`}
                                     song={song}
-                                    onInfoClick={() => {}}
                                     onPlayButtonClick={play}
                                     onClickX={() => {}}
                                     viewType={
@@ -308,7 +307,7 @@ const Builder = () => {
                         dropDisabled={true}
                         mini={true}
                         range={mediaRange}
-                        toggle={toggleAudioFlag}
+                        toggle={isPlayingAudio}
                     />
                 </div>
             ) : null}

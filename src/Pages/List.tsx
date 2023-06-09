@@ -27,6 +27,7 @@ import SongSummary from 'Components/SongSummary'
 import AudioPlayer from 'Components/AudioPlayer'
 import { getDisplayName } from 'utils/front'
 import SearchField from 'Components/SearchField'
+import lo from 'lodash'
 const ModalStyle = {
     content: {
         top: '50%',
@@ -103,20 +104,23 @@ const List = () => {
     const move = (song: UserSong) => {
         navigate(`/edit/${song.id}`)
     }
-    const play = (song: UserSong) => {
+
+    const [isPlayingAudio, setIsPlayingAudio] = useState(false) //このstateを変化させることで再生停止を切り替える
+    const play = (song: UserSong, range: AudioRange) => {
         console.log('play')
         console.log(song)
         const userAudio = song.audio
         if (!userAudio) return
+        const audioChanged = audio.url !== userAudio.url.get
+        const rangeChanged = !lo.isEqual(mediaRange, range)
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,
         })
-        setMediaRange({
-            //listページではrange無効
-            start: 0,
-            end: 0,
-        })
+        setMediaRange(range)
+        //変更があれば再生、変更がなければ再生停止を切り替え
+        const newFlag = audioChanged || rangeChanged ? true : !isPlayingAudio
+        setIsPlayingAudio(newFlag)
     }
     const [mediaRange, setMediaRange] = useState<AudioRange>({
         start: 0,
@@ -155,9 +159,9 @@ const List = () => {
 
     const MENU_ITEMS = [
         {
-            name: '設定をコピーして新規作成',
+            name: '編集',
             onClick: (input: UserSong) => {
-                navigateNew(input.id!)
+                move(input)
             },
         },
         {
@@ -188,7 +192,6 @@ const List = () => {
                                 <SongSummary
                                     key={index}
                                     song={song}
-                                    onInfoClick={move}
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
                                     menuItems={MENU_ITEMS}
@@ -209,7 +212,7 @@ const List = () => {
                     autoPlay
                     isHLS={true}
                     range={mediaRange}
-                    toggle={false}
+                    toggle={isPlayingAudio}
                 />
             )}
             <Modal

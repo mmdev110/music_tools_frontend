@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import MoreIcon from '@mui/icons-material/MoreVert'
 
-import { UserSong } from 'types'
+import { UserSong, AudioRange } from 'types'
 import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import { Button } from 'Components/HTMLElementsWrapper'
 import Chord from 'Classes/Chord'
@@ -17,27 +17,17 @@ import lo from 'lodash'
 
 type Props = {
     song: UserSong
-    onPlayButtonClick: (song: UserSong) => void
-    onInfoClick: (song: UserSong) => void
+    onPlayButtonClick: (song: UserSong, range: AudioRange) => void
     onClickX: (song: UserSong) => void
     menuItems?: { name: string; onClick: (song: UserSong) => void }[]
     viewType: string
 }
-const allowedViewTypes = ['overview', 'chords', 'memo']
 const SongSummary = ({
     song,
     onPlayButtonClick,
-    onInfoClick,
     menuItems,
     viewType,
 }: Props) => {
-    const onButtonClick = () => {
-        onPlayButtonClick(song)
-    }
-    const onClick = () => {
-        onInfoClick(song)
-    }
-
     //削除、複製ボタン
     //https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
 
@@ -54,11 +44,32 @@ const SongSummary = ({
     }
     const renderByViewType = () => {
         if (viewType === 'overview') {
-            return <ViewOverview song={song} />
+            return (
+                <ViewOverview
+                    song={song}
+                    onClick={(range: AudioRange) =>
+                        onPlayButtonClick(song, range)
+                    }
+                />
+            )
         } else if (viewType === 'chords') {
-            return <ViewChords song={song} />
+            return (
+                <ViewChords
+                    song={song}
+                    onClick={(range: AudioRange) =>
+                        onPlayButtonClick(song, range)
+                    }
+                />
+            )
         } else if (viewType === 'memo') {
-            return <ViewMemo song={song} />
+            return (
+                <ViewMemo
+                    song={song}
+                    onClick={(range: AudioRange) =>
+                        onPlayButtonClick(song, range)
+                    }
+                />
+            )
         }
     }
 
@@ -92,23 +103,8 @@ const SongSummary = ({
 
             <div className="flex justify-between border-t-2 border-black">
                 {/**コード進行、ディグリー、メモ */}
-                <div onClick={onClick} className="h-full grow border-black">
+                <div className="h-full grow border-black">
                     {renderByViewType()}
-                </div>
-                {/**オーディオ再生ボタン */}
-                <div className="h-hull w-12 self-center">
-                    {!song.audio?.url.get ? (
-                        <Button className="h-10 w-full rounded bg-red-400 font-bold text-white">
-                            ×
-                        </Button>
-                    ) : (
-                        <Button
-                            className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
-                            onClick={onButtonClick}
-                        >
-                            ▷
-                        </Button>
-                    )}
                 </div>
             </div>
         </div>
@@ -117,8 +113,9 @@ const SongSummary = ({
 
 type ViewOverviewProps = {
     song: UserSong
+    onClick: (range: AudioRange) => void
 }
-const ViewOverview = ({ song }: ViewOverviewProps) => {
+const ViewOverview = ({ song, onClick }: ViewOverviewProps) => {
     const getBasicInfoString = (index: number): string => {
         if (!song.sections) return ''
         const sections = song.sections
@@ -150,7 +147,7 @@ const ViewOverview = ({ song }: ViewOverviewProps) => {
                             className="flex border-b-2 border-black last:border-transparent"
                         >
                             <div className="basis-1/2 border-r-2 border-black">
-                                {sec.section}
+                                {sec.section || '-'}
                             </div>
                             <div className="basis-1/2 border-r-2 border-black">{`${getBasicInfoString(
                                 index
@@ -159,13 +156,11 @@ const ViewOverview = ({ song }: ViewOverviewProps) => {
                     )
                 })}
             </div>
-            <div className="grow overflow-y-clip border-r-2 border-black">
-                {song.memo}
-            </div>
+            <div className="grow overflow-y-clip">{song.memo}</div>
         </div>
     )
 }
-const ViewChords = ({ song }: ViewOverviewProps) => {
+const ViewChords = ({ song, onClick }: ViewOverviewProps) => {
     const formatProgressions = (index: number): string => {
         const progressions = song.sections[index].progressions
         if (progressions.length === 0) return ''
@@ -215,7 +210,7 @@ const ViewChords = ({ song }: ViewOverviewProps) => {
                             className="flex border-b-2 border-black last:border-transparent"
                         >
                             <div className="basis-1/2 border-r-2 border-black">
-                                {sec.section}
+                                {sec.section || '-'}
                             </div>
                             <div className="basis-1/2 border-r-2 border-black">{`${formatProgressionsDegree(
                                 index
@@ -223,6 +218,19 @@ const ViewChords = ({ song }: ViewOverviewProps) => {
                             <div className="basis-1/2 border-r-2 border-black">{`${formatProgressions(
                                 index
                             )}`}</div>
+                            {/**オーディオ再生ボタン */}
+                            <div className="h-hull w-12 self-center border-r-2 border-black">
+                                {song.audio?.url.get ? (
+                                    <Button
+                                        className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
+                                        onClick={() =>
+                                            onClick(sec.audioPlaybackRange)
+                                        }
+                                    >
+                                        ▷
+                                    </Button>
+                                ) : null}
+                            </div>
                         </div>
                     )
                 })}
@@ -230,7 +238,7 @@ const ViewChords = ({ song }: ViewOverviewProps) => {
         </div>
     )
 }
-const ViewMemo = ({ song }: ViewOverviewProps) => {
+const ViewMemo = ({ song, onClick }: ViewOverviewProps) => {
     return (
         <div className="flex">
             <div className="grow">
@@ -241,10 +249,23 @@ const ViewMemo = ({ song }: ViewOverviewProps) => {
                             className="flex border-b-2 border-black last:border-transparent"
                         >
                             <div className="basis-1/2 border-r-2 border-black">
-                                {sec.section}
+                                {sec.section || '-'}
                             </div>
                             <div className="basis-1/2 border-r-2 border-black">
-                                {sec.memo}
+                                {sec.memo || '-'}
+                            </div>
+                            {/**オーディオ再生ボタン */}
+                            <div className="h-hull w-12 self-center border-r-2 border-black">
+                                {song.audio?.url.get ? (
+                                    <Button
+                                        className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
+                                        onClick={() =>
+                                            onClick(sec.audioPlaybackRange)
+                                        }
+                                    >
+                                        ▷
+                                    </Button>
+                                ) : null}
                             </div>
                         </div>
                     )
