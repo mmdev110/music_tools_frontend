@@ -252,7 +252,7 @@ const ViewChords = ({ song }: ViewOverviewProps) => {
     }
     return (
         <div className="flex">
-            <div className="basis-3/4">
+            <div className="grow">
                 {song.sections.map((sec, index) => {
                     return (
                         <div
@@ -276,7 +276,27 @@ const ViewChords = ({ song }: ViewOverviewProps) => {
     )
 }
 const ViewMemo = ({ song }: ViewOverviewProps) => {
-    return <div>ViewMemo</div>
+    return (
+        <div className="flex">
+            <div className="grow">
+                {song.sections.map((sec, index) => {
+                    return (
+                        <div
+                            key={index}
+                            className="flex border-b-2 border-black last:border-transparent"
+                        >
+                            <div className="basis-1/2 border-r-2 border-black">
+                                {sec.section}
+                            </div>
+                            <div className="basis-1/2 border-r-2 border-black">
+                                {sec.memo}
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
 }
 
 export default SongSummary
