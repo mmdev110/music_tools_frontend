@@ -41,13 +41,6 @@ const SongSummary = ({
     //削除、複製ボタン
     //https://mui.com/material-ui/react-app-bar/#app-bar-with-responsive-menu
 
-    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElUser(event.currentTarget)
-    }
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null)
-    }
     const getDisplayName = (song: UserSong): string => {
         if (song.title && song.artist) {
             return `${song.title} - ${song.artist}`
@@ -84,45 +77,7 @@ const SongSummary = ({
                 {/*削除複製メニュー*/}
                 <div className="w-12">
                     {menuItems ? (
-                        <Box sx={{ flexGrow: 0 }}>
-                            {/*メニューアイコン*/}
-                            <Tooltip title="Actions">
-                                <IconButton
-                                    onClick={handleOpenUserMenu}
-                                    sx={{ p: 0 }}
-                                >
-                                    <MoreIcon />
-                                </IconButton>
-                            </Tooltip>
-                            {/*メニュー内容*/}
-                            <Menu
-                                sx={{ mt: '45px' }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                {menuItems.map((item, index) => (
-                                    <MenuItem
-                                        key={index}
-                                        onClick={() => item.onClick(song)}
-                                    >
-                                        <Typography textAlign="center">
-                                            {item.name}
-                                        </Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
+                        <MenuButton menuItems={menuItems} song={song} />
                     ) : null}
                 </div>
             </div>
@@ -296,6 +251,53 @@ const ViewMemo = ({ song }: ViewOverviewProps) => {
                 })}
             </div>
         </div>
+    )
+}
+
+type MenuProps = {
+    menuItems: { name: string; onClick: (song: UserSong) => void }[]
+    song: UserSong
+}
+const MenuButton = ({ menuItems, song }: MenuProps) => {
+    const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null)
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElUser(event.currentTarget)
+    }
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null)
+    }
+    return (
+        <Box sx={{ flexGrow: 0 }}>
+            {/*メニューアイコン*/}
+            <Tooltip title="Actions">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <MoreIcon />
+                </IconButton>
+            </Tooltip>
+            {/*メニュー内容*/}
+            <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+            >
+                {menuItems.map((item, index) => (
+                    <MenuItem key={index} onClick={() => item.onClick(song)}>
+                        <Typography textAlign="center">{item.name}</Typography>
+                    </MenuItem>
+                ))}
+            </Menu>
+        </Box>
     )
 }
 
