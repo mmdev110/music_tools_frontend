@@ -33,24 +33,6 @@ import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
 
-const DefaultChordNames: string[] = [
-    'CM7',
-    'Am7',
-    'Dm7',
-    'G7',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-]
 const ModalStyle = {
     content: {
         top: '50%',
@@ -61,30 +43,7 @@ const ModalStyle = {
         transform: 'translate(-50%, -50%)',
     },
 }
-const sectionInit: UserSongSection = {
-    section: '',
-    progressions: DefaultChordNames,
-    progressionsCsv: '',
-    key: 0,
-    scale: TERMS.MAJOR,
-    bpm: 0,
-    memo: '',
-    audioPlaybackRange: {
-        start: 0,
-        end: 0,
-    },
-    midi: null,
-    sortOrder: 0,
-}
-const songInit: UserSong = {
-    title: '',
-    artist: '',
-    sections: [lo.clone(sectionInit)],
-    memo: '',
-    audio: null,
-    tags: [],
-    genres: [],
-}
+
 Modal.setAppElement('#root')
 const OtherTools = () => {
     const [scaleForm, setScaleForm] = useState<ScaleFormType>({

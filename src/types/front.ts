@@ -14,6 +14,7 @@ export type UserSong = {
     audio: UserSongAudio | null
     genres: Genre[]
     tags: Tag[]
+    instruments: UserSongInstrument[]
 }
 export type UserSongSection = {
     id?: number
@@ -27,6 +28,7 @@ export type UserSongSection = {
     audioPlaybackRange: AudioRange
     midi: UserSectionMidi | null
     sortOrder: number
+    instruments: UserSongInstrument[]
 }
 type UserSongAudio = {
     id?: number
@@ -36,6 +38,12 @@ type UserSongAudio = {
         get: string
         put: string
     }
+}
+export type UserSongInstrument = {
+    id?: number
+    userSongId: number
+    name: string
+    sortOrder: number
 }
 type UserSectionMidi = {
     id?: number

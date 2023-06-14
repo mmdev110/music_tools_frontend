@@ -62,29 +62,13 @@ import { NoteIntervals } from 'Classes/Chord'
 import Song from 'Components/Song'
 import SongSummary from 'Components/SongSummary'
 import { resolve } from 'dns/promises'
+import { songInit, sectionInit } from 'config/front'
 
 type Audio = {
     name: string
     url: string
 }
-const DefaultChordNames: string[] = [
-    'CM7',
-    'Am7',
-    'Dm7',
-    'G7',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-]
+
 const ModalStyle = {
     content: {
         top: '50%',
@@ -94,30 +78,6 @@ const ModalStyle = {
         marginRight: '-50%',
         transform: 'translate(-50%, -50%)',
     },
-}
-const sectionInit: UserSongSection = {
-    section: '',
-    progressions: DefaultChordNames,
-    progressionsCsv: '',
-    key: 0,
-    scale: TERMS.MAJOR,
-    bpm: 0,
-    memo: '',
-    audioPlaybackRange: {
-        start: 0,
-        end: 0,
-    },
-    midi: null,
-    sortOrder: 0,
-}
-const songInit: UserSong = {
-    title: '',
-    artist: '',
-    sections: [lo.clone(sectionInit)],
-    memo: '',
-    audio: null,
-    tags: [],
-    genres: [],
 }
 const defaultDrawerHeight = 240
 const minDrawerHeight = 50
@@ -133,7 +93,9 @@ const Builder = () => {
     const user = useContext(UserContext)
 
     //編集中のsong
-    const [userSong, setUserSong] = useState<UserSong>(songInit)
+    const [userSong, setUserSong] = useState<UserSong>(
+        structuredClone(songInit)
+    )
     //参照用のsong
     const [songs, setSongs] = useState<UserSong[]>([])
     //タグ

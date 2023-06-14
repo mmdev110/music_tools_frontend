@@ -64,6 +64,7 @@ const sectionInit: UserSongSection = {
     },
     midi: null,
     sortOrder: 0,
+    instruments: [],
 }
 type Props = {
     sectionIndex: number

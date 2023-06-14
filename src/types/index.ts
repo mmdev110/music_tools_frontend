@@ -9,6 +9,7 @@ export type {
     AudioState,
     Genre,
     TagUI,
+    UserSongInstrument,
 } from './front'
 export type {
     SequencerNote,
