@@ -305,6 +305,13 @@ const Song = ({
                                 }
                             }}
                             onClickChordInfo={showChordModal}
+                            allInstruments={song.instruments}
+                            onUpdateInstrumentsList={(newInstruments) =>
+                                onSongChange({
+                                    ...song,
+                                    instruments: newInstruments,
+                                })
+                            }
                         />
                         <Button onClick={() => appendNewSection(index)}>
                             +

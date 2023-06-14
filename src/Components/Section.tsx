@@ -20,8 +20,15 @@ import TagModal from 'Pages/Modals/Tag'
 import ChordModal from 'Pages/Modals/Chord'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
+import InstrumentsList from 'Components/InstrumentsList'
 import { TERMS } from 'config/music'
-import { Tag, ScaleFormType, AudioState, UserSongSection } from 'types'
+import {
+    Tag,
+    ScaleFormType,
+    AudioState,
+    UserSongSection,
+    UserSongInstrument,
+} from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
 import * as Utils from 'utils/music'
@@ -32,40 +39,6 @@ import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
 
-const DefaultChordNames: string[] = [
-    'CM7',
-    'Am7',
-    'Dm7',
-    'G7',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-]
-const sectionInit: UserSongSection = {
-    section: '',
-    progressions: DefaultChordNames,
-    progressionsCsv: '',
-    key: 0,
-    scale: TERMS.MAJOR,
-    bpm: 0,
-    memo: '',
-    audioPlaybackRange: {
-        start: 0,
-        end: 0,
-    },
-    midi: null,
-    sortOrder: 0,
-    instruments: [],
-}
 type Props = {
     sectionIndex: number
     section: UserSongSection
@@ -78,6 +51,8 @@ type Props = {
     onRangeClick: (btn: string) => void
     showMidi: boolean
     onClickChordInfo: (intervals: NoteIntervals) => void
+    allInstruments: UserSongInstrument[]
+    onUpdateInstrumentsList: (newInstruments: UserSongInstrument[]) => void
 }
 const Section = ({
     sectionIndex,
@@ -91,6 +66,8 @@ const Section = ({
     onRangeClick,
     showMidi,
     onClickChordInfo,
+    allInstruments,
+    onUpdateInstrumentsList,
 }: Props) => {
     const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
 
@@ -194,7 +171,33 @@ const Section = ({
                 scaleForm={scaleForm}
                 onNoteIntervalsClick={onClickChordInfo}
             />
-
+            <div className="text-2xl">Instruments</div>
+            <Button
+                onClick={() => {
+                    //空のinstruments追加
+                    const newInstrument: UserSongInstrument = {
+                        name: '',
+                        sortOrder: allInstruments.length + 1,
+                    }
+                    const newInstruments = [...allInstruments, newInstrument]
+                    onUpdateInstrumentsList(newInstruments)
+                }}
+            >
+                +
+            </Button>
+            <InstrumentsList
+                instrumentsList={allInstruments}
+                selectedInstruments={section.instruments}
+                onListUpdate={(newList) => onUpdateInstrumentsList(newList)}
+                onSelectedUpdate={(newList) =>
+                    onSectionChange({ ...section, instruments: newList })
+                }
+            />
+            <Memo
+                className="h-1/2 w-full border-2 border-sky-400"
+                memo={section.memo}
+                onChange={(str) => onSectionChange({ ...section, memo: str })}
+            />
             <div className="text-2xl">Memo</div>
             <Memo
                 className="h-1/2 w-full border-2 border-sky-400"

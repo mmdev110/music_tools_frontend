@@ -41,7 +41,7 @@ type UserSongAudio = {
 }
 export type UserSongInstrument = {
     id?: number
-    userSongId: number
+    userSongId?: number
     name: string
     sortOrder: number
 }
