@@ -63,16 +63,7 @@ const InstrumentsList = ({
                     <Button
                         bgColor={isSelected(inst) ? 'bg-sky-500' : 'bg-sky-300'}
                     >
-                        {index}
-                    </Button>
-                    <Button
-                        bgColor={'bg-red-500'}
-                        onClick={() => {
-                            instrumentsList.splice(index, 1)
-                            onListUpdate(instrumentsList)
-                        }}
-                    >
-                        -
+                        {inst.name}
                     </Button>
                 </div>
             ))}

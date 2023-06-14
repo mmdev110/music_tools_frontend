@@ -188,7 +188,6 @@ const Detail = () => {
     }, [])
 
     const isChanged = (): boolean => {
-        console.log('@@@checkChanged')
         return !lo.isEqual(oldState, userSong)
     }
 

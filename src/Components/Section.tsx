@@ -52,7 +52,7 @@ type Props = {
     showMidi: boolean
     onClickChordInfo: (intervals: NoteIntervals) => void
     allInstruments: UserSongInstrument[]
-    onUpdateInstrumentsList: (newInstruments: UserSongInstrument[]) => void
+    onInstrumentsMenuClick: (index: number) => void
 }
 const Section = ({
     sectionIndex,
@@ -67,7 +67,7 @@ const Section = ({
     showMidi,
     onClickChordInfo,
     allInstruments,
-    onUpdateInstrumentsList,
+    onInstrumentsMenuClick,
 }: Props) => {
     const [transposeRoot, setTransposeRoot] = useState<number | null>(null)
 
@@ -174,21 +174,15 @@ const Section = ({
             <div className="text-2xl">Instruments</div>
             <Button
                 onClick={() => {
-                    //空のinstruments追加
-                    const newInstrument: UserSongInstrument = {
-                        name: '',
-                        sortOrder: allInstruments.length + 1,
-                    }
-                    const newInstruments = [...allInstruments, newInstrument]
-                    onUpdateInstrumentsList(newInstruments)
+                    onInstrumentsMenuClick(sectionIndex)
                 }}
             >
-                +
+                instruments編集
             </Button>
             <InstrumentsList
                 instrumentsList={allInstruments}
                 selectedInstruments={section.instruments}
-                onListUpdate={(newList) => onUpdateInstrumentsList(newList)}
+                onListUpdate={() => {}}
                 onSelectedUpdate={(newList) =>
                     onSectionChange({ ...section, instruments: newList })
                 }

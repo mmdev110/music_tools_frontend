@@ -26,6 +26,7 @@ import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
 import GenreModal from 'Pages/Modals/Genre'
 import ChordModal from 'Pages/Modals/Chord'
+import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { songInit, sectionInit } from 'config/front'
@@ -38,6 +39,7 @@ import {
     UserSongSection,
     AudioState,
     TagUI,
+    UserSongInstrument,
 } from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
@@ -98,7 +100,7 @@ const Song = ({
     onSaveGenres,
 }: Props) => {
     //tag modal
-    const [tagModalIsOpen, setTagIsOpen] = React.useState(false)
+    const [tagModalIsOpen, setTagIsOpen] = useState(false)
     const showTagModal = () => {
         setTagIsOpen(true)
     }
@@ -106,16 +108,26 @@ const Song = ({
         setTagIsOpen(false)
     }
     //genre modal
-    const [genreModalIsOpen, setGenreIsOpen] = React.useState(false)
+    const [genreModalIsOpen, setGenreIsOpen] = useState(false)
     const showGenreModal = () => {
         setGenreIsOpen(true)
     }
     const closeGenreModal = () => {
         setGenreIsOpen(false)
     }
+    //instruments modal
+    const [instrumentsModalIsOpen, setInstrumentsIsOpen] = useState(false)
+    const [sectionIndex, setSectionIndex] = useState(0)
+    const showInstrumentsModal = (index: number) => {
+        setSectionIndex(index)
+        setInstrumentsIsOpen(true)
+    }
+    const closeInstrumentsModal = () => {
+        setInstrumentsIsOpen(false)
+    }
     //コード詳細 modal
-    const [chordModalIsOpen, setChordIsOpen] = React.useState(false)
-    const [noteIntervals, setNoteIntervals] = React.useState<NoteIntervals>([])
+    const [chordModalIsOpen, setChordIsOpen] = useState(false)
+    const [noteIntervals, setNoteIntervals] = useState<NoteIntervals>([])
     const showChordModal = (info: NoteIntervals) => {
         setNoteIntervals(info)
         setChordIsOpen(true)
@@ -306,11 +318,8 @@ const Song = ({
                             }}
                             onClickChordInfo={showChordModal}
                             allInstruments={song.instruments}
-                            onUpdateInstrumentsList={(newInstruments) =>
-                                onSongChange({
-                                    ...song,
-                                    instruments: newInstruments,
-                                })
+                            onInstrumentsMenuClick={(index) =>
+                                showInstrumentsModal(index)
                             }
                         />
                         <Button onClick={() => appendNewSection(index)}>
@@ -355,6 +364,30 @@ const Song = ({
                     closeModal={closeGenreModal}
                     songGenres={song.genres}
                     allGenres={genres || []}
+                />
+            </Modal>
+            {/* instruments編集*/}
+            <Modal
+                isOpen={instrumentsModalIsOpen}
+                //onAfterOpen={afterOpenModal}
+                onRequestClose={closeInstrumentsModal}
+                style={ModalStyle}
+                contentLabel="Example Modal"
+            >
+                <InstrumentsModal
+                    onSave={(
+                        selected: UserSongInstrument[],
+                        list: UserSongInstrument[]
+                    ) => {
+                        const newSong = { ...song }
+                        newSong.instruments = list
+                        newSong.sections[sectionIndex].instruments = selected
+                        onSongChange(newSong)
+                        closeInstrumentsModal()
+                    }}
+                    closeModal={closeInstrumentsModal}
+                    currentInstruments={song.sections[sectionIndex].instruments}
+                    allInstruments={song.instruments}
                 />
             </Modal>
             {/* コード詳細*/}
