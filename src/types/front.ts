@@ -70,7 +70,7 @@ export type Genre = {
     id?: number
     userId?: number
     name: string
-    sortOrder?: number
+    sortOrder: number
     userSongs?: UserSong[]
 }
 export type Tag = {

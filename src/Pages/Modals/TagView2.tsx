@@ -15,6 +15,7 @@ type Selector<T> = T & {
 interface TagModel {
     id?: number
     name: string
+    sortOrder: number
 }
 type Props<T> = {
     onCancelButtonClick: () => void
@@ -57,6 +58,7 @@ const TagView2 = <T extends TagModel>({
         if (selectors.find((tag) => tag.name === nameInput)) return
         const newSelector = {
             name: nameInput,
+            sortOrder: selectors.length + 1,
             isSelected: false,
         } as Selector<T>
         setSelectors([...selectors, newSelector])
