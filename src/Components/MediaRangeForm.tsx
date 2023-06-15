@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
 import { AudioRange } from 'types/front'
+import { Button } from 'Components/HTMLElementsWrapper'
 
 type Props = {
     range: AudioRange
     onChange: (newrange: AudioRange) => void
+    onRangeClick: (command: string) => void
 }
-const MediaRangeForm = ({ range, onChange }: Props) => {
+const MediaRangeForm = ({ range, onChange, onRangeClick }: Props) => {
     const onStartChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(event.target.value)
         if (!isNaN(value)) onChange({ ...range, start: value })
@@ -25,6 +27,14 @@ const MediaRangeForm = ({ range, onChange }: Props) => {
                     value={range.start}
                     className="w-16"
                 />
+                <Button
+                    onClick={(e: React.FormEvent) => {
+                        e.preventDefault()
+                        onRangeClick('set-start')
+                    }}
+                >
+                    set
+                </Button>
                 <label>end: </label>
                 <input
                     type="text"
@@ -33,6 +43,14 @@ const MediaRangeForm = ({ range, onChange }: Props) => {
                     value={range.end}
                     className="w-16"
                 />
+                <Button
+                    onClick={(e: React.FormEvent) => {
+                        e.preventDefault()
+                        onRangeClick('set-end')
+                    }}
+                >
+                    set
+                </Button>
             </form>
         </div>
     )

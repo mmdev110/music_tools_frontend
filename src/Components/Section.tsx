@@ -152,12 +152,9 @@ const Section = ({
                                 audioPlaybackRange: { ...newRange },
                             })
                         }}
+                        onRangeClick={onRangeClick}
                     />
                     <Button onClick={onClickPlayButton}>▷</Button>
-                    <Button onClick={() => onRangeClick('set-start')}>
-                        tap
-                    </Button>
-                    <Button onClick={() => onRangeClick('set-end')}>tap</Button>
                 </div>
             ) : null}
 
