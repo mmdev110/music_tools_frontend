@@ -107,7 +107,9 @@ const Builder = () => {
     const [selectedGenres, setSelectedGenres] = useState<Genre[]>([])
     //リストの表示切り替え
     const [viewTypes, setViewTypes] = useState<ViewType[]>(InitialViewTypes)
-    const [selectedViewTypes, setSelectedViewTypes] = useState<ViewType[]>([])
+    const [selectedViewTypes, setSelectedViewTypes] = useState<ViewType[]>([
+        InitialViewTypes[0],
+    ])
 
     const onSectionChange = (index: number, newSection: UserSongSection) => {
         //console.log('@@@onsectionchange')
