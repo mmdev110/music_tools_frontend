@@ -43,28 +43,53 @@ type Props = {
     selectedInstruments: UserSongInstrument[]
     onListUpdate: (newList: UserSongInstrument[]) => void
     onSelectedUpdate: (newList: UserSongInstrument[]) => void
+    previousInstruments?: UserSongInstrument[]
 }
 const InstrumentsList = ({
     instrumentsList,
     selectedInstruments,
     onListUpdate,
     onSelectedUpdate,
+    previousInstruments,
 }: Props) => {
-    const isSelected = (instInList: UserSongInstrument): boolean => {
-        return !!selectedInstruments.find((elem) => {
-            if (elem.id && instInList.id) return elem.id === instInList.id
-            return elem.name === instInList.name
+    const isInList = (
+        inst: UserSongInstrument,
+        targetList: UserSongInstrument[]
+    ): boolean => {
+        return !!targetList.find((elem) => {
+            if (elem.id && inst.id) return elem.id === inst.id
+            return elem.name === inst.name
         })
+    }
+    const getColor = (inst: UserSongInstrument): string => {
+        //instrumentの使用状況に応じてボタン色を変える
+        const colors = {
+            used: 'bg-sky-500',
+            addedRecently: 'bg-amber-600',
+            removedRecently: 'bg-amber-200',
+            unused: 'bg-sky-200',
+        }
+        if (isInList(inst, selectedInstruments)) {
+            //selected = usedまたはaddedRecently
+            if (previousInstruments && !isInList(inst, previousInstruments)) {
+                return colors.addedRecently
+            } else {
+                return colors.used
+            }
+        } else {
+            if (previousInstruments && isInList(inst, previousInstruments)) {
+                return colors.removedRecently
+            } else {
+                return colors.unused
+            }
+        }
+        return ''
     }
     return (
         <div>
             {instrumentsList.map((inst, index) => (
                 <div key={index}>
-                    <Button
-                        bgColor={isSelected(inst) ? 'bg-sky-500' : 'bg-sky-300'}
-                    >
-                        {inst.name}
-                    </Button>
+                    <Button bgColor={getColor(inst)}>{inst.name}</Button>
                 </div>
             ))}
         </div>

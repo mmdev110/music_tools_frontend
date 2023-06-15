@@ -317,6 +317,11 @@ const Song = ({
                             }}
                             onClickChordInfo={showChordModal}
                             allInstruments={song.instruments}
+                            previousInstruments={
+                                index === 0
+                                    ? undefined
+                                    : song.sections[index - 1].instruments
+                            }
                             onInstrumentsMenuClick={(index) =>
                                 showInstrumentsModal(index)
                             }
