@@ -38,7 +38,6 @@ import {
     AudioRange,
     UserSongSection,
     AudioState,
-    TagUI,
     UserSongInstrument,
 } from 'types'
 import { UserSong } from 'types'

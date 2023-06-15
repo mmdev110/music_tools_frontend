@@ -36,7 +36,6 @@ import {
     UserSongSection,
     Genre,
     AudioState,
-    TagUI,
 } from 'types'
 import { UserSong } from 'types'
 import {
@@ -286,42 +285,7 @@ const Detail = () => {
         })
         setUserSong({ ...userSong, genres: songTags })
     }
-    //const onSaveGenres = async () => {
-    //    //TagUIからgenresをビルド
-    //    let newGenres: Genre[] = tagUIs.map((genreui, index): Genre => {
-    //        const existinGgenre = genres.find((g) => genreui.name === g.name)
-    //        return (
-    //            existinGgenre || {
-    //                userId: user!.userId,
-    //                name: genreui.name,
-    //                sortOrder: index,
-    //            }
-    //        )
-    //    })
-    //    const isGenresChanged = (): boolean => {
-    //        const A = newGenres.map((e) => e.name)
-    //        const B = genres.map((e) => e.name)
-    //        return !lo.isEqual(A, B)
-    //    }
-    //    //genresに存在しないものがあれば保存
-    //    if (isGenresChanged()) {
-    //        try {
-    //            newGenres = await saveGenres(newGenres)
-    //            //genres更新
-    //            setGenres(newGenres)
-    //        } catch (e) {
-    //            console.log(e)
-    //        }
-    //    }
-    //    //userSongの更新
-    //    const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
-    //    //全てのタグの中から、isSelectedのものをuserSongに追加
-    //    const songGenres = newGenres.filter((genre) => {
-    //        const isSelected = selectedUIs.find((ui) => ui.name === genre.name)
-    //        return isSelected
-    //    })
-    //    setUserSong({ ...userSong, genres: songGenres })
-    //}
+
     const test = () => {
         console.log(oldState)
         console.log(userSong)
