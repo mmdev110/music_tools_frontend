@@ -190,11 +190,6 @@ const Section = ({
                     onSectionChange({ ...section, instruments: newList })
                 }
             />
-            <Memo
-                className="h-1/2 w-full border-2 border-sky-400"
-                memo={section.memo}
-                onChange={(str) => onSectionChange({ ...section, memo: str })}
-            />
             <div className="text-2xl">Memo</div>
             <Memo
                 className="h-1/2 w-full border-2 border-sky-400"
