@@ -78,8 +78,8 @@ type Props = {
     onSectionChange: (index: number, newSection: UserSongSection) => void
     onSectionAppendButtonClick?: (index: number) => void
     onSectionDeleteButtonClick?: (index: number) => void
-    onSaveTags?: (tagUIs: TagUI[]) => void
-    onSaveGenres?: (genreUIs: TagUI[]) => void
+    onSaveTags?: (selected: Tag[], all: Tag[]) => void
+    onSaveGenres?: (selected: Genre[], all: Genre[]) => void
 }
 Modal.setAppElement('#root')
 const Song = ({
@@ -339,8 +339,8 @@ const Song = ({
                 contentLabel="Example Modal"
             >
                 <TagModal
-                    onSaveTags={(tagUIs: TagUI[]) => {
-                        if (onSaveTags) onSaveTags(tagUIs)
+                    onSaveTags={(selected: Tag[], all: Tag[]) => {
+                        if (onSaveTags) onSaveTags(selected, all)
                         closeTagModal()
                     }}
                     closeModal={closeTagModal}
@@ -357,8 +357,8 @@ const Song = ({
                 contentLabel="Example Modal"
             >
                 <GenreModal
-                    onSaveGenres={(tagUIs: TagUI[]) => {
-                        if (onSaveGenres) onSaveGenres(tagUIs)
+                    onSaveGenres={(selected: Genre[], all: Genre[]) => {
+                        if (onSaveGenres) onSaveGenres(selected, all)
                         closeGenreModal()
                     }}
                     closeModal={closeGenreModal}

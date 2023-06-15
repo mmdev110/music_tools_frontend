@@ -68,7 +68,7 @@ export type AudioState = {
 }
 export type Genre = {
     id?: number
-    userId: number
+    userId?: number
     name: string
     sortOrder?: number
     userSongs?: UserSong[]

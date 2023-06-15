@@ -210,40 +210,35 @@ const Detail = () => {
             console.log(e)
         }
     }
-    const onSaveTags = async (tagUIs: TagUI[]) => {
-        //TagUIからtagsをビルド
-        let newTags: Tag[] = tagUIs.map((tagui, index): Tag => {
-            const existingTag = tags.find((t) => tagui.name === t.name)
-            return (
-                existingTag || {
-                    userId: user!.userId,
-                    name: tagui.name,
-                    sortOrder: index,
-                }
-            )
-        })
+    const onSaveTags = async (selected: Tag[], all: Tag[]) => {
         const isTagsChanged = (): boolean => {
-            const A = newTags.map((e) => e.name)
+            const A = all.map((e) => e.name)
             const B = tags.map((e) => e.name)
-            console.log(A)
-            console.log(B)
             return !lo.isEqual(A, B)
         }
+        //userIdを付与
+        all = all.map((t) => {
+            t.userId = user?.userId
+            return t
+        })
+        selected = selected.map((t) => {
+            t.userId = user?.userId
+            return t
+        })
         //tagsに存在しないものがあれば保存
         if (isTagsChanged()) {
             try {
-                newTags = await saveTags(newTags)
+                all = await saveTags(all)
                 //tags更新
-                setTags(newTags)
+                setTags(all)
             } catch (e) {
                 console.log(e)
             }
         }
         //userSongの更新
-        const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
         //全てのタグの中から、isSelectedのものをuserSongに追加
-        const songTags = newTags.filter((tag) => {
-            const isSelected = selectedUIs.find((ui) => ui.name === tag.name)
+        const songTags = all.filter((tag) => {
+            const isSelected = selected.find((ui) => ui.name === tag.name)
             return isSelected
         })
         setUserSong({ ...userSong, tags: songTags })
@@ -258,42 +253,75 @@ const Detail = () => {
             console.log(e)
         }
     }
-    const onSaveGenres = async (tagUIs: TagUI[]) => {
-        //TagUIからgenresをビルド
-        let newGenres: Genre[] = tagUIs.map((genreui, index): Genre => {
-            const existinGgenre = genres.find((g) => genreui.name === g.name)
-            return (
-                existinGgenre || {
-                    userId: user!.userId,
-                    name: genreui.name,
-                    sortOrder: index,
-                }
-            )
-        })
-        const isGenresChanged = (): boolean => {
-            const A = newGenres.map((e) => e.name)
+    const onSaveGenres = async (selected: Genre[], all: Genre[]) => {
+        const isTagsChanged = (): boolean => {
+            const A = all.map((e) => e.name)
             const B = genres.map((e) => e.name)
             return !lo.isEqual(A, B)
         }
-        //genresに存在しないものがあれば保存
-        if (isGenresChanged()) {
+        //userIdを付与
+        all = all.map((t) => {
+            t.userId = user?.userId
+            return t
+        })
+        selected = selected.map((t) => {
+            t.userId = user?.userId
+            return t
+        })
+        //tagsに存在しないものがあれば保存
+        if (isTagsChanged()) {
             try {
-                newGenres = await saveGenres(newGenres)
-                //genres更新
-                setGenres(newGenres)
+                all = await saveGenres(all)
+                //tags更新
+                setGenres(all)
             } catch (e) {
                 console.log(e)
             }
         }
         //userSongの更新
-        const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
         //全てのタグの中から、isSelectedのものをuserSongに追加
-        const songGenres = newGenres.filter((genre) => {
-            const isSelected = selectedUIs.find((ui) => ui.name === genre.name)
+        const songTags = all.filter((tag) => {
+            const isSelected = selected.find((ui) => ui.name === tag.name)
             return isSelected
         })
-        setUserSong({ ...userSong, genres: songGenres })
+        setUserSong({ ...userSong, genres: songTags })
     }
+    //const onSaveGenres = async () => {
+    //    //TagUIからgenresをビルド
+    //    let newGenres: Genre[] = tagUIs.map((genreui, index): Genre => {
+    //        const existinGgenre = genres.find((g) => genreui.name === g.name)
+    //        return (
+    //            existinGgenre || {
+    //                userId: user!.userId,
+    //                name: genreui.name,
+    //                sortOrder: index,
+    //            }
+    //        )
+    //    })
+    //    const isGenresChanged = (): boolean => {
+    //        const A = newGenres.map((e) => e.name)
+    //        const B = genres.map((e) => e.name)
+    //        return !lo.isEqual(A, B)
+    //    }
+    //    //genresに存在しないものがあれば保存
+    //    if (isGenresChanged()) {
+    //        try {
+    //            newGenres = await saveGenres(newGenres)
+    //            //genres更新
+    //            setGenres(newGenres)
+    //        } catch (e) {
+    //            console.log(e)
+    //        }
+    //    }
+    //    //userSongの更新
+    //    const selectedUIs = tagUIs.filter((ui) => ui.isSelected)
+    //    //全てのタグの中から、isSelectedのものをuserSongに追加
+    //    const songGenres = newGenres.filter((genre) => {
+    //        const isSelected = selectedUIs.find((ui) => ui.name === genre.name)
+    //        return isSelected
+    //    })
+    //    setUserSong({ ...userSong, genres: songGenres })
+    //}
     const test = () => {
         console.log(oldState)
         console.log(userSong)

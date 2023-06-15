@@ -9,11 +9,11 @@ import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
-import TagView from 'Pages/Modals/TagView'
+import TagView2 from 'Pages/Modals/TagView2'
 
 type Props = {
     closeModal: () => void
-    onSaveGenres: (selectedGenres: TagUI[]) => void
+    onSaveGenres: (selected: Genre[], all: Genre[]) => void
     songGenres: Genre[]
     allGenres: Genre[]
 }
@@ -27,10 +27,10 @@ const GenreModal = ({
     return (
         <div>
             <h2>ジャンル編集</h2>
-            <TagView
+            <TagView2<Genre>
                 onCancelButtonClick={closeModal}
                 onSaveButtonClick={onSaveGenres}
-                songTags={songGenres}
+                selectedTags={songGenres}
                 allTags={allGenres}
             />
         </div>
