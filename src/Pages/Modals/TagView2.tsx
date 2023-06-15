@@ -59,7 +59,7 @@ const TagView2 = <T extends TagModel>({
         const newSelector = {
             name: nameInput,
             sortOrder: selectors.length + 1,
-            isSelected: false,
+            isSelected: true,
         } as Selector<T>
         setSelectors([...selectors, newSelector])
         setNameInput('')
