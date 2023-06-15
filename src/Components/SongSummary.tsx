@@ -9,7 +9,7 @@ import Tooltip from '@mui/material/Tooltip'
 import MenuItem from '@mui/material/MenuItem'
 import MoreIcon from '@mui/icons-material/MoreVert'
 
-import { UserSong, AudioRange } from 'types'
+import { UserSong, AudioRange, ViewType } from 'types'
 import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import { Button } from 'Components/HTMLElementsWrapper'
 import Chord from 'Classes/Chord'
@@ -20,7 +20,7 @@ type Props = {
     onPlayButtonClick: (song: UserSong, range: AudioRange) => void
     onClickX: (song: UserSong) => void
     menuItems?: { name: string; onClick: (song: UserSong) => void }[]
-    viewType: string
+    viewType: ViewType
 }
 const SongSummary = ({
     song,
@@ -43,7 +43,7 @@ const SongSummary = ({
         }
     }
     const renderByViewType = () => {
-        if (viewType === 'overview') {
+        if (viewType.name === 'overview') {
             return (
                 <ViewOverview
                     song={song}
@@ -52,7 +52,7 @@ const SongSummary = ({
                     }
                 />
             )
-        } else if (viewType === 'chords') {
+        } else if (viewType.name === 'chords') {
             return (
                 <ViewChords
                     song={song}
@@ -61,7 +61,7 @@ const SongSummary = ({
                     }
                 />
             )
-        } else if (viewType === 'memo') {
+        } else if (viewType.name === 'memo') {
             return (
                 <ViewMemo
                     song={song}

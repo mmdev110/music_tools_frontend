@@ -15,7 +15,7 @@ import {
     Tag,
     UserSongSearchCondition,
     AudioRange,
-    TagUI,
+    Genre,
 } from 'types/'
 import * as Utils from 'utils/music'
 //import './App.css'
@@ -46,8 +46,10 @@ type Audio = {
 const List = () => {
     const navigate = useNavigate()
     const [userSongs, setUserSongs] = useState<UserSong[]>([])
-    const [allTags, setAllTags] = useState<TagUI[]>([])
-    const [allGenres, setAllGenres] = useState<TagUI[]>([])
+    const [allTags, setAllTags] = useState<Tag[]>([])
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+    const [allGenres, setAllGenres] = useState<Genre[]>([])
+    const [selectedGenres, setSelectedGenres] = useState<Genre[]>([])
     const [isFiltering, setIsFiltering] = useState(false)
 
     const loadSongs = async (condition: UserSongSearchCondition) => {
@@ -61,29 +63,16 @@ const List = () => {
     const loadAllTags = async () => {
         try {
             const responseTags = await getTags()
-
-            const t: TagUI[] = responseTags.map((tag) => {
-                return {
-                    name: tag.name,
-                    isSelected: false,
-                }
-            })
-            setAllTags(t)
+            setAllTags(responseTags)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
     }
     const loadAllGenres = async () => {
         try {
-            const responseTags = await getGenres()
+            const responseGenres = await getGenres()
 
-            const t: TagUI[] = responseTags.map((tag) => {
-                return {
-                    name: tag.name,
-                    isSelected: false,
-                }
-            })
-            setAllGenres(t)
+            setAllGenres(responseGenres)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -182,8 +171,8 @@ const List = () => {
                     hideViewType={true}
                     tags={allTags}
                     genres={allGenres}
-                    onTagsChange={(newTags) => setAllTags(newTags)}
-                    onGenresChange={(newGenres) => setAllGenres(newGenres)}
+                    onTagsChange={(newTags) => setSelectedTags(newTags)}
+                    onGenresChange={(newGenres) => setSelectedGenres(newGenres)}
                 />
                 <div className="flex flex-col gap-y-5">
                     {userSongs.length ? (
@@ -195,7 +184,10 @@ const List = () => {
                                     onPlayButtonClick={play}
                                     onClickX={toggleConfirmationModal}
                                     menuItems={MENU_ITEMS}
-                                    viewType="overview"
+                                    viewType={{
+                                        name: 'overview',
+                                        sortOrder: 0,
+                                    }}
                                 />
                             )
                         })

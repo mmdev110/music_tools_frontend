@@ -8,8 +8,8 @@ export type {
     AudioRange,
     AudioState,
     Genre,
-    TagUI,
     UserSongInstrument,
+    ViewType,
 } from './front'
 export type {
     SequencerNote,
