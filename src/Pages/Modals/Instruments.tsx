@@ -30,10 +30,10 @@ const InstrumentsModal = ({
     return (
         <div>
             <h2>instruments編集</h2>
-            <TagView2
+            <TagView2<UserSongInstrument>
                 onCancelButtonClick={closeModal}
                 onSaveButtonClick={onSave}
-                currentTags={currentInstruments}
+                selectedTags={currentInstruments}
                 allTags={allInstruments}
             />
         </div>

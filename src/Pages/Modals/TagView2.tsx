@@ -9,81 +9,73 @@ import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
-
+type Selector<T> = T & {
+    isSelected: boolean
+}
+interface TagModel {
+    id?: number
+    name: string
+}
 type Props<T> = {
     onCancelButtonClick: () => void
     onSaveButtonClick: (selected: T[], tagList: T[]) => void
     allTags: T[]
-    currentTags: T[]
-}
-interface Taglike {
-    id?: number
-    name: string
+    selectedTags: T[]
 }
 
-const TagView2 = <T extends Taglike>({
+const TagView2 = <T extends TagModel>({
     onSaveButtonClick,
     onCancelButtonClick,
     allTags,
-    currentTags,
+    selectedTags,
 }: Props<T>) => {
     //設定されているタグ
-    const [tags, setTags] = useState<T[]>([])
-    const [oldTags, setOldTags] = useState<T[]>([])
-    //全てのタグ
-    const [tagList, setTagList] = useState<T[]>([])
-    const [oldTagList, setOldTagList] = useState<T[]>([])
+    const [selectors, setSelectors] = useState<Selector<T>[]>([])
+    const [oldSelectors, setOldSelectors] = useState<Selector<T>[]>([])
     useEffect(() => {
-        setTags(currentTags)
-        setOldTags(structuredClone(currentTags))
-        setTagList(allTags)
-        setOldTagList(structuredClone(allTags))
+        const selectors = allTags.map((tag): Selector<T> => {
+            const isSelected = !!selectedTags.find((elem) => {
+                if (elem.id && tag.id) return elem.id === tag.id
+                return elem.name === tag.name
+            })
+            return { ...tag, isSelected }
+        })
+        setSelectors(selectors)
+        setOldSelectors(structuredClone(selectors))
     }, [])
 
+    //入力フォーム
     const [nameInput, setNameInput] = useState('')
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNameInput(e.target.value)
     }
-    const select = (tag: T) => {
-        console.log('select')
-        if (!isSelected(tag)) {
-            //追加
-            setTags([...tags, tag])
-        } else {
-            //削除
-            const newTags = tags.filter((elem) => {
-                if (elem.id && tag.id) return elem.id !== tag.id
-                return elem.name !== tag.name
-            })
-            console.log(newTags)
-            setTags(newTags)
-        }
-    }
-    const isSelected = (target: T): boolean => {
-        return !!tags.find((elem) => {
-            if (elem.id && target.id) return elem.id === target.id
-            return elem.name === target.name
-        })
-    }
+
     const append = (e: React.FormEvent) => {
         e.preventDefault()
         if (nameInput === '') return
         //同じ名前のタグは登録不可
-        if (tags.find((tag) => tag.name === nameInput)) return
-        const newTag = {
+        if (selectors.find((tag) => tag.name === nameInput)) return
+        const newSelector = {
             name: nameInput,
-        } as T
-        setTagList([...tagList, newTag])
+            isSelected: false,
+        } as Selector<T>
+        setSelectors([...selectors, newSelector])
         setNameInput('')
     }
+    const select = (index: number) => {
+        const newSelectors = [...selectors]
+        newSelectors[index].isSelected = !newSelectors[index].isSelected
+        setSelectors(newSelectors)
+    }
+
     const remove = (index: number) => {
-        const newTags = [...tagList]
-        newTags.splice(index, 1)
-        setTagList(newTags)
+        const newSelectors = [...selectors]
+        newSelectors.splice(index, 1)
+        setSelectors(newSelectors)
     }
 
     const isChanged = (): boolean => {
-        return !lo.isEqual(oldTags, tags) || !lo.isEqual(tagList, oldTagList)
+        return !lo.isEqual(oldSelectors, selectors)
     }
 
     return (
@@ -98,18 +90,18 @@ const TagView2 = <T extends Taglike>({
                 <Button type="submit">+</Button>
             </form>
             <div className="mb-5 flex flex-col gap-y-5">
-                {tagList.map((tag, index) => {
-                    const bgColor = isSelected(tag)
+                {selectors.map((selector, index) => {
+                    const bgColor = selector.isSelected
                         ? 'bg-sky-500'
                         : 'bg-sky-300'
                     return (
                         <div key={index}>
                             <Button
                                 bgColor={bgColor}
-                                onClick={() => select(tag)}
+                                onClick={() => select(index)}
                                 key={'usertag' + index.toString()}
                             >
-                                {tag.name}
+                                {selector.name}
                             </Button>
                             <Button
                                 bgColor="bg-red-400"
@@ -125,7 +117,18 @@ const TagView2 = <T extends Taglike>({
 
             <Button
                 disabled={!isChanged()}
-                onClick={() => onSaveButtonClick(tags, tagList)}
+                onClick={() => {
+                    const selected = selectors.filter((elem) => elem.isSelected)
+                    const allT = selectors.map((elem): T => {
+                        const { isSelected, ...t } = elem
+                        return t as unknown as T
+                    })
+                    const selectedT = selected.map((elem): T => {
+                        const { isSelected, ...t } = elem
+                        return t as unknown as T
+                    })
+                    onSaveButtonClick(selectedT, allT)
+                }}
             >
                 保存
             </Button>
