@@ -171,6 +171,7 @@ const Song = ({
         newSection.audioPlaybackRange.start =
             sections[index].audioPlaybackRange.end
         newSection.audioPlaybackRange.end = audioState.duration_sec
+        newSection.progressions = sections[index].progressions
 
         sections.splice(index + 1, 0, newSection)
         onSongChange({
