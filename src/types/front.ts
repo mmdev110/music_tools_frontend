@@ -43,6 +43,7 @@ export type UserSongInstrument = {
     id?: number
     userSongId?: number
     name: string
+    category: 'tonal' | 'rhythm' | 'FX' | ''
     sortOrder: number
 }
 type UserSectionMidi = {

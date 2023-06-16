@@ -60,6 +60,16 @@ const ModalStyle = {
         transform: 'translate(-50%, -50%)',
     },
 }
+const WideModalStyle = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: '30%',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+    },
+}
 
 type Props = {
     user?: User
@@ -377,7 +387,7 @@ const Song = ({
                 isOpen={instrumentsModalIsOpen}
                 //onAfterOpen={afterOpenModal}
                 onRequestClose={closeInstrumentsModal}
-                style={ModalStyle}
+                style={WideModalStyle}
                 contentLabel="Example Modal"
             >
                 <InstrumentsModal

@@ -9,7 +9,7 @@ import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
-import TagView2 from 'Pages/Modals/TagView2'
+import InstrumentsView from 'Pages/Modals/InstrumentsView'
 
 type Props = {
     closeModal: () => void
@@ -30,7 +30,7 @@ const InstrumentsModal = ({
     return (
         <div>
             <h2>instruments編集</h2>
-            <TagView2<UserSongInstrument>
+            <InstrumentsView<UserSongInstrument>
                 onCancelButtonClick={closeModal}
                 onSaveButtonClick={onSave}
                 selectedTags={currentInstruments}

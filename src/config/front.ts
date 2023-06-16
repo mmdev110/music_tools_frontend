@@ -55,3 +55,5 @@ export const songInit: UserSong = {
     genres: [],
     instruments: [],
 }
+//instrumentsの種類
+export const INSTRUMENT_CATEGORIES = ['tonal', 'rhythm', 'FX', 'others']

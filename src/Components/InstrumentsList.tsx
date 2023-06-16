@@ -44,6 +44,7 @@ type Props = {
     onListUpdate: (newList: UserSongInstrument[]) => void
     onSelectedUpdate: (newList: UserSongInstrument[]) => void
     previousInstruments?: UserSongInstrument[]
+    categories: string[]
 }
 const InstrumentsList = ({
     instrumentsList,
@@ -51,6 +52,7 @@ const InstrumentsList = ({
     onListUpdate,
     onSelectedUpdate,
     previousInstruments,
+    categories,
 }: Props) => {
     const isInList = (
         inst: UserSongInstrument,
@@ -65,8 +67,8 @@ const InstrumentsList = ({
         //instrumentの使用状況に応じてボタン色を変える
         const colors = {
             used: 'bg-sky-500',
-            addedRecently: 'bg-amber-600',
-            removedRecently: 'bg-amber-200',
+            addedRecently: 'bg-red-500',
+            removedRecently: 'bg-red-200',
             unused: 'bg-sky-200',
         }
         if (isInList(inst, selectedInstruments)) {
@@ -86,14 +88,37 @@ const InstrumentsList = ({
         return ''
     }
     return (
-        <div>
-            {instrumentsList.map((inst, index) => (
-                <div key={index}>
-                    <Button bgColor={getColor(inst)}>{inst.name}</Button>
-                </div>
-            ))}
+        <div className="flex w-full justify-around">
+            {categories.map((categName, index) => {
+                const filtered = instrumentsList.filter(
+                    (inst) => inst.category === categName
+                )
+                return (
+                    <div key={index}>
+                        <div>{categName}</div>
+                        {filtered.map((inst, index2) => (
+                            <div key={index2}>
+                                <Button bgColor={getColor(inst)}>
+                                    {inst.name}
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
+                )
+            })}
         </div>
     )
+    /*
+                                {categories.map(categName=>{
+                
+                return
+                <div>aa</div>
+                                        {instrumentsList.map((inst, index) => 
+                        <div key={index}>
+                            <Button bgColor={getColor(inst)}>{inst.name}</Button>
+                        </div>
+                    )}
+                    */
 }
 
 export default InstrumentsList

@@ -22,6 +22,7 @@ import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import InstrumentsList from 'Components/InstrumentsList'
 import { TERMS } from 'config/music'
+import { INSTRUMENT_CATEGORIES } from 'config/front'
 import {
     Tag,
     ScaleFormType,
@@ -186,6 +187,7 @@ const Section = ({
                 onSelectedUpdate={(newList) =>
                     onSectionChange({ ...section, instruments: newList })
                 }
+                categories={INSTRUMENT_CATEGORIES}
             />
             <div className="text-2xl">Memo</div>
             <Memo
