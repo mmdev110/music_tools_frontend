@@ -90,6 +90,7 @@ const InstrumentsView = <T extends TagModel>({
                 <input
                     className="border-2 border-black"
                     type="text"
+                    placeholder="input"
                     onChange={handleInput}
                     value={nameInput}
                 />
