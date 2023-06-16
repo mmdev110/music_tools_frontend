@@ -14,3 +14,10 @@ export const validatePassword = (input: string): string => {
 export const getDisplayName = (song: UserSong): string => {
     return song.title || song.audio?.name || ''
 }
+
+interface WithSortOrder {
+    sortOrder: number
+}
+export const adjustSortOrder = <T extends WithSortOrder>(arr: T[]) => {
+    arr.forEach((arr, index) => (arr.sortOrder = index))
+}

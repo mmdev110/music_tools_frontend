@@ -49,6 +49,7 @@ import {
     saveGenres,
 } from 'API/request'
 import * as Utils from 'utils/music'
+import { adjustSortOrder } from 'utils/front'
 import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
@@ -110,6 +111,8 @@ const Detail = () => {
     const save = async () => {
         console.log('@@@@save')
         console.log(userSong)
+        //sortOrderを配列のindexに合わせる
+        adjustSortOrder(userSong.sections)
         //保存
         let response: UserSong | undefined
         try {
