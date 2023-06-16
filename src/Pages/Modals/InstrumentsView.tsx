@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef } from 'react'
 import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
 import { TERMS } from 'config/music'
 import { INSTRUMENT_CATEGORIES } from 'config/front'
@@ -10,6 +10,7 @@ import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
+import OneTag from 'Components/OneTag'
 type Selector<T> = T & {
     isSelected: boolean
 }
@@ -35,6 +36,7 @@ const InstrumentsView = <T extends TagModel>({
     //設定されているタグ
     const [selectors, setSelectors] = useState<Selector<T>[]>([])
     const [oldSelectors, setOldSelectors] = useState<Selector<T>[]>([])
+    const [editingIndex, setEditingIndex] = useState<number>()
     useEffect(() => {
         const selectors = allTags.map((tag): Selector<T> => {
             const isSelected = !!selectedTags.find((elem) => {
@@ -66,15 +68,13 @@ const InstrumentsView = <T extends TagModel>({
         setSelectors([...selectors, newSelector])
         setNameInput('')
     }
-    const select = (selector: Selector<T>) => {
-        const index = selectors.findIndex((sel) => sel.name === selector.name)
+    const select = (index: number) => {
         const newSelectors = [...selectors]
         newSelectors[index].isSelected = !newSelectors[index].isSelected
         setSelectors(newSelectors)
     }
 
-    const remove = (selector: Selector<T>) => {
-        const index = selectors.findIndex((sel) => sel.name === selector.name)
+    const remove = (index: number) => {
         const newSelectors = [...selectors]
         newSelectors.splice(index, 1)
         setSelectors(newSelectors)
@@ -109,6 +109,9 @@ const InstrumentsView = <T extends TagModel>({
                             </div>
                             <div>{categName}</div>
                             {filtered.map((selector, index) => {
+                                const totalIndex = selectors.findIndex(
+                                    (sel) => sel.name === selector.name
+                                ) //selectors全体で見た時のindex
                                 const bgColor = selector.isSelected
                                     ? 'bg-sky-500'
                                     : 'bg-sky-300'
@@ -117,15 +120,24 @@ const InstrumentsView = <T extends TagModel>({
                                         className="flex justify-between"
                                         key={index}
                                     >
-                                        <Button
-                                            bgColor={bgColor}
-                                            onClick={() => select(selector)}
-                                        >
-                                            {selector.name}
-                                        </Button>
+                                        <OneTag
+                                            color={bgColor}
+                                            onClick={() => {
+                                                select(totalIndex)
+                                            }}
+                                            onRename={(newName) => {
+                                                const newSelectors = [
+                                                    ...selectors,
+                                                ]
+                                                newSelectors[totalIndex].name =
+                                                    newName
+                                                setSelectors(newSelectors)
+                                            }}
+                                            name={selector.name}
+                                        />
                                         <Button
                                             bgColor="bg-red-400"
-                                            onClick={() => remove(selector)}
+                                            onClick={() => remove(totalIndex)}
                                         >
                                             ×
                                         </Button>

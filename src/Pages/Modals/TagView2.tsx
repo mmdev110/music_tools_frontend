@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Route, Routes, BrowserRouter, useParams } from 'react-router-dom'
 import { TERMS } from 'config/music'
 import * as Types from 'types/music'
-import { Tag } from 'types/'
+import { Tag, UserSongInstrument } from 'types/'
 import { getTags, saveTags } from 'API/request'
 import * as Utils from 'utils/music'
 import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
+import OneTag from 'Components/OneTag'
 type Selector<T> = T & {
     isSelected: boolean
 }
@@ -79,6 +80,12 @@ const TagView2 = <T extends TagModel>({
     const isChanged = (): boolean => {
         return !lo.isEqual(oldSelectors, selectors)
     }
+    const handleMouseDown = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        elem: Selector<UserSongInstrument>
+    ) => {
+        console.log(e)
+    }
 
     return (
         <div>
@@ -98,14 +105,19 @@ const TagView2 = <T extends TagModel>({
                         ? 'bg-sky-500'
                         : 'bg-sky-300'
                     return (
-                        <div key={index}>
-                            <Button
-                                bgColor={bgColor}
-                                onClick={() => select(index)}
-                                key={'usertag' + index.toString()}
-                            >
-                                {selector.name}
-                            </Button>
+                        <div className="flex justify-between" key={index}>
+                            <OneTag
+                                color={bgColor}
+                                onClick={() => {
+                                    select(index)
+                                }}
+                                onRename={(newName) => {
+                                    const newSelectors = [...selectors]
+                                    newSelectors[index].name = newName
+                                    setSelectors(newSelectors)
+                                }}
+                                name={selector.name}
+                            />
                             <Button
                                 bgColor="bg-red-400"
                                 onClick={() => remove(index)}
