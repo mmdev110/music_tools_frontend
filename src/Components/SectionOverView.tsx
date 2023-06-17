@@ -17,11 +17,15 @@ const SectionOverView = ({
     onClick,
     onClickPlayButton,
 }: Props) => {
-    const [row, setRow] = useState<(UserSongInstrument | null)[]>([]) //横軸
-    const [column, setColumn] = useState<(UserSongSection | null)[]>([]) //縦軸
+    const [row, setRow] = useState<(UserSongInstrument | string)[]>([]) //横軸
+    const [column, setColumn] = useState<(UserSongSection | string)[]>([]) //縦軸
 
     useEffect(() => {
-        const rowValues: (UserSongInstrument | null)[] = [null, null] //section名、再生ボタンの分を空けておく
+        const rowValues: (UserSongInstrument | string)[] = [
+            'sectionname',
+            'play',
+            'copy',
+        ] //section名、再生ボタンの分を空けておく
         INSTRUMENT_CATEGORIES.forEach((categ) => {
             const filtered = instruments.filter(
                 (inst) => inst.category === categ
@@ -31,18 +35,22 @@ const SectionOverView = ({
         setRow(rowValues)
     }, [instruments])
     useEffect(() => {
-        setColumn([null, ...sections]) //inst名表示部分を開けておく
+        setColumn(['instname', ...sections]) //inst名表示部分を開けておく
     }, [sections])
 
-    const renderColumn = (indexCol: number) => {
+    const renderColumn = (
+        valueCol: UserSongSection | string,
+        indexCol: number
+    ) => {
         return (
             <div className="flex basis-20 flex-col" key={indexCol}>
-                {row.map((inst, indexRow) => {
+                {row.map((valueRow, indexRow) => {
                     let value: React.ReactNode = ''
                     let style = 'text-sm border-2 basis-12 border-black'
                     let onCellClick = () => {}
-                    if (inst) {
-                        if (indexCol === 0) {
+                    if (typeof valueRow !== 'string') {
+                        const inst = valueRow as UserSongInstrument
+                        if (valueCol === 'instname') {
                             //左端
                             value = inst.name || ''
                         } else {
@@ -81,14 +89,13 @@ const SectionOverView = ({
                             }
                         }
                     } else {
-                        if (indexCol >= 1) {
-                            console.log({ indexCol })
-                            const section = sections[indexCol - 1]
+                        if (valueCol !== 'instname') {
+                            const section = valueCol as UserSongSection
                             //instがない=上部の2列分の表示
-                            if (indexRow === 0) {
+                            if (valueRow === 'sectionname') {
                                 //sectionName
                                 value = section.section
-                            } else if (indexRow === 1) {
+                            } else if (valueRow === 'play') {
                                 //再生ボタン
                                 value = section.audioPlaybackRange ? (
                                     <Button
@@ -99,6 +106,31 @@ const SectionOverView = ({
                                         }}
                                     >
                                         ▷
+                                    </Button>
+                                ) : (
+                                    ''
+                                )
+                            } else if (valueRow === 'copy') {
+                                //コピーボタン
+                                value = section.audioPlaybackRange ? (
+                                    <Button
+                                        onClick={() => {
+                                            const indexSec = indexCol - 1
+                                            if (indexSec > 0) {
+                                                const newSections = [
+                                                    ...sections,
+                                                ]
+                                                newSections[indexSec] =
+                                                    structuredClone(
+                                                        newSections[
+                                                            indexSec - 1
+                                                        ]
+                                                    )
+                                                onClick(newSections)
+                                            }
+                                        }}
+                                    >
+                                        copy
                                     </Button>
                                 ) : (
                                     ''
@@ -122,7 +154,7 @@ const SectionOverView = ({
     }
     return (
         <div className="flex">
-            {column.map((sectionName, index) => renderColumn(index))}
+            {column.map((value, index) => renderColumn(value, index))}
         </div>
     )
 }

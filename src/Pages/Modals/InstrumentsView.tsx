@@ -86,15 +86,13 @@ const InstrumentsView = <T extends TagModel>({
 
     return (
         <div className="flex flex-col items-center">
-            <form className="pb-5">
-                <input
-                    className="border-2 border-black"
-                    type="text"
-                    placeholder="input"
-                    onChange={handleInput}
-                    value={nameInput}
-                />
-            </form>
+            <input
+                className="mb-5 border-2 border-black"
+                type="text"
+                placeholder="input"
+                onChange={handleInput}
+                value={nameInput}
+            />
             <div className="flex w-full justify-around">
                 {INSTRUMENT_CATEGORIES.map((categName, index) => {
                     const filtered = selectors.filter((sel) => {
