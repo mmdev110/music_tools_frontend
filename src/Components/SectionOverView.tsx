@@ -120,12 +120,12 @@ const SectionOverView = ({
                                                 const newSections = [
                                                     ...sections,
                                                 ]
-                                                newSections[indexSec] =
-                                                    structuredClone(
-                                                        newSections[
-                                                            indexSec - 1
-                                                        ]
-                                                    )
+                                                newSections[
+                                                    indexSec
+                                                ].instruments = structuredClone(
+                                                    newSections[indexSec - 1]
+                                                        .instruments
+                                                )
                                                 onClick(newSections)
                                             }
                                         }}
