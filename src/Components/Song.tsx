@@ -29,6 +29,7 @@ import ChordModal from 'Pages/Modals/Chord'
 import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
+import SectionOverView from 'Components/SectionOverView'
 import { songInit, sectionInit } from 'config/front'
 import {
     Tag,
@@ -291,6 +292,17 @@ const Song = ({
                     className="h-1/2 w-full border-2 border-sky-400"
                     memo={song.memo}
                     onChange={(str) => onSongChange({ ...song, memo: str })}
+                />
+                <div className="text-2xl">Overview</div>
+                <SectionOverView
+                    sections={song.sections}
+                    instruments={song.instruments}
+                    onClick={(newSections) => {
+                        const newSong = { ...song }
+                        newSong.sections = newSections
+                        onSongChange(newSong)
+                    }}
+                    onClickPlayButton={(range) => playAudioWithRange(range)}
                 />
                 <div className="text-2xl">sections</div>
                 {song.sections.map((section, index) => (
