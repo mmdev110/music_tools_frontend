@@ -192,8 +192,18 @@ const Section = ({
             <div className="text-2xl">Memo</div>
             <Memo
                 className="h-1/2 w-full border-2 border-sky-400"
+                placeholder="セクションの大まかなメモ"
                 memo={section.memo}
                 onChange={(str) => onSectionChange({ ...section, memo: str })}
+            />
+            <div className="text-2xl">Memo_Transition</div>
+            <Memo
+                className="h-1/2 w-full border-2 border-sky-400"
+                placeholder="次のセクションへの繋ぎ方に関するメモ"
+                memo={section.memoTransition}
+                onChange={(str) =>
+                    onSectionChange({ ...section, memoTransition: str })
+                }
             />
             {showMidi ? (
                 <div>
