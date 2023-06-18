@@ -10,13 +10,14 @@ import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import { Button } from 'Components/HTMLElementsWrapper'
-import OneTag from 'Components/OneTag'
+import OneTag from 'Components/OneTag2'
 type Selector<T> = T & {
     isSelected: boolean
 }
 interface TagModel {
     id?: number
     name: string
+    memo: string
     category: string
     sortOrder: number
 }
@@ -51,8 +52,12 @@ const InstrumentsView = <T extends TagModel>({
 
     //入力フォーム
     const [nameInput, setNameInput] = useState('')
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNameInput(e.target.value)
+    }
+    const [memoInput, setMemoInput] = useState('')
+    const handleMemoInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setMemoInput(e.target.value)
     }
 
     const append = (categ: string) => {
@@ -62,11 +67,13 @@ const InstrumentsView = <T extends TagModel>({
         const newSelector = {
             name: nameInput,
             sortOrder: selectors.length + 1,
+            memo: memoInput,
             isSelected: true,
             category: categ,
         } as Selector<T>
         setSelectors([...selectors, newSelector])
         setNameInput('')
+        setMemoInput('')
     }
     const select = (index: number) => {
         const newSelectors = [...selectors]
@@ -83,15 +90,36 @@ const InstrumentsView = <T extends TagModel>({
     const isChanged = (): boolean => {
         return !lo.isEqual(oldSelectors, selectors)
     }
+    const handleRightClick = (selector: Selector<T>, index: number) => {
+        if (nameInput === '' && memoInput === '') {
+            //空なら、selectorの内容をinputに反映させる
+            setNameInput(selector.name)
+            setMemoInput(selector.memo)
+        } else {
+            //値が入っている場合、inputの値をselectorに反映させる
+            const newSelectors = [...selectors]
+            newSelectors[index].name = nameInput
+            newSelectors[index].memo = memoInput
+            setSelectors(newSelectors)
+            setNameInput('')
+            setMemoInput('')
+        }
+    }
 
     return (
         <div className="flex flex-col items-center">
             <input
                 className="mb-5 border-2 border-black"
                 type="text"
-                placeholder="input"
-                onChange={handleInput}
+                placeholder="instrument名"
+                onChange={handleNameInput}
                 value={nameInput}
+            />
+            <textarea
+                className="mb-5 h-20 w-1/2 border-2 border-black"
+                placeholder="フレーズの特徴など"
+                onChange={handleMemoInput}
+                value={memoInput}
             />
             <div className="flex w-full justify-around">
                 {INSTRUMENT_CATEGORIES.map((categName, index) => {
@@ -123,14 +151,12 @@ const InstrumentsView = <T extends TagModel>({
                                             onClick={() => {
                                                 select(totalIndex)
                                             }}
-                                            onRename={(newName) => {
-                                                const newSelectors = [
-                                                    ...selectors,
-                                                ]
-                                                newSelectors[totalIndex].name =
-                                                    newName
-                                                setSelectors(newSelectors)
-                                            }}
+                                            onRightClick={() =>
+                                                handleRightClick(
+                                                    selector,
+                                                    totalIndex
+                                                )
+                                            }
                                             name={selector.name}
                                         />
                                         <Button

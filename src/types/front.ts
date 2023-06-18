@@ -44,6 +44,7 @@ export type UserSongInstrument = {
     userSongId?: number
     name: string
     category: 'tonal' | 'rhythm' | 'FX' | ''
+    memo: string
     sortOrder: number
 }
 type UserSectionMidi = {

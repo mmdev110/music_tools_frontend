@@ -37,6 +37,7 @@ import lo from 'lodash'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
+import OneTag from 'Components/OneTag2'
 
 type Props = {
     instrumentsList: UserSongInstrument[]
@@ -98,9 +99,11 @@ const InstrumentsList = ({
                         <div>{categName}</div>
                         {filtered.map((inst, index2) => (
                             <div key={index2}>
-                                <Button bgColor={getColor(inst)}>
-                                    {inst.name}
-                                </Button>
+                                <OneTag
+                                    name={inst.name}
+                                    color={getColor(inst)}
+                                    tooltipText={inst.memo}
+                                />
                             </div>
                         ))}
                     </div>

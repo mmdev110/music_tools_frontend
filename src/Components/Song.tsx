@@ -293,17 +293,24 @@ const Song = ({
                     memo={song.memo}
                     onChange={(str) => onSongChange({ ...song, memo: str })}
                 />
-                <div className="text-2xl">Overview</div>
-                <SectionOverView
-                    sections={song.sections}
-                    instruments={song.instruments}
-                    onClick={(newSections) => {
-                        const newSong = { ...song }
-                        newSong.sections = newSections
-                        onSongChange(newSong)
-                    }}
-                    onClickPlayButton={(range) => playAudioWithRange(range)}
-                />
+                {song.sections.length > 0 && song.instruments.length > 0 ? (
+                    <div>
+                        <div className="text-2xl">Overview</div>
+                        <SectionOverView
+                            sections={song.sections}
+                            instruments={song.instruments}
+                            onClick={(newSections) => {
+                                const newSong = { ...song }
+                                newSong.sections = newSections
+                                onSongChange(newSong)
+                            }}
+                            onClickPlayButton={(range) =>
+                                playAudioWithRange(range)
+                            }
+                        />
+                    </div>
+                ) : null}
+
                 <div className="text-2xl">sections</div>
                 {song.sections.map((section, index) => (
                     <div key={index}>
