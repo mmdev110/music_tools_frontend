@@ -158,6 +158,7 @@ const InstrumentsView = <T extends TagModel>({
                                                 )
                                             }
                                             name={selector.name}
+                                            tooltipText={selector.memo}
                                         />
                                         <Button
                                             bgColor="bg-red-400"

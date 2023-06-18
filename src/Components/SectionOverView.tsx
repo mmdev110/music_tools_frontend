@@ -4,6 +4,7 @@ import HLS from 'hls.js'
 import { AudioRange, UserSongSection, UserSongInstrument } from 'types/front'
 import { INSTRUMENT_CATEGORIES } from 'config/front'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
+import OneTag from 'Components/OneTag2'
 
 type Props = {
     sections: UserSongSection[]
@@ -40,7 +41,15 @@ const SectionOverView = ({
                         const inst = valueRow as UserSongInstrument
                         if (valueCol === 'instname') {
                             //左端
-                            value = inst.name || ''
+                            value = (
+                                <OneTag
+                                    color={'bg-gray-400'}
+                                    onClick={() => {}}
+                                    onRightClick={() => {}}
+                                    name={inst.name}
+                                    tooltipText={inst.memo}
+                                />
+                            )
                         } else {
                             //const indexInst = indexRow - 2
                             const indexSec = indexCol - 1
