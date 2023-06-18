@@ -17,26 +17,14 @@ const SectionOverView = ({
     onClick,
     onClickPlayButton,
 }: Props) => {
-    const [row, setRow] = useState<(UserSongInstrument | string)[]>([]) //横軸
-    const [column, setColumn] = useState<(UserSongSection | string)[]>([]) //縦軸
+    const row: (UserSongInstrument | string)[] = ['sectionname', 'play', 'copy'] //横軸
+    INSTRUMENT_CATEGORIES.forEach((categ) => {
+        //instrumentをカテゴリごとに並べ直す
+        const filtered = instruments.filter((inst) => inst.category === categ)
+        row.push(...filtered)
+    })
 
-    useEffect(() => {
-        const rowValues: (UserSongInstrument | string)[] = [
-            'sectionname',
-            'play',
-            'copy',
-        ] //section名、再生ボタンの分を空けておく
-        INSTRUMENT_CATEGORIES.forEach((categ) => {
-            const filtered = instruments.filter(
-                (inst) => inst.category === categ
-            )
-            rowValues.push(...filtered)
-        })
-        setRow(rowValues)
-    }, [instruments])
-    useEffect(() => {
-        setColumn(['instname', ...sections]) //inst名表示部分を開けておく
-    }, [sections])
+    const column: (UserSongSection | string)[] = ['instname', ...sections] //縦軸
 
     const renderColumn = (
         valueCol: UserSongSection | string,
@@ -54,7 +42,7 @@ const SectionOverView = ({
                             //左端
                             value = inst.name || ''
                         } else {
-                            const indexInst = indexRow - 2
+                            //const indexInst = indexRow - 2
                             const indexSec = indexCol - 1
                             const foundIndex = sections[
                                 indexSec
