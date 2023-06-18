@@ -103,7 +103,7 @@ const Section = ({
     }
 
     return (
-        <div className="flex flex-col gap-y-5 rounded border-y-4 border-dashed border-black ">
+        <div className="flex flex-col gap-y-5">
             <Button
                 className="rounded bg-red-400 font-bold text-white"
                 onClick={onDeleteButtonClick}
