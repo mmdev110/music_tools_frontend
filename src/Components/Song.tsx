@@ -409,9 +409,6 @@ const Song = ({
                                         showInstrumentsModal(index)
                                     }
                                 />
-                                <Button onClick={() => appendNewSection(index)}>
-                                    +
-                                </Button>
                             </div>
                         </TabPanel>
                     )
