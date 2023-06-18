@@ -13,6 +13,11 @@ import {
     useLocation,
 } from 'react-router-dom'
 import Modal from 'react-modal'
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Typography from '@mui/material/Typography'
+import Box from '@mui/material/Box'
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
 import ChordDisplay from 'Components/ChordDisplay2'
@@ -171,6 +176,9 @@ const Song = ({
     const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
     const appendNewSection = (index: number) => {
         console.log('@@@appendnew')
+        console.log('length = ', song.sections.length)
+        console.log('index = ', index)
+        console.log(song.sections[index])
         //indexの後ろにsection追加
         const sections = [...song.sections]
         const newSection = structuredClone(sectionInit) as UserSongSection
@@ -197,6 +205,7 @@ const Song = ({
         const sections = [...song.sections]
         sections.splice(index, 1)
         onSongChange({ ...song, sections })
+        if (song.sections.length - 1 === tabIndex) setTabIndex(tabIndex - 1)
     }
     const isAudioLoaded = !!(droppedAudio || song.audio?.url.get !== '')
     const isHLS = !!song.audio?.url.get
@@ -220,6 +229,16 @@ const Song = ({
 
     const test = () => {
         console.log(song)
+    }
+    const [tabIndex, setTabIndex] = React.useState(0)
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabIndex(newValue)
+    }
+    const a11yProps = (index: number) => {
+        return {
+            id: `simple-tab-${index}`,
+            'aria-controls': `simple-tabpanel-${index}`,
+        }
     }
     return (
         <BasicPage>
@@ -312,56 +331,91 @@ const Song = ({
                 ) : null}
 
                 <div className="text-2xl">sections</div>
-                {song.sections.map((section, index) => (
-                    <div key={index}>
-                        <Section
-                            sectionIndex={index}
-                            section={section}
-                            showMidi={showMidi}
-                            onDropMidi={onDropMidi || undefined}
-                            midiFile={null}
-                            onSectionChange={(newSection: UserSongSection) =>
-                                onSectionChange(index, newSection)
-                            }
-                            onDeleteButtonClick={() => deleteSection(index)}
-                            onClickPlayButton={() =>
-                                playAudioWithRange(section.audioPlaybackRange)
-                            }
-                            showAudioRange={isAudioLoaded}
-                            onRangeClick={(action: string) => {
-                                const newRange = {
-                                    ...song.sections[index].audioPlaybackRange,
-                                }
-                                if (audioState) {
-                                    if (action === 'set-start') {
-                                        newRange.start =
-                                            audioState.currentTime_sec
-                                    } else if (action === 'set-end') {
-                                        newRange.end =
-                                            audioState.currentTime_sec
+                <Tabs
+                    value={tabIndex}
+                    onChange={handleChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    aria-label="basic tabs example"
+                >
+                    {song.sections.map((section, index) => {
+                        return (
+                            <Tab
+                                key={index}
+                                label={section.section || 'new'}
+                                {...a11yProps(index)}
+                            />
+                        )
+                    })}
+                    <Tab
+                        icon={<AddCircleOutlineIcon />}
+                        onClick={() => {
+                            appendNewSection(song.sections.length - 1)
+                        }}
+                    />
+                </Tabs>
+                {song.sections.map((section, index) => {
+                    return (
+                        <TabPanel key={index} value={tabIndex} index={index}>
+                            <div key={index}>
+                                <Section
+                                    sectionIndex={index}
+                                    section={section}
+                                    showMidi={showMidi}
+                                    onDropMidi={onDropMidi || undefined}
+                                    midiFile={null}
+                                    onSectionChange={(
+                                        newSection: UserSongSection
+                                    ) => onSectionChange(index, newSection)}
+                                    onDeleteButtonClick={() =>
+                                        deleteSection(index)
                                     }
-                                    onSectionChange(index, {
-                                        ...section,
-                                        audioPlaybackRange: { ...newRange },
-                                    })
-                                }
-                            }}
-                            onClickChordInfo={showChordModal}
-                            allInstruments={song.instruments}
-                            previousInstruments={
-                                index === 0
-                                    ? undefined
-                                    : song.sections[index - 1].instruments
-                            }
-                            onInstrumentsMenuClick={(index) =>
-                                showInstrumentsModal(index)
-                            }
-                        />
-                        <Button onClick={() => appendNewSection(index)}>
-                            +
-                        </Button>
-                    </div>
-                ))}
+                                    onClickPlayButton={() =>
+                                        playAudioWithRange(
+                                            section.audioPlaybackRange
+                                        )
+                                    }
+                                    showAudioRange={isAudioLoaded}
+                                    onRangeClick={(action: string) => {
+                                        const newRange = {
+                                            ...song.sections[index]
+                                                .audioPlaybackRange,
+                                        }
+                                        if (audioState) {
+                                            if (action === 'set-start') {
+                                                newRange.start =
+                                                    audioState.currentTime_sec
+                                            } else if (action === 'set-end') {
+                                                newRange.end =
+                                                    audioState.currentTime_sec
+                                            }
+                                            onSectionChange(index, {
+                                                ...section,
+                                                audioPlaybackRange: {
+                                                    ...newRange,
+                                                },
+                                            })
+                                        }
+                                    }}
+                                    onClickChordInfo={showChordModal}
+                                    allInstruments={song.instruments}
+                                    previousInstruments={
+                                        index === 0
+                                            ? undefined
+                                            : song.sections[index - 1]
+                                                  .instruments
+                                    }
+                                    onInstrumentsMenuClick={(index) =>
+                                        showInstrumentsModal(index)
+                                    }
+                                />
+                                <Button onClick={() => appendNewSection(index)}>
+                                    +
+                                </Button>
+                            </div>
+                        </TabPanel>
+                    )
+                })}
 
                 <div style={{ marginTop: '10em' }}></div>
             </div>
@@ -439,6 +493,26 @@ const Song = ({
                 />
             </Modal>
         </BasicPage>
+    )
+}
+interface TabPanelProps {
+    children?: React.ReactNode
+    index: number
+    value: number
+}
+const TabPanel = (props: TabPanelProps) => {
+    const { children, value, index, ...other } = props
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {children}
+        </div>
     )
 }
 
