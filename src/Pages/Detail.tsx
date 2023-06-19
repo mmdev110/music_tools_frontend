@@ -110,7 +110,7 @@ const Detail = () => {
 
     const save = async () => {
         console.log('@@@@save')
-        console.log(userSong)
+        const userSong = songRef.current!
         //sortOrderを配列のindexに合わせる
         adjustSortOrder(userSong.sections)
         //保存
@@ -188,9 +188,31 @@ const Detail = () => {
             loadAllGenres()
         }
     }, [])
+    const handleBeforeUnload = () => {
+        //ブラウザ更新時の保存処理
+        console.log(`unload !!`)
+        console.log(oldState.title)
+        console.log(songRef.current!.title)
+        console.log(user)
+        console.log(isChanged())
+        if (isChanged()) save()
+    }
+    useEffect(() => {
+        //ブラウザ更新、閉じた時の保存処理
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload)
+            //アンマウント時の保存処理
+            if (isChanged()) save()
+        }
+    }, [])
+    const songRef = useRef<UserSong>()
+    useEffect(() => {
+        songRef.current = userSong
+    }, [userSong])
 
     const isChanged = (): boolean => {
-        return !lo.isEqual(oldState, userSong)
+        return !lo.isEqual(oldState, songRef.current)
     }
 
     const onSectionChange = (index: number, newSection: UserSongSection) => {
@@ -298,13 +320,6 @@ const Detail = () => {
         <BasicPage>
             <div className="text-2xl">Song Editor</div>
             <Button onClick={test}>test</Button>
-            {user ? (
-                <div>
-                    <Button disabled={!isChanged()} onClick={save}>
-                        save
-                    </Button>
-                </div>
-            ) : null}
             <Song
                 user={user || undefined}
                 song={userSong}
