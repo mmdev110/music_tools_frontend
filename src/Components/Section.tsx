@@ -29,6 +29,7 @@ import {
     AudioState,
     UserSongSection,
     UserSongInstrument,
+    AudioRange,
 } from 'types'
 import { UserSong } from 'types'
 import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
@@ -102,6 +103,15 @@ const Section = ({
         setMidiRoots(rootIndexes)
     }
 
+    const renderBarLengthEstimation = () => {
+        const { start, end } = section.audioPlaybackRange
+        if (start === 0 && end === 0) return null
+        if (start > end) return null
+        if (section.bpm === 0) return null
+        const roughBarLength = (section.bpm * (end - start)) / 240
+        return <span>{` ≈ ${roughBarLength} bars`}</span>
+    }
+
     return (
         <div className="flex flex-col gap-y-5">
             <Button
@@ -128,12 +138,24 @@ const Section = ({
             <div className="text-2xl">bpm</div>
             <Memo
                 className="h-6 w-1/4 border-2 border-sky-400"
-                memo={section.bpm.toString()}
+                memo={section.bpm}
                 onChange={(str) => {
                     if (!isNaN(Number(str)))
                         onSectionChange({
                             ...section,
                             bpm: Number(str),
+                        })
+                }}
+            />
+            <div className="text-2xl">Bar Length</div>
+            <Memo
+                className="h-6 w-1/4 border-2 border-sky-400"
+                memo={section.barLength}
+                onChange={(str) => {
+                    if (!isNaN(Number(str)))
+                        onSectionChange({
+                            ...section,
+                            barLength: Number(str),
                         })
                 }}
             />
@@ -156,6 +178,7 @@ const Section = ({
                         onRangeClick={onRangeClick}
                     />
                     <Button onClick={onClickPlayButton}>▷</Button>
+                    {renderBarLengthEstimation()}
                 </div>
             ) : null}
 

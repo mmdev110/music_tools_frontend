@@ -18,7 +18,12 @@ const SectionOverView = ({
     onClick,
     onClickPlayButton,
 }: Props) => {
-    const row: (UserSongInstrument | string)[] = ['sectionname', 'play', 'copy'] //横軸
+    const row: (UserSongInstrument | string)[] = [
+        'sectionname',
+        'bars',
+        'play',
+        'copy',
+    ] //横軸
     INSTRUMENT_CATEGORIES.forEach((categ) => {
         //instrumentをカテゴリごとに並べ直す
         const filtered = instruments.filter((inst) => inst.category === categ)
@@ -31,6 +36,7 @@ const SectionOverView = ({
         valueCol: UserSongSection | string,
         indexCol: number
     ) => {
+        //kusosugi
         return (
             <div className="flex basis-20 flex-col" key={indexCol}>
                 {row.map((valueRow, indexRow) => {
@@ -132,7 +138,16 @@ const SectionOverView = ({
                                 ) : (
                                     ''
                                 )
+                            } else if (valueRow === 'bars') {
+                                value = section.barLength
                             }
+                        } else {
+                            value =
+                                valueRow === 'bars'
+                                    ? 'bars'
+                                    : valueRow === 'sectionname'
+                                    ? ''
+                                    : ''
                         }
                     }
 

@@ -35,6 +35,7 @@ export const sectionInit: UserSongSection = {
     scale: TERMS.MAJOR,
     bpm: 0,
     memo: '',
+    barLength: 8,
     memoTransition: '',
     audioPlaybackRange: {
         start: 0,

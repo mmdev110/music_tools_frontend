@@ -1,7 +1,7 @@
 import React from 'react'
 
 type Props = {
-    memo: string
+    memo: string | number
     onChange: (str: string) => void
     className: string
     placeholder?: string

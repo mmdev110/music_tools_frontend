@@ -26,6 +26,7 @@ export type UserSongSection = {
     scale: string
     memo: string
     memoTransition: string
+    barLength: number
     audioPlaybackRange: AudioRange
     midi: UserSectionMidi | null
     sortOrder: number
