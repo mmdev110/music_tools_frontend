@@ -49,8 +49,8 @@ type Props = {
     onSectionChange: (newSection: UserSongSection) => void
     onDeleteButtonClick: () => void
     showAudioRange: boolean
-    onClickPlayButton: () => void
-    onRangeClick: (btn: string) => void
+    onClickPlayButton: (range: AudioRange) => void
+    onRangeClick: (index: number, btn: string) => void
     showMidi: boolean
     onClickChordInfo: (intervals: NoteIntervals) => void
     allInstruments: UserSongInstrument[]
@@ -104,7 +104,7 @@ const Section = ({
     }
 
     const renderBarLengthEstimation = () => {
-        const { start, end } = section.audioPlaybackRange
+        const { start, end } = section.audioRanges[0]
         if (start === 0 && end === 0) return null
         if (start > end) return null
         if (section.bpm === 0) return null
@@ -162,23 +162,55 @@ const Section = ({
             {showAudioRange ? (
                 <div>
                     <div className="text-2xl">audio playback range</div>
-                    <MediaRangeForm
-                        range={
-                            section.audioPlaybackRange || {
-                                start: 0,
-                                end: 0,
-                            }
-                        }
-                        onChange={(newRange) => {
+                    {section.audioRanges.map((range, index) => (
+                        <div key={index}>
+                            <MediaRangeForm
+                                range={range}
+                                onChange={(newRange) => {
+                                    const newRanges = [...section.audioRanges]
+                                    newRanges[index] = newRange
+                                    onSectionChange({
+                                        ...section,
+                                        audioRanges: newRanges,
+                                    })
+                                }}
+                                onRangeClick={(command) =>
+                                    onRangeClick(index, command)
+                                }
+                                onDeleteClick={() => {
+                                    if (section.audioRanges.length === 1) return
+                                    const newRanges = [...section.audioRanges]
+                                    newRanges.splice(index, 1)
+                                    onSectionChange({
+                                        ...section,
+                                        audioRanges: newRanges,
+                                    })
+                                }}
+                            />
+                            <Button onClick={() => onClickPlayButton(range)}>
+                                ▷
+                            </Button>
+                            {index === 0 && renderBarLengthEstimation()}
+                        </div>
+                    ))}
+                    <Button
+                        onClick={() => {
+                            const newRanges = [...section.audioRanges]
+                            newRanges.push({
+                                name: '',
+                                userSongSectionId: section.id,
+                                start: newRanges[0]?.start || 0,
+                                end: newRanges[0]?.end || 0,
+                                sortOrder: newRanges.length + 1,
+                            })
                             onSectionChange({
                                 ...section,
-                                audioPlaybackRange: { ...newRange },
+                                audioRanges: newRanges,
                             })
                         }}
-                        onRangeClick={onRangeClick}
-                    />
-                    <Button onClick={onClickPlayButton}>▷</Button>
-                    {renderBarLengthEstimation()}
+                    >
+                        +
+                    </Button>
                 </div>
             ) : null}
 

@@ -162,10 +162,11 @@ const Song = ({
         setAudioState({ ...audioState, duration_sec: duration })
         //sectionsにendを設定
         const newSong = { ...song }
-        for (const sec of newSong.sections) {
-            if (sec.audioPlaybackRange.end === 0)
-                sec.audioPlaybackRange.end = duration
-        }
+        newSong.sections.forEach((section) => {
+            section.audioRanges.forEach((range) => {
+                if (range.end === 0) range.end = duration
+            })
+        })
     }
     const onAudioTimeUpdate = (currentTime: number) => {
         setAudioState({
@@ -187,9 +188,8 @@ const Song = ({
         newSection.key = sections[index].key
         newSection.scale = sections[index].scale
         newSection.sortOrder = sections[index].sortOrder + 1
-        newSection.audioPlaybackRange.start =
-            sections[index].audioPlaybackRange.end
-        newSection.audioPlaybackRange.end = audioState.duration_sec
+        newSection.audioRanges[0].start = sections[index].audioRanges[0].end
+        newSection.audioRanges[0].end = audioState.duration_sec
         newSection.progressions = sections[index].progressions
         newSection.instruments = sections[index].instruments
 
@@ -209,20 +209,23 @@ const Song = ({
     }
     const isAudioLoaded = !!(droppedAudio || song.audio?.url.get !== '')
     const isHLS = !!song.audio?.url.get
-    const [audioPlaybackRange, setAudioPlaybackRange] = useState<AudioRange>({
+    const [audioRange, setaudioRange] = useState({
         start: 0,
         end: 0,
     })
     const playAudioWithRange = (range: AudioRange) => {
         if (!isAudioLoaded) return
-        const isSameRange = lo.isEqual(audioPlaybackRange, range)
+        const rangeArg = {
+            start: range.start,
+            end: range.end,
+        }
 
-        if (isSameRange) {
+        if (lo.isEqual(audioRange, rangeArg)) {
             //再生停止を切り替え
             setToggleAudioFlag(!toggleAudioFlag)
         } else {
             //rangeを変更して再生
-            setAudioPlaybackRange(range)
+            setaudioRange(rangeArg)
             setToggleAudioFlag(true)
         }
     }
@@ -298,7 +301,7 @@ const Song = ({
                             isHLS={isHLS}
                             dropDisabled={false}
                             mini={false}
-                            range={audioPlaybackRange}
+                            range={audioRange}
                             toggle={toggleAudioFlag}
                             onTimeUpdate={onAudioTimeUpdate}
                             onMetadataLoaded={onAudioMetadataLoaded}
@@ -370,30 +373,28 @@ const Song = ({
                                     onDeleteButtonClick={() =>
                                         deleteSection(index)
                                     }
-                                    onClickPlayButton={() =>
-                                        playAudioWithRange(
-                                            section.audioPlaybackRange
-                                        )
+                                    onClickPlayButton={(range) =>
+                                        playAudioWithRange(range)
                                     }
                                     showAudioRange={isAudioLoaded}
-                                    onRangeClick={(action: string) => {
-                                        const newRange = {
-                                            ...song.sections[index]
-                                                .audioPlaybackRange,
-                                        }
+                                    onRangeClick={(
+                                        rangeIndex,
+                                        action: string
+                                    ) => {
+                                        const newRanges = [
+                                            ...song.sections[index].audioRanges,
+                                        ]
                                         if (audioState) {
                                             if (action === 'set-start') {
-                                                newRange.start =
+                                                newRanges[rangeIndex].start =
                                                     audioState.currentTime_sec
                                             } else if (action === 'set-end') {
-                                                newRange.end =
+                                                newRanges[rangeIndex].end =
                                                     audioState.currentTime_sec
                                             }
                                             onSectionChange(index, {
                                                 ...section,
-                                                audioPlaybackRange: {
-                                                    ...newRange,
-                                                },
+                                                audioRanges: newRanges,
                                             })
                                         }
                                     }}

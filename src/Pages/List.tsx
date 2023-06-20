@@ -111,7 +111,7 @@ const List = () => {
         const newFlag = audioChanged || rangeChanged ? true : !isPlayingAudio
         setIsPlayingAudio(newFlag)
     }
-    const [mediaRange, setMediaRange] = useState<AudioRange>({
+    const [mediaRange, setMediaRange] = useState({
         start: 0,
         end: 0,
     })

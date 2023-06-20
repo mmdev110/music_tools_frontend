@@ -37,10 +37,14 @@ export const sectionInit: UserSongSection = {
     memo: '',
     barLength: 8,
     memoTransition: '',
-    audioPlaybackRange: {
-        start: 0,
-        end: 0,
-    },
+    audioRanges: [
+        {
+            name: '',
+            start: 0,
+            end: 0,
+            sortOrder: 0,
+        },
+    ],
     midi: null,
     sortOrder: 0,
     instruments: [],

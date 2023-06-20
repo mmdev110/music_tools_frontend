@@ -27,7 +27,7 @@ export type UserSongSection = {
     memo: string
     memoTransition: string
     barLength: number
-    audioPlaybackRange: AudioRange
+    audioRanges: AudioRange[]
     midi: UserSectionMidi | null
     sortOrder: number
     instruments: UserSongInstrument[]
@@ -62,8 +62,12 @@ type UserSectionMidi = {
 }
 export type AudioRange = {
     //audioの再生範囲
+    id?: number
+    userSongSectionId?: number
+    name: string
     start: number
     end: number
+    sortOrder: number
 }
 export type AudioState = {
     //再生中のaudioの状態

@@ -161,7 +161,7 @@ const Builder = () => {
         console.log(selectedTags)
         console.log(selectedGenres)
     }
-    const [mediaRange, setMediaRange] = useState<AudioRange>({
+    const [mediaRange, setMediaRange] = useState({
         start: 0,
         end: 0,
     })
@@ -173,7 +173,11 @@ const Builder = () => {
         const userAudio = song.audio
         if (!userAudio) return
         const audioChanged = audio.url !== userAudio.url.get
-        const rangeChanged = !lo.isEqual(mediaRange, range)
+        const rangeArg = {
+            start: range.start,
+            end: range.end,
+        }
+        const rangeChanged = !lo.isEqual(mediaRange, rangeArg)
         setAudio({
             name: userAudio.name,
             url: userAudio.url.get,

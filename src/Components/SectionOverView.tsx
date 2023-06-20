@@ -100,11 +100,11 @@ const SectionOverView = ({
                                 value = section.section
                             } else if (valueRow === 'play') {
                                 //再生ボタン
-                                value = section.audioPlaybackRange ? (
+                                value = section.audioRanges[0] ? (
                                     <Button
                                         onClick={() => {
                                             onClickPlayButton(
-                                                section.audioPlaybackRange
+                                                section.audioRanges[0]
                                             )
                                         }}
                                     >
@@ -115,7 +115,7 @@ const SectionOverView = ({
                                 )
                             } else if (valueRow === 'copy') {
                                 //コピーボタン
-                                value = section.audioPlaybackRange ? (
+                                value = section.audioRanges[0] ? (
                                     <Button
                                         onClick={() => {
                                             const indexSec = indexCol - 1

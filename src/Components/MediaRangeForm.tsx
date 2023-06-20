@@ -6,8 +6,18 @@ type Props = {
     range: AudioRange
     onChange: (newrange: AudioRange) => void
     onRangeClick: (command: string) => void
+    onDeleteClick: () => void
 }
-const MediaRangeForm = ({ range, onChange, onRangeClick }: Props) => {
+const MediaRangeForm = ({
+    range,
+    onChange,
+    onRangeClick,
+    onDeleteClick,
+}: Props) => {
+    const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value
+        onChange({ ...range, name: value })
+    }
     const onStartChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = Number(event.target.value)
         if (!isNaN(value)) onChange({ ...range, start: value })
@@ -19,6 +29,14 @@ const MediaRangeForm = ({ range, onChange, onRangeClick }: Props) => {
     return (
         <div>
             <form>
+                <label>name: </label>
+                <input
+                    type="text"
+                    name="name"
+                    onChange={onNameChange}
+                    value={range.name}
+                    className="w-16"
+                />
                 <label>start: </label>
                 <input
                     type="text"
@@ -50,6 +68,9 @@ const MediaRangeForm = ({ range, onChange, onRangeClick }: Props) => {
                     }}
                 >
                     set
+                </Button>
+                <Button bgColor="bg-red-500" onClick={onDeleteClick}>
+                    ×
                 </Button>
             </form>
         </div>

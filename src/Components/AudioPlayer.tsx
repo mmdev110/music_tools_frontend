@@ -3,6 +3,10 @@ import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
 import { AudioRange } from 'types/front'
 
+interface Range {
+    start: number
+    end: number
+}
 type Props = {
     droppedFile?: File | undefined
     audioUrl: string
@@ -12,7 +16,7 @@ type Props = {
     mini: boolean
     autoPlay?: boolean
     isHLS: boolean
-    range: AudioRange
+    range: Range
     toggle: boolean
     onTimeUpdate?: (currentTime: number) => void
     onMetadataLoaded?: (event: any) => void

@@ -224,7 +224,7 @@ const ViewChords = ({ song, onClick }: ViewOverviewProps) => {
                                     <Button
                                         className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
                                         onClick={() =>
-                                            onClick(sec.audioPlaybackRange)
+                                            onClick(sec.audioRanges[0])
                                         }
                                     >
                                         ▷
@@ -260,7 +260,7 @@ const ViewMemo = ({ song, onClick }: ViewOverviewProps) => {
                                     <Button
                                         className="h-10 w-full rounded bg-sky-500 px-4 font-bold text-white"
                                         onClick={() =>
-                                            onClick(sec.audioPlaybackRange)
+                                            onClick(sec.audioRanges[0])
                                         }
                                     >
                                         ▷
