@@ -91,7 +91,7 @@ const List = () => {
         }
     }
     const move = (song: UserSong) => {
-        navigate(`/edit/${song.id}`)
+        navigate(`/edit/${song.uuid}`)
     }
 
     const [isPlayingAudio, setIsPlayingAudio] = useState(false) //このstateを変化させることで再生停止を切り替える

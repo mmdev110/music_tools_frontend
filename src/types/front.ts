@@ -7,6 +7,7 @@ export type User = {
 }
 export type UserSong = {
     id?: number
+    uuid?: string
     title: string
     artist: string
     memo: string

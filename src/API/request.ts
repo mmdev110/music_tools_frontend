@@ -124,8 +124,8 @@ export const deleteUserSong = async (id: number): Promise<GeneralResponse> => {
     return response.data
 }
 
-export const getUserSong = async (userSongId: number): Promise<UserSong> => {
-    const response = await requestBackend<UserSong>(`song/${userSongId}`, 'GET')
+export const getUserSong = async (uuid: string): Promise<UserSong> => {
+    const response = await requestBackend<UserSong>(`song/${uuid}`, 'GET')
     return fromBackend(response.data)
 }
 export const getUserSongs = async (

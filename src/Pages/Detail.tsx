@@ -72,7 +72,7 @@ const ModalStyle = {
 
 Modal.setAppElement('#root')
 const Detail = () => {
-    let { userSongId } = useParams()
+    let { uuid } = useParams()
     const user = useContext(UserContext)
 
     //編集前の状態
@@ -116,7 +116,8 @@ const Detail = () => {
         //保存
         let response: UserSong | undefined
         try {
-            response = await saveUserSong(userSong, userSongId!)
+            const userSongId = uuid === 'new' ? 'new' : String(userSong.id!)
+            response = await saveUserSong(userSong, userSongId)
             console.log(response)
             if (response) {
                 setUserSong(structuredClone(response))
@@ -152,8 +153,8 @@ const Detail = () => {
             //await load(response.id!)
         }
     }
-    const load = async (id: number) => {
-        const response = await getUserSong(id)
+    const load = async (uuid: string) => {
+        const response = await getUserSong(uuid)
         console.log('@@URI', response)
         //編集前の状態を保存しておく
         setOldState(structuredClone(response))
@@ -179,11 +180,10 @@ const Detail = () => {
         }
     }
     useEffect(() => {
-        const id_int = parseInt(userSongId!)
-        const isNumber = !isNaN(id_int)
-        if (isNumber) {
+        console.log({ uuid })
+        if (uuid && uuid !== 'new') {
             //edit/:userSongIdのとき
-            load(id_int)
+            load(uuid)
             loadAllTags()
             loadAllGenres()
         }

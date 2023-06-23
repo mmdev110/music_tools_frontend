@@ -113,7 +113,7 @@ const App = () => {
                     element: <List />,
                 },
                 {
-                    path: 'edit/:userSongId',
+                    path: 'edit/:uuid',
                     element: <Detail />,
                 },
                 {
