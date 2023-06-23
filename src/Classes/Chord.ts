@@ -135,7 +135,8 @@ export default class Chord {
         //C9, C13に対して7追加
         //Cadd9, Cadd13の場合は7追加しない
         const matchAdd = chordQuality.match(CHORD_RE.ADD)
-        if (!matchAdd && !matchSeventh) this._detail.seventh = '7'
+        if (!matchAdd && !matchSeventh && matchTension)
+            this._detail.seventh = '7'
 
         this._detail.root = rootNote.index
     }
