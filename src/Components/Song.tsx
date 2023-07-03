@@ -315,7 +315,7 @@ const Song = ({
                     memo={song.memo}
                     onChange={(str) => onSongChange({ ...song, memo: str })}
                 />
-                {song.sections.length > 0 && song.instruments.length > 0 ? (
+                {song.sections.length > 0 ? (
                     <div>
                         <div className="text-2xl">Overview</div>
                         <SectionOverView
