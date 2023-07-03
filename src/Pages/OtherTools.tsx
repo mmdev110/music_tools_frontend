@@ -13,6 +13,7 @@ import ChordDisplay from 'Components/ChordDisplay2'
 import Intervals from 'Components/Intervals'
 import Section from 'Components/Section'
 import Modes from 'Components/Modes'
+import DiatonicChords from 'Components/DiatonicChords'
 import SequenceAnalyzer from 'Components/SequenceAnalyzer'
 import MidiMonitorDescription from 'Components/MidiMonitorDescription'
 import MidiMonitor from 'Components/MidiMonitor'
@@ -68,14 +69,23 @@ const OtherTools = () => {
             <div className="flex flex-col gap-y-5 pt-10">
                 <div className="text-2xl">Intervals</div>
                 <Intervals />
+
+                <div className="text-2xl">コード構成音とテンション</div>
                 <ScaleForm
                     scaleForm={scaleForm}
                     onChange={onScaleFormChange}
                     showTranspose={false}
                 />
-                <div className="text-2xl">Modes</div>
 
                 <Modes scaleForm={scaleForm} />
+                <div className="text-2xl">ダイアトニックコード一覧</div>
+                <ScaleForm
+                    scaleForm={scaleForm}
+                    onChange={onScaleFormChange}
+                    showTranspose={false}
+                />
+
+                <DiatonicChords scaleForm={scaleForm} />
 
                 <div className="text-2xl">MIDI Monitor</div>
 

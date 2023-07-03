@@ -84,6 +84,45 @@ export const SCALES: {
         chordTones: [0, 4, 7, 11],
         naturalTensions: [2, 9],
         alteredTensions: [6],
+        diatonics: [
+            {
+                root: 0,
+                third: '',
+                fifth: '',
+                seventh: 'M7',
+                role: TERMS.Tonic,
+            }, //CM7
+            {
+                root: 2,
+                third: 'm',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.SubDominant,
+            }, //Dm7
+            { root: 4, third: 'm', fifth: '', seventh: '7', role: TERMS.Tonic }, //Em7
+            {
+                root: 5,
+                third: '',
+                fifth: '',
+                seventh: 'M7',
+                role: TERMS.SubDominant,
+            }, //FM7
+            {
+                root: 7,
+                third: '',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.Dominant,
+            }, //G7
+            {
+                root: 9,
+                third: 'm',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.Tonic,
+            }, //Am7
+            { root: 11, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //Bm7b5
+        ],
     },
     [TERMS.DORIAN]: {
         notes: [0, 2, 3, 5, 7, 9, 10],
@@ -91,6 +130,15 @@ export const SCALES: {
         chordTones: [0, 3, 7, 10],
         naturalTensions: [2, 5],
         alteredTensions: [],
+        diatonics: [
+            { root: 0, third: 'm', fifth: '', seventh: '7', role: '?' }, //Am7
+            { root: 2, third: 'm', fifth: '', seventh: '7', role: '?' }, //Bm7
+            { root: 3, third: '', fifth: '', seventh: 'M7', role: '?' }, //CM7
+            { root: 5, third: '', fifth: '', seventh: '7', role: '?' }, //D7
+            { root: 7, third: 'm', fifth: '', seventh: '7', role: '?' }, //Em7
+            { root: 9, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //F#m7b5
+            { root: 10, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+        ],
     },
     [TERMS.PHRYGIAN]: {
         notes: [0, 1, 3, 5, 7, 8, 10],
@@ -98,6 +146,15 @@ export const SCALES: {
         chordTones: [0, 3, 7, 10],
         naturalTensions: [5],
         alteredTensions: [],
+        diatonics: [
+            { root: 0, third: 'm', fifth: '', seventh: '7', role: '?' }, //Em7
+            { root: 1, third: '', fifth: '', seventh: 'M7', role: '?' }, //FM7
+            { root: 3, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+            { root: 5, third: 'm', fifth: '', seventh: '7', role: '?' }, //Am7
+            { root: 7, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //Bm7b5
+            { root: 8, third: '', fifth: '', seventh: 'M7', role: '?' }, //CM7
+            { root: 10, third: 'm', fifth: '', seventh: '7', role: '?' }, //Dm7
+        ],
     },
     [TERMS.LYDIAN]: {
         notes: [0, 2, 4, 6, 7, 9, 11],
@@ -105,6 +162,15 @@ export const SCALES: {
         chordTones: [0, 4, 7, 11],
         naturalTensions: [2, 6, 9],
         alteredTensions: [],
+        diatonics: [
+            { root: 0, third: '', fifth: '', seventh: 'M7', role: '?' }, //FM7
+            { root: 2, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+            { root: 4, third: 'm', fifth: '', seventh: '7', role: '?' }, //Am7
+            { root: 6, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //Bm7b5
+            { root: 7, third: '', fifth: '', seventh: 'M7', role: '?' }, //CM7
+            { root: 9, third: 'm', fifth: '', seventh: '7', role: '?' }, //Dm7
+            { root: 11, third: 'm', fifth: '', seventh: '7', role: '?' }, //Em7
+        ],
     },
     [TERMS.MIXOLYDIAN]: {
         notes: [0, 2, 4, 5, 7, 9, 10],
@@ -112,6 +178,15 @@ export const SCALES: {
         chordTones: [0, 4, 7, 10],
         naturalTensions: [2, 9],
         alteredTensions: [1, 3, 6, 8],
+        diatonics: [
+            { root: 0, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+            { root: 2, third: 'm', fifth: '', seventh: '7', role: '?' }, //Am7
+            { root: 4, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //Bm7b5
+            { root: 5, third: '', fifth: '', seventh: 'M7', role: '?' }, //CM7
+            { root: 7, third: 'm', fifth: '', seventh: '7', role: '?' }, //Dm7
+            { root: 9, third: 'm', fifth: '', seventh: '7', role: '?' }, //Em7
+            { root: 10, third: '', fifth: '', seventh: 'M7', role: '?' }, //FM7
+        ],
     },
     [TERMS.AEORIAN]: {
         notes: [0, 2, 3, 5, 7, 8, 10],
@@ -119,6 +194,51 @@ export const SCALES: {
         chordTones: [0, 3, 7, 10],
         naturalTensions: [2, 5],
         alteredTensions: [],
+        diatonics: [
+            {
+                root: 0,
+                third: 'm',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.Tonic,
+            }, //Am7
+            {
+                root: 2,
+                third: 'm',
+                fifth: 'b5',
+                seventh: '7',
+                role: TERMS.SubDominant,
+            }, //Bm7b5
+            {
+                root: 3,
+                third: '',
+                fifth: '',
+                seventh: 'M7',
+                role: TERMS.Tonic,
+            }, //CM7
+            {
+                root: 5,
+                third: 'm',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.SubDominant,
+            }, //Dm7
+            {
+                root: 7,
+                third: 'm',
+                fifth: '',
+                seventh: '7',
+                role: TERMS.Dominant,
+            }, //Em7
+            {
+                root: 8,
+                third: '',
+                fifth: '',
+                seventh: 'M7',
+                role: TERMS.Tonic,
+            }, //FM7
+            { root: 10, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+        ],
     },
     [TERMS.LOCRIAN]: {
         notes: [0, 1, 3, 5, 6, 9, 10],
@@ -126,6 +246,15 @@ export const SCALES: {
         chordTones: [0, 3, 6, 10],
         naturalTensions: [5, 9],
         alteredTensions: [],
+        diatonics: [
+            { root: 0, third: 'm', fifth: 'b5', seventh: '7', role: '?' }, //Bm7b5
+            { root: 1, third: '', fifth: '', seventh: 'M7', role: '?' }, //CM7
+            { root: 3, third: 'm', fifth: '', seventh: '7', role: '?' }, //Dm7
+            { root: 5, third: 'm', fifth: '', seventh: '7', role: '?' }, //Em7
+            { root: 6, third: '', fifth: '', seventh: 'M7', role: '?' }, //FM7
+            { root: 9, third: '', fifth: '', seventh: '7', role: '?' }, //G7
+            { root: 10, third: 'm', fifth: '', seventh: '7', role: '?' }, //Am7
+        ],
     },
     [TERMS.MAJOR]: {
         notes: [0, 2, 4, 5, 7, 9, 11],
