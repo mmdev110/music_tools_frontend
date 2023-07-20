@@ -211,7 +211,9 @@ const Builder = () => {
     return (
         <BasicPage>
             <div className="text-2xl">Song Builder</div>
-            <Button onClick={test}>test</Button>
+            {process.env.REACT_APP_ENV === 'local' ? (
+                <Button onClick={test}>test</Button>
+            ) : null}
             <React.Fragment>
                 <div className="fixed">
                     <Button onClick={() => setIsDrawerOpen(!isDrawerOpen)}>

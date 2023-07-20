@@ -29,7 +29,9 @@ const Top = ({ onVisit }: props) => {
                     <span>から試してみましょう！</span>
                 </div>
                 <HowToUse />
-                <Button onClick={onClick}>テスト</Button>
+                {process.env.REACT_APP_ENV === 'local' ? (
+                    <Button onClick={onClick}>テスト</Button>
+                ) : null}
             </div>
         </BasicPage>
     )

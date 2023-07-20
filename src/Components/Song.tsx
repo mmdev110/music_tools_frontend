@@ -246,7 +246,10 @@ const Song = ({
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
-                <Button onClick={test}>test</Button>
+                {process.env.REACT_APP_ENV === 'local' ? (
+                    <Button onClick={test}>test</Button>
+                ) : null}
+
                 <div className="text-2xl">title</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
