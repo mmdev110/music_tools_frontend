@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
 import Dropzone from 'react-dropzone'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+
 import HLS from 'hls.js'
-import { AudioRange, ViewType, Tag, Genre } from 'types/'
+import { AudioRange, ViewType, Tag, Genre, Order } from 'types/'
 import { Button } from 'Components/HTMLElementsWrapper'
 import { values } from 'lodash'
 type Selector<T extends TagModel> = T & {
@@ -25,6 +30,9 @@ type Props = {
     selectedGenres?: Genre[]
     genres?: Genre[]
     onGenresChange?: (newGenres: Genre[]) => void
+    hideOrders?: boolean
+    orders?: Order[]
+    onOrderChange?: (newOrder: Order) => void
 }
 const SearchField = ({
     selectedTags,
@@ -39,9 +47,13 @@ const SearchField = ({
     onViewTypeChange,
     onTagsChange,
     onGenresChange,
+    hideOrders,
+    orders,
+    onOrderChange,
 }: Props) => {
     const [tagSelectors, setTagSelectors] = useState<Selector<Tag>[]>([])
     const [genreSelectors, setGenreSelectors] = useState<Selector<Genre>[]>([])
+    const [currentOrderIndex, setCurrentOrderIndex] = useState('') //UIコンポーネントの都合によりstring
     const [viewTypeSelectors, setViewTypeSelectors] = useState<
         Selector<ViewType>[]
     >([])
@@ -94,9 +106,8 @@ const SearchField = ({
                             const newSelectors = [...selectors]
                             if (exclusiveMode) {
                                 //排他モードの場合、選択したもの以外は全てfalse
-                                newSelectors.forEach((elem) => {
-                                    elem.isSelected = false
-                                    return elem
+                                newSelectors.forEach((elem, i) => {
+                                    if (i !== index) elem.isSelected = false
                                 })
                             }
                             newSelectors[index].isSelected =
@@ -117,6 +128,14 @@ const SearchField = ({
             </div>
         )
     }
+    const handleOrderChange = (e: SelectChangeEvent) => {
+        if (orders && onOrderChange) {
+            setCurrentOrderIndex(e.target.value)
+            const currentOrder =
+                orders[parseInt(e.target.value, 10) as unknown as number]
+            onOrderChange(currentOrder)
+        }
+    }
 
     return (
         <div>
@@ -136,15 +155,31 @@ const SearchField = ({
                     {renderSelectors<Genre>(
                         genreSelectors,
                         onGenresChange!,
-                        false
+                        true
                     )}
                 </div>
             ) : null}
             {!hideTags ? (
                 <div>
                     <div>タグ</div>
-                    {renderSelectors<Tag>(tagSelectors, onTagsChange!, false)}
+                    {renderSelectors<Tag>(tagSelectors, onTagsChange!, true)}
                 </div>
+            ) : null}
+            {!hideOrders && orders ? (
+                <FormControl className="w-1/4">
+                    <InputLabel>Order</InputLabel>
+                    <Select
+                        value={currentOrderIndex}
+                        label="order"
+                        onChange={handleOrderChange}
+                    >
+                        {orders.map((elem, index) => (
+                            <MenuItem key={index} value={index.toString()}>
+                                {elem.displayString}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             ) : null}
         </div>
     )

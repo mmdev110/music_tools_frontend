@@ -10,6 +10,7 @@ export type {
     Genre,
     UserSongInstrument,
     ViewType,
+    Order,
 } from './front'
 export type {
     SequencerNote,

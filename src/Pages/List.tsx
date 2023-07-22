@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import {
     Route,
     Routes,
@@ -16,7 +16,9 @@ import {
     UserSongSearchCondition,
     AudioRange,
     Genre,
+    Order,
 } from 'types/'
+import { UserContext } from 'App'
 import * as Utils from 'utils/music'
 //import './App.css'
 import { getUserSongs, getTags, deleteUserSong, getGenres } from 'API/request'
@@ -28,6 +30,7 @@ import AudioPlayer from 'Components/AudioPlayer'
 import { getDisplayName } from 'utils/front'
 import SearchField from 'Components/SearchField'
 import lo from 'lodash'
+import { Newspaper } from '@mui/icons-material'
 const ModalStyle = {
     content: {
         top: '50%',
@@ -42,14 +45,52 @@ type Audio = {
     name: string
     url: string
 }
+const SearchConditionInit: UserSongSearchCondition = {
+    userIds: [],
+    tagIds: [],
+    genreIds: [],
+    sectionName: '',
+    orderBy: 'created_at',
+    ascending: true,
+}
+
+const orders: Order[] = [
+    { displayString: '作成日-昇順', orderBy: 'created_at', ascending: true },
+    { displayString: '作成日-降順', orderBy: 'created_at', ascending: false },
+    {
+        displayString: '最後に編集した-昇順',
+        orderBy: 'last_modified_at',
+        ascending: true,
+    },
+    {
+        displayString: '最後に編集した-降順',
+        orderBy: 'last_modified_at',
+        ascending: false,
+    },
+    {
+        displayString: '最後に見た-昇順',
+        orderBy: 'last_viewed_at',
+        ascending: true,
+    },
+    {
+        displayString: '最後に見た-降順',
+        orderBy: 'last_viewed_at',
+        ascending: false,
+    },
+    { displayString: '見た回数-昇順', orderBy: 'view_times', ascending: true },
+    { displayString: '見た回数-降順', orderBy: 'view_times', ascending: false },
+]
 
 const List = () => {
     const navigate = useNavigate()
+    const user = useContext(UserContext)
     const [userSongs, setUserSongs] = useState<UserSong[]>([])
     const [allTags, setAllTags] = useState<Tag[]>([])
-    const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+    //const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const [allGenres, setAllGenres] = useState<Genre[]>([])
-    const [selectedGenres, setSelectedGenres] = useState<Genre[]>([])
+    const [searchCondition, setSearchCondition] =
+        useState<UserSongSearchCondition>(SearchConditionInit)
+    //const [selectedGenres, setSelectedGenres] = useState<Genre[]>([])
     const [isFiltering, setIsFiltering] = useState(false)
 
     const loadSongs = async (condition: UserSongSearchCondition) => {
@@ -78,10 +119,17 @@ const List = () => {
         }
     }
     useEffect(() => {
-        loadSongs({})
-        loadAllTags()
-        loadAllGenres()
-    }, [])
+        if (user) {
+            const newCond = { ...searchCondition }
+            newCond.userIds = [user.userId]
+            setSearchCondition(newCond)
+            loadAllTags()
+            loadAllGenres()
+        }
+    }, [user])
+    useEffect(() => {
+        if (searchCondition.userIds.length > 0) loadSongs(searchCondition)
+    }, [searchCondition])
     const navigateNew = (duplicateFromId: number | null) => {
         if (duplicateFromId) {
             //パラメータを複製して新規作成
@@ -171,8 +219,24 @@ const List = () => {
                     hideViewType={true}
                     tags={allTags}
                     genres={allGenres}
-                    onTagsChange={(newTags) => setSelectedTags(newTags)}
-                    onGenresChange={(newGenres) => setSelectedGenres(newGenres)}
+                    onTagsChange={(newTags) => {
+                        const newSearchCondition = { ...searchCondition }
+                        newSearchCondition.tagIds = newTags.map((t) => t.id!)
+                        setSearchCondition(newSearchCondition)
+                    }}
+                    onGenresChange={(newGenres) => {
+                        const newSearchCondition = { ...searchCondition }
+                        newSearchCondition.tagIds = newGenres.map((g) => g.id!)
+                        setSearchCondition(newSearchCondition)
+                    }}
+                    orders={orders}
+                    onOrderChange={(newOrder: Order) => {
+                        console.log(newOrder)
+                        const newSearchCondition = { ...searchCondition }
+                        newSearchCondition.orderBy = newOrder.orderBy
+                        newSearchCondition.ascending = newOrder.ascending
+                        setSearchCondition(newSearchCondition)
+                    }}
                 />
                 <div className="flex flex-col gap-y-5">
                     {userSongs.length ? (

@@ -88,6 +88,14 @@ const InitialViewTypes: ViewType[] = [
     { name: 'chords', sortOrder: 0 },
     { name: 'memo', sortOrder: 0 },
 ]
+const SearchConditionInit: UserSongSearchCondition = {
+    userIds: [0],
+    tagIds: [],
+    genreIds: [],
+    sectionName: '',
+    orderBy: 'created_at',
+    ascending: true,
+}
 //Modal.setAppElement('#root')
 const Builder = () => {
     let { userSongId } = useParams()
@@ -149,8 +157,9 @@ const Builder = () => {
     }
     useEffect(() => {
         if (user) {
-            console.log('effect')
-            loadSongs({})
+            const searchCond = structuredClone(SearchConditionInit)
+            searchCond.userIds = [user!.userId]
+            loadSongs(searchCond)
             loadAllTags()
             loadAllGenres()
         }

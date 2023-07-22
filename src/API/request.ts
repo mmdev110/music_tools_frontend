@@ -132,6 +132,7 @@ export const getUserSongs = async (
     condition: UserSongSearchCondition
 ): Promise<UserSong[]> => {
     console.log('@@@@getUserSongs')
+    console.log(condition)
     const response = await requestBackend<UserSong[]>('list', 'POST', condition)
     const resp = response.data.map((song) => fromBackend(song))
     //console.log(resp)
@@ -219,6 +220,12 @@ export const setNewPassword = async (
     )
     return response.data
 }
+export const confirmEmail = async (token: string): Promise<User> => {
+    const response = await requestBackend<User>('email_confirm', 'POST', {
+        token: token,
+    })
+    return response.data
+}
 
 //ユーザーのtag一覧の取得
 export const getTags = async (): Promise<Tag[]> => {
@@ -272,10 +279,11 @@ const fromBackend = (song: UserSong) => {
     }
     return song
 }
-
+//array to csv
 const AToC = (arr: any[]): string => {
     return arr.join(',')
 }
+//csv to array
 const CToA = (csv: string): string[] | number[] => {
     const array = csv.split(',')
     if (!isNaN(parseInt(array[0], 10))) {
