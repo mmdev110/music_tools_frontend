@@ -45,7 +45,9 @@ const SignUp = () => {
             const err = validate()
             if (err) return
             const result = await signUp(email.email, password.password)
-            setResultText(`registered: ${result.email}`)
+            setResultText(
+                `メールアドレス確認のため、${result.email}宛にメールを送信しました。確認後にログイン可能になります。`
+            )
         } catch (err) {
             if (isAxiosError(err)) {
                 const { code, message } = err.response?.data
