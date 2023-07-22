@@ -29,7 +29,7 @@ const SignIn = () => {
         } catch (err) {
             console.log(err)
             if (isAxiosError(err)) {
-                setResultText(err.message)
+                setResultText(err.response!.data.message)
             }
         }
     }
