@@ -89,10 +89,18 @@ export type Tag = {
     sortOrder: number
     userSongs?: UserSong[]
 }
-
+export type Order = {
+    displayString: string
+    orderBy: string
+    ascending: boolean
+}
 export type UserSongSearchCondition = {
+    userIds: number[]
     tagIds?: number[]
-    subString?: string
+    genreIds?: number[]
+    sectionName?: string
+    orderBy?: string
+    ascending?: boolean
 }
 export type ViewType = {
     name: 'overview' | 'chords' | 'memo'

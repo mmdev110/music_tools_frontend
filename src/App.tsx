@@ -20,6 +20,7 @@ import ResetNew from 'Pages/ResetNew'
 import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
 import OtherTools from 'Pages/OtherTools'
+import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
 import { getUser, refreshToken, healthCheck } from 'API/request'
 
@@ -67,6 +68,7 @@ const App = () => {
                     await auth()
                 } catch (e) {
                     //accessTokenもrefreshTokenもexpireしているので、ログアウト状態とする
+                    localStorage.removeItem('access_token')
                     if (isAxiosError(e)) console.log(e)
                     return
                 }
@@ -78,11 +80,13 @@ const App = () => {
         chk()
     }, [])
     const startRefreshTimer = (): NodeJS.Timer => {
+        console.log('@@@@REFRESH TIMER START')
         return setInterval(async () => {
             refresh()
         }, TOKEN_REFRESH_INTERVAL_SEC * 1000)
     }
     const refresh = async () => {
+        console.log('refresh !!')
         const { accessToken } = await refreshToken()
         localStorage.setItem('access_token', accessToken)
     }
@@ -123,6 +127,10 @@ const App = () => {
                 {
                     path: 'reset_password/new',
                     element: <ResetNew />,
+                },
+                {
+                    path: 'email_confirm',
+                    element: <EmailConfirm />,
                 },
                 {
                     path: 'other_tools',

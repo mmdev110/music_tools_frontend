@@ -29,7 +29,17 @@ const SignIn = () => {
         } catch (err) {
             console.log(err)
             if (isAxiosError(err)) {
-                setResultText(err.message)
+                const { code, message } = err.response?.data
+                let msg = message
+                if (code === 1) {
+                    msg = 'メールアドレスが登録されていません'
+                } else if (code === 4) {
+                    msg =
+                        'メールアドレスが確認されていません。メールを確認するか、SignUpをやり直してください。'
+                } else if (code === 5) {
+                    msg = 'パスワードが合っていません'
+                }
+                setResultText(msg)
             }
         }
     }
