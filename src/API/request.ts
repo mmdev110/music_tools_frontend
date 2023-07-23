@@ -61,6 +61,16 @@ const configBackend = () => {
 configBackend()
 
 //jwtによる認証
+export const signInWithToken = async (): Promise<SignInResponse | null> => {
+    const jwt = window.localStorage.getItem('access_token')
+    if (!jwt) return null
+    const response = await requestBackend<SignInResponse>(
+        'signin_with_token',
+        'GET'
+    )
+    //console.log(response)
+    return response.data
+}
 export const getUser = async (): Promise<User | null> => {
     const jwt = window.localStorage.getItem('access_token')
     if (!jwt) return null

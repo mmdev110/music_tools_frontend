@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, useRef, createContext } from 'react'
 import {
     Route,
     Routes,
@@ -22,12 +22,18 @@ import ErrorPage from 'Pages/ErrorPage'
 import OtherTools from 'Pages/OtherTools'
 import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
-import { getUser, refreshToken, healthCheck } from 'API/request'
+import {
+    getUser,
+    signInWithToken,
+    refreshToken,
+    healthCheck,
+} from 'API/request'
 
 export const UserContext = createContext<User | null>(null)
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
     const [isOnline, setIsOnline] = useState(true)
+
     const chk = async () => {
         try {
             await healthCheck()
@@ -45,8 +51,12 @@ const App = () => {
         if (token) {
             let me: User | null = null
             try {
-                const userResult = await getUser()
-                if (userResult) me = userResult
+                const response = await signInWithToken()
+                if (response) {
+                    const { user, accessToken } = response
+                    me = user
+                    localStorage.setItem('access_token', accessToken)
+                }
             } catch (err) {
                 if (isAxiosError(err)) console.log(err)
             }
@@ -56,16 +66,20 @@ const App = () => {
 
                 //アクセストークン更新用のタイマー開始
                 const timer = startRefreshTimer()
-                return () => {
-                    clearInterval(timer)
-                }
             } else {
                 //userが取得できなかった場合
                 try {
                     //リフレッシュする
                     await refresh()
-                    //新しいトークンでもう1回叩く
-                    await auth()
+                    //新しいトークンでuserを叩く
+                    //refresh()でaccess_token再設定済みなのでsignin_with_tokenは叩かない
+                    const userResult = await getUser()
+                    if (userResult) me = userResult
+                    if (me) {
+                        setUser(me)
+                        //アクセストークン更新用のタイマー開始
+                        const timer = startRefreshTimer()
+                    }
                 } catch (e) {
                     //accessTokenもrefreshTokenもexpireしているので、ログアウト状態とする
                     localStorage.removeItem('access_token')
@@ -87,8 +101,12 @@ const App = () => {
     }
     const refresh = async () => {
         console.log('refresh !!')
-        const { accessToken } = await refreshToken()
-        localStorage.setItem('access_token', accessToken)
+        try {
+            const { accessToken } = await refreshToken()
+            localStorage.setItem('access_token', accessToken)
+        } catch (e) {
+            console.log(e)
+        }
     }
     const onVisit = () => {
         //TOPのonVisit要らなくなったら消す
