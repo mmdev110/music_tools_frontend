@@ -149,7 +149,7 @@ const SearchField = ({
                     )}
                 </div>
             ) : null}
-            {!hideGenres ? (
+            {!hideGenres || genres?.length ? (
                 <div>
                     <div>ジャンル</div>
                     {renderSelectors<Genre>(
@@ -159,13 +159,13 @@ const SearchField = ({
                     )}
                 </div>
             ) : null}
-            {!hideTags ? (
+            {!hideTags || tags?.length ? (
                 <div>
                     <div>タグ</div>
                     {renderSelectors<Tag>(tagSelectors, onTagsChange!, true)}
                 </div>
             ) : null}
-            {!hideOrders && orders ? (
+            {!hideOrders && orders?.length ? (
                 <FormControl className="w-1/4">
                     <InputLabel>Order</InputLabel>
                     <Select
