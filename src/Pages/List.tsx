@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import Modal from 'react-modal'
 import { TERMS } from 'config/music'
+import TAILWIND from 'config/tailwind'
 import Detail from 'Pages/Detail'
 import * as Types from 'types/music'
 import {
@@ -211,7 +212,7 @@ const List = () => {
     return (
         <BasicPage>
             <div className="flex flex-col gap-y-5 pt-10">
-                <div>YOUR LOOPS</div>
+                <div>YOUR SONGS</div>
                 <div>
                     <Button onClick={() => navigateNew(null)}>New</Button>
                 </div>
@@ -238,7 +239,7 @@ const List = () => {
                         setSearchCondition(newSearchCondition)
                     }}
                 />
-                <div className="flex flex-col gap-y-5">
+                <div className={`flex flex-col`}>
                     {userSongs.length ? (
                         userSongs.map((song, index) => {
                             return (
@@ -256,7 +257,7 @@ const List = () => {
                             )
                         })
                     ) : (
-                        <div>NO LOOPS. LET'S CREATE ONE!!</div>
+                        <div>NO SONGS. LET'S CREATE ONE!!</div>
                     )}
                 </div>
             </div>
