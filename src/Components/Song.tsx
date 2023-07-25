@@ -33,6 +33,7 @@ import GenreModal from 'Pages/Modals/Genre'
 import ChordModal from 'Pages/Modals/Chord'
 import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
+import TAILWIND from 'config/tailwind'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import SectionOverView from 'Components/SectionOverView'
 import { songInit, sectionInit } from 'config/front'
@@ -244,12 +245,8 @@ const Song = ({
         }
     }
     return (
-        <BasicPage>
-            <div className="flex flex-col gap-y-5 pt-10">
-                {process.env.REACT_APP_ENV === 'local' ? (
-                    <Button onClick={test}>test</Button>
-                ) : null}
-
+        <div>
+            <div className="flex flex-col gap-y-5 pt-4">
                 <div className="text-2xl">title</div>
                 <Memo
                     className="h-6 w-1/4 border-2 border-sky-400"
@@ -267,24 +264,30 @@ const Song = ({
                     }}
                 />
                 {user && showGenres ? (
-                    <div className="flex flex-col gap-y-5">
-                        <Button onClick={showGenreModal}>ジャンル編集</Button>
-                        <div className="flex flex-row gap-x-4">
-                            {song.genres.map((genre, index) => (
-                                <Button key={index}>{genre.name}</Button>
-                            ))}
-                        </div>
+                    <div className="flex flex-row gap-x-4">
+                        <Button
+                            bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
+                            onClick={showGenreModal}
+                        >
+                            ジャンル編集
+                        </Button>
+                        {song.genres.map((genre, index) => (
+                            <Button key={index}>{genre.name}</Button>
+                        ))}
                     </div>
                 ) : null}
 
                 {user && showTags ? (
-                    <div className="flex flex-col gap-y-5">
-                        <Button onClick={showTagModal}>タグ編集</Button>
-                        <div className="flex flex-row gap-x-4">
-                            {song.tags.map((tag, index) => (
-                                <Button key={index}>{tag.name}</Button>
-                            ))}
-                        </div>
+                    <div className="flex flex-row gap-x-4">
+                        <Button
+                            bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
+                            onClick={showTagModal}
+                        >
+                            タグ編集
+                        </Button>
+                        {song.tags.map((tag, index) => (
+                            <Button key={index}>{tag.name}</Button>
+                        ))}
                     </div>
                 ) : null}
 
@@ -335,8 +338,12 @@ const Song = ({
                         />
                     </div>
                 ) : null}
-
+                {/*
                 <div className="text-2xl">sections</div>
+                 */}
+                <div
+                    className={`border-t-2 ${TAILWIND.BORDER_COLOR_STRONG}`}
+                ></div>
                 <Tabs
                     value={tabIndex}
                     onChange={handleChange}
@@ -493,7 +500,7 @@ const Song = ({
                     noteIntervals={noteIntervals}
                 />
             </Modal>
-        </BasicPage>
+        </div>
     )
 }
 interface TabPanelProps {

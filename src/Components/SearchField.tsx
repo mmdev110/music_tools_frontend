@@ -166,20 +166,22 @@ const SearchField = ({
                 </div>
             ) : null}
             {!hideOrders && orders?.length ? (
-                <FormControl className="w-1/4">
-                    <InputLabel>Order</InputLabel>
-                    <Select
-                        value={currentOrderIndex}
-                        label="order"
-                        onChange={handleOrderChange}
-                    >
-                        {orders.map((elem, index) => (
-                            <MenuItem key={index} value={index.toString()}>
-                                {elem.displayString}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                <div className="mt-4">
+                    <FormControl className="w-1/4">
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={currentOrderIndex}
+                            label="order"
+                            onChange={handleOrderChange}
+                        >
+                            {orders.map((elem, index) => (
+                                <MenuItem key={index} value={index.toString()}>
+                                    {elem.displayString}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </div>
             ) : null}
         </div>
     )

@@ -324,10 +324,7 @@ const Detail = () => {
     }
     return (
         <BasicPage>
-            <div className="text-2xl">Song Editor</div>
-            {process.env.REACT_APP_ENV === 'local' ? (
-                <Button onClick={test}>test</Button>
-            ) : null}
+            <div className="text-2xl">楽曲分析</div>
             <Song
                 user={user || undefined}
                 song={userSong}

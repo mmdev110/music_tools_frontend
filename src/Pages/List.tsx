@@ -97,7 +97,7 @@ const List = () => {
     const loadSongs = async (condition: UserSongSearchCondition) => {
         try {
             const data = await getUserSongs(condition)
-            if (data) setUserSongs(data)
+            setUserSongs(data)
         } catch (err) {
             if (isAxiosError(err)) console.log(err.response)
         }
@@ -129,6 +129,7 @@ const List = () => {
         }
     }, [user])
     useEffect(() => {
+        console.log(searchCondition)
         if (searchCondition.userIds.length > 0) loadSongs(searchCondition)
     }, [searchCondition])
     const navigateNew = (duplicateFromId: number | null) => {
