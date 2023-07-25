@@ -142,10 +142,8 @@ export const getUserSongs = async (
     condition: UserSongSearchCondition
 ): Promise<UserSong[]> => {
     console.log('@@@@getUserSongs')
-    console.log(condition)
     const response = await requestBackend<UserSong[]>('list', 'POST', condition)
     const resp = response.data.map((song) => fromBackend(song))
-    //console.log(resp)
     return resp
 }
 //疎通確認
