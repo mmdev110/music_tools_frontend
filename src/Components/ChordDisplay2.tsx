@@ -12,7 +12,6 @@ type Props = {
     scaleForm: Types.ScaleFormType
     onProgressionsChange: (progressions: string[]) => void
     progressionNames: string[]
-    onNoteIntervalsClick: (info: NoteIntervals) => void
 }
 const ResetChordNames: string[] = [
     '',
@@ -37,7 +36,6 @@ const ChordDisplay2 = ({
     progressionNames,
     onProgressionsChange,
     scaleForm,
-    onNoteIntervalsClick,
 }: Props) => {
     const [progression, setProgression] = useState<ChordProgression>(
         ChordProgression.newFromChordNames(
@@ -91,14 +89,7 @@ const ChordDisplay2 = ({
                     {chunk.map((chord, index2) => {
                         const { degree, detail, characteristics } = chord
                         //const { scaleForm } = props
-                        let degreeName: string = ''
-                        if (degree.root !== -1) {
-                            degreeName =
-                                ALL_DEGREES[degree.root].degree + detail.quality
-                            if (degree.on !== -1)
-                                degreeName +=
-                                    '/' + ALL_DEGREES[degree.on].degree
-                        }
+                        let degreeName: string = chord.getDegreeName()
                         let transposed = ''
                         if (scaleForm.transposeRoot) {
                             const [newRoot, newOn] = chord.getTransposedRoot(
@@ -110,7 +101,6 @@ const ChordDisplay2 = ({
                             if (newOn) transposed += '/' + newOn
                         }
                         const noteIntervals = chord.getNoteIntervals()
-                        const showNoteIntervals = detail.on === -1
 
                         return (
                             <div
@@ -124,9 +114,7 @@ const ChordDisplay2 = ({
                                     index={index * 4 + index2}
                                     transposedChord={transposed}
                                     onChange={onChange}
-                                    showNoteIntervals={showNoteIntervals}
                                     noteIntervals={noteIntervals}
-                                    onNoteIntervalsClick={onNoteIntervalsClick}
                                 />
                                 <OneRelation
                                     chara_relation={characteristics.relation}

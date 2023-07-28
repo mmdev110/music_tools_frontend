@@ -52,7 +52,6 @@ type Props = {
     onClickPlayButton: (range: AudioRange) => void
     onRangeClick: (index: number, btn: string) => void
     showMidi: boolean
-    onClickChordInfo: (intervals: NoteIntervals) => void
     allInstruments: UserSongInstrument[]
     previousInstruments?: UserSongInstrument[]
     onInstrumentsMenuClick: (index: number) => void
@@ -68,7 +67,6 @@ const Section = ({
     showAudioRange,
     onRangeClick,
     showMidi,
-    onClickChordInfo,
     allInstruments,
     previousInstruments,
     onInstrumentsMenuClick,
@@ -224,7 +222,6 @@ const Section = ({
                     })
                 }
                 scaleForm={scaleForm}
-                onNoteIntervalsClick={onClickChordInfo}
             />
             <div className="text-2xl">Instruments</div>
             <Button

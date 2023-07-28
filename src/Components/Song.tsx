@@ -30,7 +30,6 @@ import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
 import GenreModal from 'Pages/Modals/Genre'
-import ChordModal from 'Pages/Modals/Chord'
 import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
 import TAILWIND from 'config/tailwind'
@@ -141,18 +140,7 @@ const Song = ({
     const closeInstrumentsModal = () => {
         setInstrumentsIsOpen(false)
     }
-    //コード詳細 modal
-    const [chordModalIsOpen, setChordIsOpen] = useState(false)
-    const [noteIntervals, setNoteIntervals] = useState<NoteIntervals>([])
-    const showChordModal = (info: NoteIntervals) => {
-        setNoteIntervals(info)
-        setChordIsOpen(true)
-    }
 
-    const closeChordModal = () => {
-        setNoteIntervals([])
-        setChordIsOpen(false)
-    }
     const [audioState, setAudioState] = useState<AudioState>({
         currentTime_sec: 0,
         duration_sec: 0,
@@ -408,7 +396,6 @@ const Song = ({
                                             })
                                         }
                                     }}
-                                    onClickChordInfo={showChordModal}
                                     allInstruments={song.instruments}
                                     previousInstruments={
                                         index === 0
@@ -485,19 +472,6 @@ const Song = ({
                     closeModal={closeInstrumentsModal}
                     currentInstruments={song.sections[sectionIndex].instruments}
                     allInstruments={song.instruments}
-                />
-            </Modal>
-            {/* コード詳細*/}
-            <Modal
-                isOpen={chordModalIsOpen}
-                //onAfterOpen={afterOpenModal}
-                style={ModalStyle}
-                onRequestClose={closeChordModal}
-                contentLabel="Example Modal"
-            >
-                <ChordModal
-                    closeModal={closeChordModal}
-                    noteIntervals={noteIntervals}
                 />
             </Modal>
         </div>
