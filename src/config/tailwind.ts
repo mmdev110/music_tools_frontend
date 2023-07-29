@@ -6,5 +6,6 @@ const TAILWIND = {
     BTN_BG_COLOR_SELECTED: 'bg-sky-500',
     BTN_BG_COLOR_DISABLED: 'bg-sky-300',
     BTN_BG_COLOR_OTHER: 'bg-pink-400',
+    LINK_STYLE: 'text-blue-500 font-bold underline',
 }
 export default TAILWIND

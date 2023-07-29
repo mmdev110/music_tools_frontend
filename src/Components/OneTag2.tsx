@@ -20,7 +20,7 @@ import Tooltip from '@mui/material/Tooltip'
 
 type Props = {
     name: string
-    color: string
+    color?: string
     onClick?: () => void
     onRightClick?: () => void
     tooltipText?: string
@@ -38,7 +38,7 @@ const OneTag = ({ name, color, onClick, onRightClick, tooltipText }: Props) => {
         <Tooltip
             title={
                 tooltipText ? (
-                    <span style={{ whiteSpace: 'pre-line' }}>
+                    <span className="whitespace-pre-line text-base">
                         {tooltipText}
                     </span>
                 ) : (
@@ -52,7 +52,7 @@ const OneTag = ({ name, color, onClick, onRightClick, tooltipText }: Props) => {
                 <Button
                     onContextMenu={(e) => e.preventDefault()}
                     onMouseDown={(e) => handleMouseDown(e)}
-                    bgColor={color}
+                    bgColor={color || 'bg-sky-500'}
                     onClick={onClick}
                 >
                     {name}

@@ -159,7 +159,10 @@ const Section = ({
             />
             {showAudioRange ? (
                 <div>
-                    <div className="text-2xl">audio playback range</div>
+                    <div className="text-2xl">audio range</div>
+                    <div className="ml-4">
+                        秒数を直接入力するか、再生中にsetをクリックすることでオーディオの再生範囲を指定できます。
+                    </div>
                     {section.audioRanges.map((range, index) => (
                         <div key={index}>
                             <MediaRangeForm
@@ -175,20 +178,32 @@ const Section = ({
                                 onRangeClick={(command) =>
                                     onRangeClick(index, command)
                                 }
-                                onDeleteClick={() => {
-                                    if (section.audioRanges.length === 1) return
-                                    const newRanges = [...section.audioRanges]
-                                    newRanges.splice(index, 1)
-                                    onSectionChange({
-                                        ...section,
-                                        audioRanges: newRanges,
-                                    })
-                                }}
-                            />
-                            <Button onClick={() => onClickPlayButton(range)}>
-                                ▷
-                            </Button>
-                            {index === 0 && renderBarLengthEstimation()}
+                            >
+                                <Button
+                                    onClick={() => onClickPlayButton(range)}
+                                >
+                                    ▷
+                                </Button>
+                                <Button
+                                    bgColor="bg-red-500"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (section.audioRanges.length === 1)
+                                            return
+                                        const newRanges = [
+                                            ...section.audioRanges,
+                                        ]
+                                        newRanges.splice(index, 1)
+                                        onSectionChange({
+                                            ...section,
+                                            audioRanges: newRanges,
+                                        })
+                                    }}
+                                >
+                                    ×
+                                </Button>
+                                {index === 0 && renderBarLengthEstimation()}
+                            </MediaRangeForm>
                         </div>
                     ))}
                     <Button
@@ -223,14 +238,17 @@ const Section = ({
                 }
                 scaleForm={scaleForm}
             />
-            <div className="text-2xl">Instruments</div>
-            <Button
-                onClick={() => {
-                    onInstrumentsMenuClick(sectionIndex)
-                }}
-            >
-                instruments編集
-            </Button>
+            <div>
+                <span className="text-2xl"> Instruments</span>
+                <Button
+                    onClick={() => {
+                        onInstrumentsMenuClick(sectionIndex)
+                    }}
+                >
+                    編集
+                </Button>
+            </div>
+
             <InstrumentsList
                 instrumentsList={allInstruments}
                 selectedInstruments={section.instruments}

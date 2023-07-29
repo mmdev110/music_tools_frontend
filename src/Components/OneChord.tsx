@@ -6,6 +6,7 @@ import * as Utils from '../utils/music'
 import { TERMS } from '../config/music'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
+import OneTag from 'Components/OneTag2'
 
 type Props = {
     chord: string
@@ -88,30 +89,7 @@ const OneChord = (props: Props) => {
             }
         })
         tooltipText += `${root.noteName}: ${root.interval}\n`
-        return (
-            <Tooltip
-                title={
-                    <span
-                        className="text-xl"
-                        style={{ whiteSpace: 'pre-line' }}
-                    >
-                        {tooltipText}
-                    </span>
-                }
-                placement="right-end"
-                arrow
-            >
-                <div>
-                    <Button
-                        onClick={() => {
-                            //props.onNoteIntervalsClick(props.noteIntervals)
-                        }}
-                    >
-                        詳細
-                    </Button>
-                </div>
-            </Tooltip>
-        )
+        return <OneTag name="詳細" tooltipText={tooltipText} />
     }
 
     return (

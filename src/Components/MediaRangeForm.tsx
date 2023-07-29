@@ -6,14 +6,9 @@ type Props = {
     range: AudioRange
     onChange: (newrange: AudioRange) => void
     onRangeClick: (command: string) => void
-    onDeleteClick: () => void
+    children?: React.ReactNode
 }
-const MediaRangeForm = ({
-    range,
-    onChange,
-    onRangeClick,
-    onDeleteClick,
-}: Props) => {
+const MediaRangeForm = ({ range, onChange, onRangeClick, children }: Props) => {
     const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value
         onChange({ ...range, name: value })
@@ -27,17 +22,18 @@ const MediaRangeForm = ({
         if (!isNaN(value)) onChange({ ...range, end: value })
     }
     return (
-        <div>
-            <form>
-                <label>name: </label>
-                <input
-                    type="text"
-                    name="name"
-                    onChange={onNameChange}
-                    value={range.name}
-                    className="w-16"
-                />
-                <label>start: </label>
+        <div className="flex gap-x-2">
+            <label>name: </label>
+            <input
+                type="text"
+                name="name"
+                onChange={onNameChange}
+                value={range.name}
+                className="w-16"
+            />
+            <label>start: </label>
+            <span>
+                {' '}
                 <input
                     type="text"
                     name="start"
@@ -53,7 +49,10 @@ const MediaRangeForm = ({
                 >
                     set
                 </Button>
-                <label>end: </label>
+            </span>
+
+            <label>end: </label>
+            <span>
                 <input
                     type="text"
                     name="end"
@@ -69,10 +68,8 @@ const MediaRangeForm = ({
                 >
                     set
                 </Button>
-                <Button bgColor="bg-red-500" onClick={onDeleteClick}>
-                    ×
-                </Button>
-            </form>
+            </span>
+            {children || null}
         </div>
     )
 }

@@ -325,6 +325,11 @@ const Detail = () => {
     return (
         <BasicPage>
             <div className="text-2xl">楽曲分析</div>
+            <div>
+                {user
+                    ? 'データは自動保存されます'
+                    : 'ログインすることで入力データやオーディオファイルを保存して、再度開くことができます'}
+            </div>
             <Song
                 user={user || undefined}
                 song={userSong}

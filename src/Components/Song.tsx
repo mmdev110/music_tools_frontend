@@ -252,41 +252,51 @@ const Song = ({
                     }}
                 />
                 {user && showGenres ? (
-                    <div className="flex flex-row gap-x-4">
-                        <Button
-                            bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
-                            onClick={showGenreModal}
-                        >
-                            ジャンル編集
-                        </Button>
-                        {song.genres.map((genre, index) => (
-                            <Button key={index}>{genre.name}</Button>
-                        ))}
+                    <div>
+                        <span>
+                            <span className="text-2xl">ジャンル</span>
+                            <span className="absolute left-48">
+                                <Button
+                                    bgColor={TAILWIND.BTN_BG_COLOR_SELECTED}
+                                    onClick={showGenreModal}
+                                >
+                                    編集
+                                </Button>
+                            </span>
+                        </span>
+                        <div className="mt-4 flex flex-row gap-x-4">
+                            {song.genres.map((genre, index) => (
+                                <Button key={index}>{genre.name}</Button>
+                            ))}
+                        </div>
                     </div>
                 ) : null}
 
                 {user && showTags ? (
-                    <div className="flex flex-row gap-x-4">
-                        <Button
-                            bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
-                            onClick={showTagModal}
-                        >
-                            タグ編集
-                        </Button>
-                        {song.tags.map((tag, index) => (
-                            <Button key={index}>{tag.name}</Button>
-                        ))}
+                    <div>
+                        <span>
+                            <span className="text-2xl">タグ</span>
+                            <span className="absolute left-48">
+                                <Button
+                                    bgColor={TAILWIND.BTN_BG_COLOR_SELECTED}
+                                    onClick={showTagModal}
+                                >
+                                    編集
+                                </Button>
+                            </span>
+                        </span>
+                        <div className="flex flex-row gap-x-4">
+                            {song.tags.map((tag, index) => (
+                                <Button key={index}>{tag.name}</Button>
+                            ))}
+                        </div>
                     </div>
                 ) : null}
 
                 {showAudio ? (
                     <div>
                         <div className="text-2xl">AudioPlayer</div>
-                        <div>
-                            mp3, wav, m4aファイルをドロップできます。
-                            <br />
-                            start, endでループ範囲を指定できます。
-                        </div>
+                        <div>mp3, wav, m4aファイルをドロップできます。</div>
                         <AudioPlayer
                             droppedFile={droppedAudio}
                             audioUrl={song.audio?.url.get || ''}
@@ -311,7 +321,7 @@ const Song = ({
                 />
                 {song.sections.length > 0 ? (
                     <div>
-                        <div className="text-2xl">Overview</div>
+                        <div className="text-2xl">Sections Overview</div>
                         <SectionOverView
                             sections={song.sections}
                             instruments={song.instruments}
