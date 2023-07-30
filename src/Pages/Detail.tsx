@@ -197,7 +197,7 @@ const Detail = () => {
         console.log(songRef.current!.title)
         console.log(user)
         console.log(isChanged())
-        if (isChanged()) save()
+        if (user && isChanged()) save()
     }
     useEffect(() => {
         //ブラウザ更新、閉じた時の保存処理
@@ -205,7 +205,7 @@ const Detail = () => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload)
             //アンマウント時の保存処理
-            if (isChanged()) save()
+            if (user && isChanged()) save()
         }
     }, [])
     const songRef = useRef<UserSong>()
