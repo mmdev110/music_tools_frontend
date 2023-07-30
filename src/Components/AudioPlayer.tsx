@@ -20,6 +20,7 @@ type Props = {
     toggle: boolean
     onTimeUpdate?: (currentTime: number) => void
     onMetadataLoaded?: (event: any) => void
+    className?: string
 }
 const AudioPlayer = ({
     droppedFile,
@@ -34,6 +35,7 @@ const AudioPlayer = ({
     toggle,
     onTimeUpdate,
     onMetadataLoaded,
+    className,
 }: Props) => {
     const processFiles = (acceptedFiles: File[]) => {
         if (onDrop) onDrop(acceptedFiles)
@@ -80,7 +82,7 @@ const AudioPlayer = ({
     }
 
     return (
-        <div>
+        <div className={className}>
             <Dropzone
                 accept={{ 'audio/mpeg': ['.mp3', '.wav', '.m4a'] }}
                 onDrop={processFiles}
@@ -88,10 +90,7 @@ const AudioPlayer = ({
             >
                 {({ getRootProps, getInputProps }) => (
                     <section>
-                        <div
-                            className="border-2 border-solid border-sky-400"
-                            {...getRootProps()}
-                        >
+                        <div {...getRootProps()}>
                             <input {...getInputProps()} />
                             <div>{audioName}</div>
                             {isHLS ? (
