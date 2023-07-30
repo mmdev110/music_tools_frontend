@@ -39,9 +39,10 @@ const SectionOverView = ({
 
     //左端の一列目
     const renderInstNamesCol = (indexCol: number) => {
-        let style = 'text-sm border-2 basis-12 border-black'
+        let tailwind_child =
+            'flex justify-center items-center text-sm first:border-2 border-b-2 border-l-2 border-r-2 h-8 w-48 border-black'
         return (
-            <div className="flex basis-20 flex-col" key={indexCol}>
+            <div className="flex flex-col" key={indexCol}>
                 {row.map((rowValue, rowIndex) => {
                     let value: React.ReactNode = ''
                     switch (rowValue) {
@@ -67,7 +68,7 @@ const SectionOverView = ({
                                 />
                             )
                     }
-                    return <div className={style}>{value}</div>
+                    return <div className={tailwind_child}>{value}</div>
                 })}
             </div>
         )
@@ -76,9 +77,10 @@ const SectionOverView = ({
     const renderInstCol = (sectionIndex: number, indexCol: number) => {
         const section = sections[sectionIndex]
         return (
-            <div className="flex basis-20 flex-col" key={indexCol}>
+            <div className="flex flex-col" key={indexCol}>
                 {row.map((rowValue, rowIndex) => {
-                    let style = 'text-sm border-2 basis-12 border-black'
+                    let tailwind_child =
+                        'flex justify-center items-center text-sm first:border-t-2 border-r-2 border-b-2 h-8 w-16 border-black'
                     let value: React.ReactNode = ''
                     let onClick = () => {}
                     switch (rowValue) {
@@ -101,7 +103,7 @@ const SectionOverView = ({
                             const foundIndex = section.instruments.findIndex(
                                 (i) => i.name === inst.name
                             )
-                            style += ` ${instCellColor(
+                            tailwind_child += ` ${instCellColor(
                                 inst,
                                 foundIndex !== -1
                             )}`
@@ -110,7 +112,7 @@ const SectionOverView = ({
                                 onInstCellClick(sectionIndex, foundIndex, inst)
                     }
                     return (
-                        <div className={style} onClick={onClick}>
+                        <div className={tailwind_child} onClick={onClick}>
                             {value}
                         </div>
                     )
