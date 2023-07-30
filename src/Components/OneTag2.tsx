@@ -24,9 +24,17 @@ type Props = {
     onClick?: () => void
     onRightClick?: () => void
     tooltipText?: string
+    className?: string
 }
 
-const OneTag = ({ name, color, onClick, onRightClick, tooltipText }: Props) => {
+const OneTag = ({
+    name,
+    color,
+    onClick,
+    onRightClick,
+    tooltipText,
+    className,
+}: Props) => {
     const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (e.button == 2) {
             //右クリック
@@ -36,6 +44,7 @@ const OneTag = ({ name, color, onClick, onRightClick, tooltipText }: Props) => {
 
     return (
         <Tooltip
+            className={className}
             title={
                 tooltipText ? (
                     <span className="whitespace-pre-line text-base">
@@ -50,6 +59,7 @@ const OneTag = ({ name, color, onClick, onRightClick, tooltipText }: Props) => {
         >
             <div>
                 <Button
+                    className={className}
                     onContextMenu={(e) => e.preventDefault()}
                     onMouseDown={(e) => handleMouseDown(e)}
                     bgColor={color || 'bg-sky-500'}

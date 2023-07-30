@@ -62,7 +62,7 @@ const SectionOverView = ({
                             const inst = rowValue as UserSongInstrument
                             value = (
                                 <OneTag
-                                    color="bg-gray-400"
+                                    className="h-full w-full bg-gray-400 font-bold text-white"
                                     name={inst.name}
                                     tooltipText={inst.memo}
                                 />
@@ -123,6 +123,7 @@ const SectionOverView = ({
     const playButton = (section: UserSongSection) => {
         return (
             <Button
+                className="h-full w-full bg-sky-500 font-bold text-white"
                 onClick={() => {
                     onClickPlayButton(section.audioRanges[0])
                 }}
