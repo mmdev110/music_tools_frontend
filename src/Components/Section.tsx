@@ -7,6 +7,7 @@ import {
     useLocation,
 } from 'react-router-dom'
 import Modal from 'react-modal'
+import TAILWIND from 'config/tailwind'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
 import ChordDisplay from 'Components/ChordDisplay2'
@@ -247,6 +248,7 @@ const Section = ({
                 <span className="text-2xl"> Instruments</span>
                 <span className="ml-6">
                     <Button
+                        bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
                         onClick={() => {
                             onInstrumentsMenuClick(sectionIndex)
                         }}
