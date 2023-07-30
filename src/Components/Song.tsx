@@ -188,7 +188,10 @@ const Song = ({
     }
     const deleteSection = (index: number) => {
         console.log('delete')
-        if (song.sections.length <= 1) return
+        if (song.sections.length <= 1) {
+            setTabIndex(0)
+            return
+        }
         const sections = [...song.sections]
         sections.splice(index, 1)
         onSongChange({ ...song, sections })
