@@ -68,7 +68,11 @@ const SectionOverView = ({
                                 />
                             )
                     }
-                    return <div className={tailwind_child}>{value}</div>
+                    return (
+                        <div key={rowIndex} className={tailwind_child}>
+                            {value}
+                        </div>
+                    )
                 })}
             </div>
         )
@@ -112,7 +116,11 @@ const SectionOverView = ({
                                 onInstCellClick(sectionIndex, foundIndex, inst)
                     }
                     return (
-                        <div className={tailwind_child} onClick={onClick}>
+                        <div
+                            key={rowIndex}
+                            className={tailwind_child}
+                            onClick={onClick}
+                        >
                             {value}
                         </div>
                     )
