@@ -25,6 +25,12 @@ const Header = ({ isOnline }: props) => {
         //jwt消してリロードすることでApp.tsxのタイマーが消える
         window.location.reload()
     }
+
+    //edit中にedit/newに<Link>で遷移すると入力データがリセットされないので更新させる
+    const toNewSong = async () => {
+        navigate('/edit/new')
+        window.location.reload()
+    }
     return (
         <div className="font-mono">
             {!isOnline && (
@@ -41,7 +47,12 @@ const Header = ({ isOnline }: props) => {
                         'Not Logged In. |'
                     )}
                     <div>
-                        <Link to="/edit/new">NEW</Link>
+                        <div
+                            className="hover:cursor-pointer"
+                            onClick={toNewSong}
+                        >
+                            NEW
+                        </div>
                     </div>
                     <div>|</div>
                     <div>
