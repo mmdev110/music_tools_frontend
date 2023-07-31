@@ -28,12 +28,12 @@ const DefaultChordNames: string[] = [
 ]
 //sectionの初期値
 export const sectionInit: UserSongSection = {
-    section: '',
+    section: 'intro',
     progressions: DefaultChordNames,
     progressionsCsv: '',
     key: 0,
     scale: TERMS.MAJOR,
-    bpm: 0,
+    bpm: 100,
     memo: '',
     barLength: 8,
     memoTransition: '',
@@ -41,7 +41,7 @@ export const sectionInit: UserSongSection = {
         {
             name: '',
             start: 0,
-            end: 0,
+            end: 20,
             sortOrder: 0,
         },
     ],

@@ -7,6 +7,7 @@ import {
     useLocation,
 } from 'react-router-dom'
 import Modal from 'react-modal'
+import TAILWIND from 'config/tailwind'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
 import ChordDisplay from 'Components/ChordDisplay2'
@@ -47,12 +48,10 @@ type Props = {
     onDropMidi?: (index: number, file: File) => void
     midiFile: File | null
     onSectionChange: (newSection: UserSongSection) => void
-    onDeleteButtonClick: () => void
     showAudioRange: boolean
     onClickPlayButton: (range: AudioRange) => void
     onRangeClick: (index: number, btn: string) => void
     showMidi: boolean
-    onClickChordInfo: (intervals: NoteIntervals) => void
     allInstruments: UserSongInstrument[]
     previousInstruments?: UserSongInstrument[]
     onInstrumentsMenuClick: (index: number) => void
@@ -63,12 +62,10 @@ const Section = ({
     onDropMidi,
     midiFile,
     onSectionChange,
-    onDeleteButtonClick,
     onClickPlayButton,
     showAudioRange,
     onRangeClick,
     showMidi,
-    onClickChordInfo,
     allInstruments,
     previousInstruments,
     onInstrumentsMenuClick,
@@ -114,54 +111,64 @@ const Section = ({
 
     return (
         <div className="flex flex-col gap-y-5">
-            <Button
-                className="rounded bg-red-400 font-bold text-white"
-                onClick={onDeleteButtonClick}
-            >
-                ×
-            </Button>
-            <div className="text-2xl">section name</div>
-            <Memo
-                className="h-6 w-1/4 border-2 border-sky-400"
-                memo={section.section}
-                onChange={(str) => {
-                    onSectionChange({ ...section, section: str })
-                }}
-            />
-            <div className="text-2xl">Key, Scales</div>
-            <ScaleForm
-                scaleForm={scaleForm}
-                onChange={onScaleFormChange}
-                showTranspose={true}
-            />
-            <ScaleDisplay scaleForm={scaleForm} />
-            <div className="text-2xl">bpm</div>
-            <Memo
-                className="h-6 w-1/4 border-2 border-sky-400"
-                memo={section.bpm}
-                onChange={(str) => {
-                    if (!isNaN(Number(str)))
-                        onSectionChange({
-                            ...section,
-                            bpm: Number(str),
-                        })
-                }}
-            />
-            <div className="text-2xl">Bar Length</div>
-            <Memo
-                className="h-6 w-1/4 border-2 border-sky-400"
-                memo={section.barLength}
-                onChange={(str) => {
-                    if (!isNaN(Number(str)))
-                        onSectionChange({
-                            ...section,
-                            barLength: Number(str),
-                        })
-                }}
-            />
+            <div className="flex items-end">
+                <span className="basis-48 text-2xl">name</span>
+                <Memo
+                    singleLine
+                    className="h-6 w-1/4 border-2 border-sky-400"
+                    memo={section.section}
+                    onChange={(str) => {
+                        onSectionChange({ ...section, section: str })
+                    }}
+                />
+            </div>
+            <div className="flex">
+                <span className="basis-48 text-2xl">Scale</span>
+                <div>
+                    <ScaleForm
+                        scaleForm={scaleForm}
+                        onChange={onScaleFormChange}
+                        showTranspose={true}
+                    />
+                    <ScaleDisplay scaleForm={scaleForm} />
+                </div>
+            </div>
+            <div className="flex items-end">
+                <span className="basis-48 text-2xl">BPM</span>
+                <Memo
+                    singleLine
+                    className="h-6 w-20 border-2 border-sky-400"
+                    memo={section.bpm}
+                    onChange={(str) => {
+                        if (!isNaN(Number(str)))
+                            onSectionChange({
+                                ...section,
+                                bpm: Number(str),
+                            })
+                    }}
+                />
+            </div>
+            <div className="flex items-end">
+                <span className="basis-48 text-2xl">Bar Length</span>
+                <Memo
+                    singleLine
+                    className="h-6 w-20 border-2 border-sky-400"
+                    memo={section.barLength}
+                    onChange={(str) => {
+                        if (!isNaN(Number(str)))
+                            onSectionChange({
+                                ...section,
+                                barLength: Number(str),
+                            })
+                    }}
+                />
+            </div>
             {showAudioRange ? (
                 <div>
-                    <div className="text-2xl">audio playback range</div>
+                    <div className="text-2xl">audio range</div>
+                    <div className="ml-4">
+                        秒数を直接入力するか、再生中にsetをクリックすることでオーディオの再生範囲を指定できます。
+                    </div>
                     {section.audioRanges.map((range, index) => (
                         <div key={index}>
                             <MediaRangeForm
@@ -177,20 +184,32 @@ const Section = ({
                                 onRangeClick={(command) =>
                                     onRangeClick(index, command)
                                 }
-                                onDeleteClick={() => {
-                                    if (section.audioRanges.length === 1) return
-                                    const newRanges = [...section.audioRanges]
-                                    newRanges.splice(index, 1)
-                                    onSectionChange({
-                                        ...section,
-                                        audioRanges: newRanges,
-                                    })
-                                }}
-                            />
-                            <Button onClick={() => onClickPlayButton(range)}>
-                                ▷
-                            </Button>
-                            {index === 0 && renderBarLengthEstimation()}
+                            >
+                                <Button
+                                    onClick={() => onClickPlayButton(range)}
+                                >
+                                    ▷
+                                </Button>
+                                <Button
+                                    bgColor="bg-red-500"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        if (section.audioRanges.length === 1)
+                                            return
+                                        const newRanges = [
+                                            ...section.audioRanges,
+                                        ]
+                                        newRanges.splice(index, 1)
+                                        onSectionChange({
+                                            ...section,
+                                            audioRanges: newRanges,
+                                        })
+                                    }}
+                                >
+                                    ×
+                                </Button>
+                                {index === 0 && renderBarLengthEstimation()}
+                            </MediaRangeForm>
                         </div>
                     ))}
                     <Button
@@ -214,7 +233,7 @@ const Section = ({
                 </div>
             ) : null}
 
-            <div className="text-2xl">Chord Display</div>
+            <div className="text-2xl">Chord Progressions</div>
             <ChordDisplay
                 progressionNames={section.progressions}
                 onProgressionsChange={(progressions) =>
@@ -224,16 +243,21 @@ const Section = ({
                     })
                 }
                 scaleForm={scaleForm}
-                onNoteIntervalsClick={onClickChordInfo}
             />
-            <div className="text-2xl">Instruments</div>
-            <Button
-                onClick={() => {
-                    onInstrumentsMenuClick(sectionIndex)
-                }}
-            >
-                instruments編集
-            </Button>
+            <div className="flex items-baseline">
+                <span className="text-2xl"> Instruments</span>
+                <span className="ml-6">
+                    <Button
+                        bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
+                        onClick={() => {
+                            onInstrumentsMenuClick(sectionIndex)
+                        }}
+                    >
+                        編集
+                    </Button>
+                </span>
+            </div>
+
             <InstrumentsList
                 instrumentsList={allInstruments}
                 selectedInstruments={section.instruments}
@@ -244,25 +268,31 @@ const Section = ({
                 }
                 categories={INSTRUMENT_CATEGORIES}
             />
-            <div className="text-2xl">Memo</div>
-            <Memo
-                className="h-1/2 w-full border-2 border-sky-400"
-                placeholder="セクションの大まかなメモ"
-                memo={section.memo}
-                onChange={(str) => onSectionChange({ ...section, memo: str })}
-            />
-            <div className="text-2xl">Memo_Transition</div>
-            <Memo
-                className="h-1/2 w-full border-2 border-sky-400"
-                placeholder="次のセクションへの繋ぎ方に関するメモ"
-                memo={section.memoTransition}
-                onChange={(str) =>
-                    onSectionChange({ ...section, memoTransition: str })
-                }
-            />
+            <div className="flex">
+                <span className="text-2xl">Memo</span>
+                <Memo
+                    className="ml-40 h-1/2 w-full border-2 border-sky-400"
+                    placeholder="セクションの大まかなメモ"
+                    memo={section.memo}
+                    onChange={(str) =>
+                        onSectionChange({ ...section, memo: str })
+                    }
+                />
+            </div>
+            <div className="flex">
+                <span className="text-2xl">Memo_Transition</span>
+                <Memo
+                    className="h-1/2 w-full border-2 border-sky-400"
+                    placeholder="次のセクションへの繋ぎ方に関するメモ"
+                    memo={section.memoTransition}
+                    onChange={(str) =>
+                        onSectionChange({ ...section, memoTransition: str })
+                    }
+                />
+            </div>
             {showMidi ? (
                 <div>
-                    <div className="text-2xl">MIDI Analyzer</div>
+                    <div className="text-2xl">MIDI</div>
                     <SequenceAnalyzer
                         scaleForm={scaleForm}
                         onDrop={onDrop}

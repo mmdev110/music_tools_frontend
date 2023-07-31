@@ -40,14 +40,26 @@ const DiatonicChords = ({ scaleForm }: Props) => {
         return (
             <div className="flex">
                 {Columns.map((col, colIndex) => {
+                    let tailwind_style = 'basis-16 border-b-2 border-black'
                     let value: string = ''
                     if (col === '-') {
                         //左端の列
                         value = row
+                        if (row === '-') {
+                            tailwind_style =
+                                'basis-32 border-l-2 border-t-2 border-b-4 border-r-4 border-black shrink-0'
+                        } else {
+                            tailwind_style =
+                                'basis-32 border-l-2 border-b-2 border-r-4 border-black shrink-0'
+                        }
                     } else if (row === '-') {
                         //上端の行
                         value = col
+                        tailwind_style =
+                            'basis-20 border-t-2 border-b-4 border-r-2 border-black text-center'
                     } else {
+                        tailwind_style =
+                            'basis-20 border-b-2 border-r-2 border-black text-center'
                         const noteIndex = colIndex - 1
                         console.log(notes[noteIndex])
                         const note = notes[noteIndex]
@@ -60,15 +72,13 @@ const DiatonicChords = ({ scaleForm }: Props) => {
                         if (diatonic) {
                             const { third, fifth, seventh } = diatonic
                             value = note.flat + third + seventh + fifth
+                            tailwind_style += ' bg-sky-400'
                         } else {
                             value = '(' + note.flat + ')'
                         }
                     }
                     return (
-                        <div
-                            className="basis-16 border-b-2 border-black"
-                            key={colIndex}
-                        >
+                        <div className={tailwind_style} key={colIndex}>
                             {value}
                         </div>
                     )
@@ -77,7 +87,7 @@ const DiatonicChords = ({ scaleForm }: Props) => {
         )
     }
     return (
-        <div className="flex flex-col border-2 border-black">
+        <div className="flex flex-col">
             {notes.length > 0
                 ? Rows.map((row, index) => {
                       return <div key={index}>{renderRow(row)}</div>

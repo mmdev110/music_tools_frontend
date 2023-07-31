@@ -8,8 +8,14 @@ import React, {
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
     bgColor?: string
     width?: string
+    className?: string
 }
-export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
+export const Button = ({
+    bgColor,
+    width,
+    className,
+    ...props
+}: ButtonProps) => {
     let bg = bgColor || 'bg-sky-500'
     if (props.disabled) bg = 'bg-sky-300'
     const px = 'px-4'
@@ -17,7 +23,7 @@ export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
     const text = 'text-white'
     const rounded = 'rounded'
     const w = width || 'w-auto'
-    const className = [bg, px, font, text, rounded, w].join(' ')
+    const style = className || [bg, px, font, text, rounded, w].join(' ')
     const [disabled, setDisabled] = useState(false)
     const onClick = async (
         e: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -35,7 +41,7 @@ export const Button = ({ bgColor, width, ...props }: ButtonProps) => {
     }
     return (
         <button
-            className={className}
+            className={style}
             disabled={disabled}
             {...props}
             onClick={onClick}

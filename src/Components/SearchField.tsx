@@ -149,7 +149,7 @@ const SearchField = ({
                     )}
                 </div>
             ) : null}
-            {!hideGenres ? (
+            {!hideGenres || genres?.length ? (
                 <div>
                     <div>ジャンル</div>
                     {renderSelectors<Genre>(
@@ -159,27 +159,29 @@ const SearchField = ({
                     )}
                 </div>
             ) : null}
-            {!hideTags ? (
+            {!hideTags || tags?.length ? (
                 <div>
                     <div>タグ</div>
                     {renderSelectors<Tag>(tagSelectors, onTagsChange!, true)}
                 </div>
             ) : null}
-            {!hideOrders && orders ? (
-                <FormControl className="w-1/4">
-                    <InputLabel>Order</InputLabel>
-                    <Select
-                        value={currentOrderIndex}
-                        label="order"
-                        onChange={handleOrderChange}
-                    >
-                        {orders.map((elem, index) => (
-                            <MenuItem key={index} value={index.toString()}>
-                                {elem.displayString}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+            {!hideOrders && orders?.length ? (
+                <div className="mt-4">
+                    <FormControl className="w-1/4">
+                        <InputLabel>Order</InputLabel>
+                        <Select
+                            value={currentOrderIndex}
+                            label="order"
+                            onChange={handleOrderChange}
+                        >
+                            {orders.map((elem, index) => (
+                                <MenuItem key={index} value={index.toString()}>
+                                    {elem.displayString}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </div>
             ) : null}
         </div>
     )

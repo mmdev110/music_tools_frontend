@@ -18,6 +18,7 @@ import Tab from '@mui/material/Tab'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 import ScaleForm from 'Components/ScaleForm'
 import ScaleDisplay from 'Components/ScaleDisplay'
 import ChordDisplay from 'Components/ChordDisplay2'
@@ -30,9 +31,9 @@ import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
 import GenreModal from 'Pages/Modals/Genre'
-import ChordModal from 'Pages/Modals/Chord'
 import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
+import TAILWIND from 'config/tailwind'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import SectionOverView from 'Components/SectionOverView'
 import { songInit, sectionInit } from 'config/front'
@@ -140,18 +141,7 @@ const Song = ({
     const closeInstrumentsModal = () => {
         setInstrumentsIsOpen(false)
     }
-    //コード詳細 modal
-    const [chordModalIsOpen, setChordIsOpen] = useState(false)
-    const [noteIntervals, setNoteIntervals] = useState<NoteIntervals>([])
-    const showChordModal = (info: NoteIntervals) => {
-        setNoteIntervals(info)
-        setChordIsOpen(true)
-    }
 
-    const closeChordModal = () => {
-        setNoteIntervals([])
-        setChordIsOpen(false)
-    }
     const [audioState, setAudioState] = useState<AudioState>({
         currentTime_sec: 0,
         duration_sec: 0,
@@ -176,14 +166,11 @@ const Song = ({
     }
     const [toggleAudioFlag, setToggleAudioFlag] = useState(false) //このstateを変化させることで再生停止を切り替える
     const appendNewSection = (index: number) => {
-        console.log('@@@appendnew')
-        console.log('length = ', song.sections.length)
-        console.log('index = ', index)
-        console.log(song.sections[index])
         //indexの後ろにsection追加
         const sections = [...song.sections]
         const newSection = structuredClone(sectionInit) as UserSongSection
         //ある程度の情報は引き継ぐ
+        newSection.section = ''
         newSection.bpm = sections[index].bpm
         newSection.key = sections[index].key
         newSection.scale = sections[index].scale
@@ -201,7 +188,10 @@ const Song = ({
     }
     const deleteSection = (index: number) => {
         console.log('delete')
-        if (song.sections.length <= 1) return
+        if (song.sections.length <= 1) {
+            setTabIndex(0)
+            return
+        }
         const sections = [...song.sections]
         sections.splice(index, 1)
         onSongChange({ ...song, sections })
@@ -244,46 +234,75 @@ const Song = ({
         }
     }
     return (
-        <BasicPage>
-            <div className="flex flex-col gap-y-5 pt-10">
-                {process.env.REACT_APP_ENV === 'local' ? (
-                    <Button onClick={test}>test</Button>
-                ) : null}
+        <div>
+            <div className="flex flex-col gap-y-5 pt-4">
+                <div className="flex items-end">
+                    <span className="basis-28 text-2xl">title</span>
+                    <Memo
+                        singleLine
+                        className="h-6 w-1/4 border-2 border-sky-400"
+                        memo={song.title}
+                        onChange={(str) => {
+                            onSongChange({ ...song, title: str })
+                        }}
+                    />
+                </div>
+                <div className="flex items-end">
+                    <span className="basis-28 text-2xl">artist</span>
+                    <Memo
+                        singleLine
+                        className="h-6 w-1/4 border-2 border-sky-400"
+                        memo={song.artist}
+                        onChange={(str) => {
+                            onSongChange({ ...song, artist: str })
+                        }}
+                    />
+                </div>
 
-                <div className="text-2xl">title</div>
-                <Memo
-                    className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={song.title}
-                    onChange={(str) => {
-                        onSongChange({ ...song, title: str })
-                    }}
-                />
-                <div className="text-2xl">artist</div>
-                <Memo
-                    className="h-6 w-1/4 border-2 border-sky-400"
-                    memo={song.artist}
-                    onChange={(str) => {
-                        onSongChange({ ...song, artist: str })
-                    }}
-                />
                 {user && showGenres ? (
-                    <div className="flex flex-col gap-y-5">
-                        <Button onClick={showGenreModal}>ジャンル編集</Button>
-                        <div className="flex flex-row gap-x-4">
-                            {song.genres.map((genre, index) => (
-                                <Button key={index}>{genre.name}</Button>
-                            ))}
+                    <div>
+                        <div className="flex">
+                            <span className="basis-28 text-2xl">ジャンル</span>
+                            <span className="">
+                                <Button
+                                    bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
+                                    onClick={showGenreModal}
+                                >
+                                    編集
+                                </Button>
+                            </span>
+                        </div>
+                        <div className="flex">
+                            <div className="basis-28" />
+                            <div className="mt-4 flex flex-row gap-x-4">
+                                {song.genres.map((genre, index) => (
+                                    <Button key={index}>{genre.name}</Button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 ) : null}
 
                 {user && showTags ? (
-                    <div className="flex flex-col gap-y-5">
-                        <Button onClick={showTagModal}>タグ編集</Button>
-                        <div className="flex flex-row gap-x-4">
-                            {song.tags.map((tag, index) => (
-                                <Button key={index}>{tag.name}</Button>
-                            ))}
+                    <div>
+                        <div className="flex">
+                            <span className="basis-28 text-2xl">タグ</span>
+                            <span className="">
+                                <Button
+                                    bgColor={TAILWIND.BTN_BG_COLOR_OTHER}
+                                    onClick={showTagModal}
+                                >
+                                    編集
+                                </Button>
+                            </span>
+                        </div>
+                        <div className="flex">
+                            <div className="basis-28" />
+                            <div className="flex flex-row gap-x-4">
+                                {song.tags.map((tag, index) => (
+                                    <Button key={index}>{tag.name}</Button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 ) : null}
@@ -291,52 +310,61 @@ const Song = ({
                 {showAudio ? (
                     <div>
                         <div className="text-2xl">AudioPlayer</div>
-                        <div>
-                            mp3, wav, m4aファイルをドロップできます。
-                            <br />
-                            start, endでループ範囲を指定できます。
+                        <div>mp3, wav, m4aファイルをドロップできます。</div>
+                        <div className="flex">
+                            <div className="basis-28" />
+                            <AudioPlayer
+                                className=""
+                                droppedFile={droppedAudio}
+                                audioUrl={song.audio?.url.get || ''}
+                                audioName={song.audio?.name || ''}
+                                onDrop={onDropAudio}
+                                isHLS={isHLS}
+                                dropDisabled={false}
+                                mini={false}
+                                range={audioRange}
+                                toggle={toggleAudioFlag}
+                                onTimeUpdate={onAudioTimeUpdate}
+                                onMetadataLoaded={onAudioMetadataLoaded}
+                            />
                         </div>
-                        <AudioPlayer
-                            droppedFile={droppedAudio}
-                            audioUrl={song.audio?.url.get || ''}
-                            audioName={song.audio?.name || ''}
-                            onDrop={onDropAudio}
-                            isHLS={isHLS}
-                            dropDisabled={false}
-                            mini={false}
-                            range={audioRange}
-                            toggle={toggleAudioFlag}
-                            onTimeUpdate={onAudioTimeUpdate}
-                            onMetadataLoaded={onAudioMetadataLoaded}
-                        />
                     </div>
                 ) : null}
 
-                <div className="text-2xl">Memo</div>
-                <Memo
-                    className="h-1/2 w-full border-2 border-sky-400"
-                    memo={song.memo}
-                    onChange={(str) => onSongChange({ ...song, memo: str })}
-                />
+                <div className="flex items-start">
+                    <span className="basis-28 text-2xl">Memo</span>
+                    <Memo
+                        className="h-32 grow border-2 border-sky-400"
+                        memo={song.memo}
+                        onChange={(str) => onSongChange({ ...song, memo: str })}
+                    />
+                </div>
+
                 {song.sections.length > 0 ? (
                     <div>
-                        <div className="text-2xl">Overview</div>
-                        <SectionOverView
-                            sections={song.sections}
-                            instruments={song.instruments}
-                            onClick={(newSections) => {
-                                const newSong = { ...song }
-                                newSong.sections = newSections
-                                onSongChange(newSong)
-                            }}
-                            onClickPlayButton={(range) =>
-                                playAudioWithRange(range)
-                            }
-                        />
+                        <div className="text-2xl">Sections Overview</div>
+                        <div className="flex">
+                            <div className="basis-28" />
+                            <SectionOverView
+                                sections={song.sections}
+                                instruments={song.instruments}
+                                onClick={(newSections) => {
+                                    const newSong = { ...song }
+                                    newSong.sections = newSections
+                                    onSongChange(newSong)
+                                }}
+                                onClickPlayButton={(range) =>
+                                    playAudioWithRange(range)
+                                }
+                            />
+                        </div>
                     </div>
                 ) : null}
-
+                {/*
                 <div className="text-2xl">sections</div>
+                 */}
+                <div className={`border-t-2 ${TAILWIND.BORDER_COLOR_STRONG}`} />
+                <div className="text-2xl">Sections</div>
                 <Tabs
                     value={tabIndex}
                     onChange={handleChange}
@@ -359,6 +387,12 @@ const Song = ({
                             appendNewSection(song.sections.length - 1)
                         }}
                     />
+                    <Tab
+                        //className="rounded bg-red-400 font-bold text-white"
+                        className="bg-red-500"
+                        icon={<CancelOutlinedIcon />}
+                        onClick={() => deleteSection(tabIndex)}
+                    />
                 </Tabs>
                 {song.sections.map((section, index) => {
                     return (
@@ -373,9 +407,6 @@ const Song = ({
                                     onSectionChange={(
                                         newSection: UserSongSection
                                     ) => onSectionChange(index, newSection)}
-                                    onDeleteButtonClick={() =>
-                                        deleteSection(index)
-                                    }
                                     onClickPlayButton={(range) =>
                                         playAudioWithRange(range)
                                     }
@@ -401,7 +432,6 @@ const Song = ({
                                             })
                                         }
                                     }}
-                                    onClickChordInfo={showChordModal}
                                     allInstruments={song.instruments}
                                     previousInstruments={
                                         index === 0
@@ -480,20 +510,7 @@ const Song = ({
                     allInstruments={song.instruments}
                 />
             </Modal>
-            {/* コード詳細*/}
-            <Modal
-                isOpen={chordModalIsOpen}
-                //onAfterOpen={afterOpenModal}
-                style={ModalStyle}
-                onRequestClose={closeChordModal}
-                contentLabel="Example Modal"
-            >
-                <ChordModal
-                    closeModal={closeChordModal}
-                    noteIntervals={noteIntervals}
-                />
-            </Modal>
-        </BasicPage>
+        </div>
     )
 }
 interface TabPanelProps {

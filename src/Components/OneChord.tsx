@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
+import Tooltip from '@mui/material/Tooltip'
 import * as Constants from '../config/music'
 import * as Types from '../types/music'
 import * as Utils from '../utils/music'
 import { TERMS } from '../config/music'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
+import OneTag from 'Components/OneTag2'
 
 type Props = {
     chord: string
@@ -13,9 +15,7 @@ type Props = {
     chara_itself: string[]
     index: number
     onChange: Function
-    showNoteIntervals: boolean
     noteIntervals: NoteIntervals
-    onNoteIntervalsClick: (info: NoteIntervals) => void
 }
 
 const OneChord = (props: Props) => {
@@ -73,17 +73,23 @@ const OneChord = (props: Props) => {
             </div>
         )
     }
-    const renderNoteIntervals = () => {
-        console.log('@@@@NoteIntervals', props.noteIntervals)
-        return props.noteIntervals.length !== 0 ? (
-            <Button
-                onClick={() => {
-                    props.onNoteIntervalsClick(props.noteIntervals)
-                }}
-            >
-                詳細
-            </Button>
-        ) : null
+    const renderNoteDetails = () => {
+        //console.log('@@@@NoteIntervals', props.noteIntervals)
+        const { noteIntervals } = props
+        let tooltipText = ''
+        tooltipText += `${props.chord}\n`
+        const rootIndex = noteIntervals.findIndex(
+            (note) => note.interval === 'root'
+        )
+        const root = noteIntervals[rootIndex]
+        noteIntervals.forEach((interval, index) => {
+            if (index !== rootIndex) {
+                const line = `${interval.noteName}: ${interval.interval}\n`
+                tooltipText += line
+            }
+        })
+        tooltipText += `${root.noteName}: ${root.interval}\n`
+        return <OneTag name="詳細" tooltipText={tooltipText} />
     }
 
     return (
@@ -91,10 +97,12 @@ const OneChord = (props: Props) => {
             {isInputting ? renderInputForm() : renderChordText()}
             <div>{props.degree}</div>
             {renderCharacteristic()}
-            {props.showNoteIntervals || renderNoteIntervals()}
-            {props.transposedChord ? (
-                <div className="mt-auto">{props.transposedChord}</div>
-            ) : null}
+            <div className="mt-auto">
+                {props.noteIntervals.length !== 0 ? renderNoteDetails() : null}
+                {props.transposedChord ? (
+                    <div className="mt-auto">{props.transposedChord}</div>
+                ) : null}
+            </div>
         </div>
     )
 }

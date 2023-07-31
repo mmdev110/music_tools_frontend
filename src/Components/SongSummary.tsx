@@ -11,6 +11,7 @@ import MoreIcon from '@mui/icons-material/MoreVert'
 
 import { UserSong, AudioRange, ViewType } from 'types'
 import { ALL_NOTES, ALL_DEGREES } from 'config/music'
+import TAILWIND from 'config/tailwind'
 import { Button } from 'Components/HTMLElementsWrapper'
 import Chord from 'Classes/Chord'
 import lo from 'lodash'
@@ -22,6 +23,7 @@ type Props = {
     menuItems?: { name: string; onClick: (song: UserSong) => void }[]
     viewType: ViewType
 }
+
 const SongSummary = ({
     song,
     onPlayButtonClick,
@@ -72,19 +74,15 @@ const SongSummary = ({
             )
         }
     }
-
     return (
-        <div className="flex w-full flex-col rounded-md border-2 border-black">
-            <div className="flex justify-between">
+        <div
+            className={`flex w-full flex-col border-t-2 ${TAILWIND.BORDER_COLOR_STRONG} pt-2 ${TAILWIND.LIST_BG_COLOR_ODD} ${TAILWIND.LIST_BG_COLOR_EVEN}`}
+        >
+            <div className="flex justify-between px-2">
                 <div className="overflow-x-clip break-words">
                     {getDisplayName(song)}
                 </div>
-                {/*genre */}
-                <div className="flex gap-x-2">
-                    {song.genres.map((tag, index) => (
-                        <Button key={index}>{tag.name}</Button>
-                    ))}
-                </div>
+
                 {/*削除複製メニュー*/}
                 <div className="w-12">
                     {menuItems ? (
@@ -92,20 +90,24 @@ const SongSummary = ({
                     ) : null}
                 </div>
             </div>
-            <div className="flex justify-start gap-x-2 border-t-2 border-black">
+            <div
+                className={`flex h-7 justify-start gap-x-2 border-t px-2 ${TAILWIND.BORDER_COLOR}`}
+            >
+                {/*genre */}
+                {song.genres.map((tag, index) => (
+                    <Button key={index}>{tag.name}</Button>
+                ))}
                 {/*タグ */}
                 {song.tags.length > 0
                     ? song.tags.map((tag, index) => (
                           <Button key={index}>{tag.name}</Button>
                       ))
-                    : 'tag'}
+                    : null}
             </div>
 
-            <div className="flex justify-between border-t-2 border-black">
-                {/**コード進行、ディグリー、メモ */}
-                <div className="h-full grow border-black">
-                    {renderByViewType()}
-                </div>
+            {/**コード進行、ディグリー、メモ */}
+            <div className={`h-full grow ${TAILWIND.BORDER_COLOR}`}>
+                {renderByViewType()}
             </div>
         </div>
     )
@@ -138,25 +140,33 @@ const ViewOverview = ({ song, onClick }: ViewOverviewProps) => {
     }
 
     return (
-        <div className="flex">
-            <div className="basis-1/3">
-                {song.sections.map((sec, index) => {
-                    return (
-                        <div
-                            key={index}
-                            className="flex border-b-2 border-black last:border-transparent"
-                        >
-                            <div className="basis-1/2 border-r-2 border-black">
-                                {sec.section || '-'}
-                            </div>
-                            <div className="basis-1/2 border-r-2 border-black">{`${getBasicInfoString(
-                                index
-                            )}`}</div>
-                        </div>
-                    )
-                })}
+        <div>
+            <div className="grow overflow-y-clip px-2">
+                {song.memo || 'song.memo'}
             </div>
-            <div className="grow overflow-y-clip">{song.memo}</div>
+            {song.sections.map((sec, index) => {
+                return (
+                    //last:border-transparent
+                    <div
+                        key={index}
+                        className={`flex border-t  ${TAILWIND.BORDER_COLOR}`}
+                    >
+                        <div
+                            className={`basis-1/12 border-r ${TAILWIND.BORDER_COLOR} px-2`}
+                        >
+                            {sec.section || '-'}
+                        </div>
+                        <div
+                            className={`basis-1/3 border-r ${TAILWIND.BORDER_COLOR} px-2`}
+                        >{`${getBasicInfoString(index)}`}</div>
+                        <div
+                            className={`basis-1/3 ${TAILWIND.BORDER_COLOR} px-2`}
+                        >
+                            {sec.memo || '-'}
+                        </div>
+                    </div>
+                )
+            })}
         </div>
     )
 }

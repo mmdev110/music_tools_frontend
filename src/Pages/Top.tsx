@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { TERMS } from 'config/music'
 import * as Types from 'types/music'
 import * as Utils from 'utils/music'
+import TEXT from 'config/text'
 import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'
 import { Button } from 'Components/HTMLElementsWrapper'
@@ -19,14 +20,8 @@ const Top = ({ onVisit }: props) => {
         <BasicPage>
             <div className="flex flex-col gap-y-2 pt-10">
                 <div>
-                    LOOP
-                    ANALYZERはループ素材を分析して、繰り返し聴くことで音楽理論を定着させるサービスです。
-                </div>
-                <div>
-                    <Link className="text-red-500" to="/edit/new">
-                        こちら
-                    </Link>
-                    <span>から試してみましょう！</span>
+                    {TEXT.SERVICE_NAME}
+                    は楽曲分析を自身の音楽制作に活かしていくためのサービスです。
                 </div>
                 <HowToUse />
                 {process.env.REACT_APP_ENV === 'local' ? (

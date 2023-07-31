@@ -228,6 +228,7 @@ export default class Chord {
         //昇順ソート
         this._notes = lo.uniq(transposed).sort((a, b) => a - b)
     }
+    //ノート名とルートからのインターバルのリスト
     getNoteIntervals(): NoteIntervals {
         const root =
             this._detail.on === -1 ? this._detail.root : this._detail.on

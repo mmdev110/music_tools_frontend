@@ -91,36 +91,47 @@ const InstrumentsView = <T extends TagModel>({
         return !lo.isEqual(oldSelectors, selectors)
     }
     const handleRightClick = (selector: Selector<T>, index: number) => {
-        if (nameInput === '' && memoInput === '') {
-            //空なら、selectorの内容をinputに反映させる
-            setNameInput(selector.name)
-            setMemoInput(selector.memo)
-        } else {
-            //値が入っている場合、inputの値をselectorに反映させる
+        if ((nameInput !== '' || memoInput !== '') && editingIndex === index) {
+            //値が入っていてindexが一致するなら、inputの値をselectorに反映させる
             const newSelectors = [...selectors]
             newSelectors[index].name = nameInput
             newSelectors[index].memo = memoInput
             setSelectors(newSelectors)
             setNameInput('')
             setMemoInput('')
+            setEditingIndex(undefined)
+        } else {
+            //空か、editingIndexが違う場合は、selectorの内容をinputに反映させる
+            setNameInput(selector.name)
+            setMemoInput(selector.memo)
+            setEditingIndex(index)
         }
     }
 
     return (
         <div className="flex flex-col items-center">
-            <input
-                className="mb-5 border-2 border-black"
-                type="text"
-                placeholder="instrument名"
-                onChange={handleNameInput}
-                value={nameInput}
-            />
+            <div>
+                <input
+                    className="mb-5 border-2 border-black"
+                    type="text"
+                    placeholder="instrument名"
+                    onChange={handleNameInput}
+                    value={nameInput}
+                />{' '}
+                <span className="font-bold text-red-500">
+                    {typeof editingIndex !== 'undefined' ? '編集中' : null}
+                </span>
+            </div>
+
             <textarea
                 className="mb-5 h-20 w-1/2 border-2 border-black"
                 placeholder="フレーズの特徴など"
                 onChange={handleMemoInput}
                 value={memoInput}
             />
+            <div className="my-6">
+                保存済みのinstrumentを右クリックし、編集してから再度右クリックすることで内容を更新することができます。
+            </div>
             <div className="flex w-full justify-around">
                 {INSTRUMENT_CATEGORIES.map((categName, index) => {
                     const filtered = selectors.filter((sel) => {
@@ -173,7 +184,6 @@ const InstrumentsView = <T extends TagModel>({
                     )
                 })}
             </div>
-
             <Button
                 disabled={!isChanged()}
                 onClick={() => {

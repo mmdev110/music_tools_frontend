@@ -197,7 +197,7 @@ const Detail = () => {
         console.log(songRef.current!.title)
         console.log(user)
         console.log(isChanged())
-        if (isChanged()) save()
+        if (user && isChanged()) save()
     }
     useEffect(() => {
         //ブラウザ更新、閉じた時の保存処理
@@ -205,7 +205,7 @@ const Detail = () => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload)
             //アンマウント時の保存処理
-            if (isChanged()) save()
+            if (user && isChanged()) save()
         }
     }, [])
     const songRef = useRef<UserSong>()
@@ -324,10 +324,12 @@ const Detail = () => {
     }
     return (
         <BasicPage>
-            <div className="text-2xl">Song Editor</div>
-            {process.env.REACT_APP_ENV === 'local' ? (
-                <Button onClick={test}>test</Button>
-            ) : null}
+            <div className="text-2xl">楽曲分析</div>
+            <div>
+                {user
+                    ? 'データは自動保存されます'
+                    : 'ログインすることで入力データやオーディオファイルを保存して、再度開くことができます'}
+            </div>
             <Song
                 user={user || undefined}
                 song={userSong}
