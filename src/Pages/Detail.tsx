@@ -30,6 +30,7 @@ import Memo from 'Components/Memo'
 import MediaRangeForm from 'Components/MediaRangeForm'
 import { TERMS } from 'config/music'
 import {
+    User,
     Tag,
     ScaleFormType,
     AudioRange,
@@ -74,6 +75,10 @@ Modal.setAppElement('#root')
 const Detail = () => {
     let { uuid } = useParams()
     const user = useContext(UserContext)
+    const userRef = useRef<User | null>()
+    useEffect(() => {
+        userRef.current = user
+    }, [user])
 
     //編集前の状態
     const [oldState, setOldState] = useState<UserSong>(
@@ -193,11 +198,11 @@ const Detail = () => {
     const handleBeforeUnload = () => {
         //ブラウザ更新時の保存処理
         console.log(`unload !!`)
-        console.log(oldState.title)
-        console.log(songRef.current!.title)
-        console.log(user)
-        console.log(isChanged())
-        if (user && isChanged()) save()
+        //console.log(oldState.title)
+        //console.log('title: ', songRef.current!.title)
+        //console.log('user: ', userRef.current)
+        //console.log('isChanged: ', isChanged())
+        if (userRef.current && isChanged()) save()
     }
     useEffect(() => {
         //ブラウザ更新、閉じた時の保存処理
@@ -205,7 +210,7 @@ const Detail = () => {
         return () => {
             window.removeEventListener('beforeunload', handleBeforeUnload)
             //アンマウント時の保存処理
-            if (user && isChanged()) save()
+            if (userRef.current && isChanged()) save()
         }
     }, [])
     const songRef = useRef<UserSong>()
@@ -318,9 +323,9 @@ const Detail = () => {
     }
 
     const test = () => {
-        console.log(droppedAudio)
+        //console.log(droppedAudio)
         //console.log(userSong)
-        //console.log(isChanged())
+        console.log(isChanged())
     }
     return (
         <BasicPage>
