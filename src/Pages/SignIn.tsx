@@ -21,7 +21,6 @@ const SignIn = () => {
                 form.email,
                 form.password
             )
-            window.localStorage.setItem('access_token', accessToken)
             navigate('/')
             //jwt追加してリロードすることでApp.tsxのタイマーが作動する
             window.location.reload()
