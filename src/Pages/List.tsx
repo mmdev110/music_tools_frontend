@@ -190,7 +190,6 @@ const List = () => {
     }
     const execDelete = async (input: UserSong) => {
         console.log(input)
-        //console.log(window.localStorage.getItem('access_token'))
         const data = await deleteUserSong(input.id!)
         closeModal()
         window.location.reload()

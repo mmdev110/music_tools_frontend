@@ -8,6 +8,7 @@ import {
     useNavigate,
 } from 'react-router-dom'
 import { UserContext } from 'App'
+import { accessToken } from 'API/request'
 import TEXT from 'config/text'
 import { TERMS } from 'config/music'
 import Detail from 'Pages/Detail'
@@ -15,12 +16,15 @@ import { User } from 'types/'
 import { forEachChild } from 'typescript'
 type props = {
     isOnline: boolean
+    onSignOut: () => Promise<void>
 }
-const Header = ({ isOnline }: props) => {
+const Header = ({ isOnline, onSignOut }: props) => {
     const navigate = useNavigate()
     const user = useContext(UserContext)
     const signOut = async () => {
-        window.localStorage.removeItem('access_token')
+        await onSignOut()
+        accessToken.update('')
+
         navigate('/')
         //jwt消してリロードすることでApp.tsxのタイマーが消える
         window.location.reload()

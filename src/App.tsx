@@ -24,9 +24,10 @@ import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
 import {
     getUser,
-    signInWithToken,
     refreshToken,
     healthCheck,
+    accessToken,
+    signOut,
 } from 'API/request'
 
 export const UserContext = createContext<User | null>(null)
@@ -47,51 +48,25 @@ const App = () => {
         }
     }
     const auth = async () => {
-        const token = localStorage.getItem('access_token')
-        if (token) {
-            let me: User | null = null
-            try {
-                const response = await signInWithToken()
-                if (response) {
-                    const { user, accessToken } = response
-                    me = user
-                    localStorage.setItem('access_token', accessToken)
-                }
-            } catch (err) {
-                if (isAxiosError(err)) console.log(err)
-            }
-
+        let me: User | null = null
+        try {
+            //cookieのrefresh_tokenからaccess_token生成
+            await refresh()
+            const userResult = await getUser()
+            if (userResult) me = userResult
             if (me) {
                 setUser(me)
-
                 //アクセストークン更新用のタイマー開始
                 const timer = startRefreshTimer()
-            } else {
-                //userが取得できなかった場合
-                try {
-                    //リフレッシュする
-                    await refresh()
-                    //新しいトークンでuserを叩く
-                    //refresh()でaccess_token再設定済みなのでsignin_with_tokenは叩かない
-                    const userResult = await getUser()
-                    if (userResult) me = userResult
-                    if (me) {
-                        setUser(me)
-                        //アクセストークン更新用のタイマー開始
-                        const timer = startRefreshTimer()
-                    }
-                } catch (e) {
-                    //accessTokenもrefreshTokenもexpireしているので、ログアウト状態とする
-                    localStorage.removeItem('access_token')
-                    if (isAxiosError(e)) console.log(e)
-                    return
-                }
             }
+        } catch (e) {
+            if (isAxiosError(e)) console.log(e)
+            return
         }
     }
     useEffect(() => {
-        auth()
         chk()
+        auth()
     }, [])
     const startRefreshTimer = (): NodeJS.Timer => {
         console.log('@@@@REFRESH TIMER START')
@@ -101,21 +76,26 @@ const App = () => {
     }
     const refresh = async () => {
         console.log('refresh !!')
-        try {
-            const { accessToken } = await refreshToken()
-            localStorage.setItem('access_token', accessToken)
-        } catch (e) {
-            console.log(e)
-        }
+        const res = await refreshToken()
+        accessToken.update(res.accessToken)
     }
     const onVisit = () => {
         //TOPのonVisit要らなくなったら消す
         console.log('top')
     }
+    const onSignOut = async () => {
+        try {
+            //refresh_tokenの削除リクエスト
+            const res = await signOut()
+            accessToken.update('')
+        } catch (e) {
+            if (isAxiosError(e)) console.log(e)
+        }
+    }
     const router = createBrowserRouter([
         {
             path: '/',
-            element: <Header isOnline={isOnline} />,
+            element: <Header isOnline={isOnline} onSignOut={onSignOut} />,
             errorElement: <ErrorPage />,
             children: [
                 {

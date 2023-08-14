@@ -3,6 +3,17 @@ import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
 
+class AccessToken {
+    constructor(private _token: string) {}
+    update = (newToken: string) => {
+        this._token = newToken
+    }
+    get = () => {
+        return this._token
+    }
+}
+export const accessToken = new AccessToken('')
+
 const backend = axios.create({
     baseURL: BACKEND_URL,
     withCredentials: true,
@@ -60,19 +71,8 @@ const configBackend = () => {
 }
 configBackend()
 
-//jwtによる認証
-export const signInWithToken = async (): Promise<SignInResponse | null> => {
-    const jwt = window.localStorage.getItem('access_token')
-    if (!jwt) return null
-    const response = await requestBackend<SignInResponse>(
-        'signin_with_token',
-        'GET'
-    )
-    //console.log(response)
-    return response.data
-}
 export const getUser = async (): Promise<User | null> => {
-    const jwt = window.localStorage.getItem('access_token')
+    const jwt = accessToken.get() || null
     if (!jwt) return null
     const response = await requestBackend<User>('user', 'GET')
     //console.log(response)
@@ -92,6 +92,11 @@ export const signIn = async (
         password,
     })
     console.log(response)
+    return response.data
+}
+type SignOutResponse = { message: string }
+export const signOut = async (): Promise<SignOutResponse> => {
+    const response = await requestBackend<SignOutResponse>('signout', 'GET', {})
     return response.data
 }
 //email,passwordによるsignup
@@ -165,7 +170,7 @@ const requestBackend = async <T>(
     data?: any
 ): Promise<AxiosResponse<T, any>> => {
     const url = endpoint
-    const jwt = window.localStorage.getItem('access_token')
+    const jwt = accessToken.get() || null
     const config = {
         headers: {
             'Content-Type': 'application/json',
