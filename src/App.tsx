@@ -62,7 +62,6 @@ const App = () => {
             }
         } catch (e) {
             if (isAxiosError(e)) console.log(e)
-            return
         }
         setAuthFinished(true)
     }
