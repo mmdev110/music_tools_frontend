@@ -33,6 +33,7 @@ import {
 export const UserContext = createContext<User | null>(null)
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
+    const [authFinished, setAuthFinished] = useState(false)
     const [isOnline, setIsOnline] = useState(true)
 
     const chk = async () => {
@@ -63,6 +64,7 @@ const App = () => {
             if (isAxiosError(e)) console.log(e)
             return
         }
+        setAuthFinished(true)
     }
     useEffect(() => {
         chk()
@@ -143,7 +145,7 @@ const App = () => {
     ])
     return (
         <UserContext.Provider value={user}>
-            <RouterProvider router={router} />
+            {authFinished ? <RouterProvider router={router} /> : null}
         </UserContext.Provider>
     )
 }
