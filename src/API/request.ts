@@ -191,7 +191,7 @@ const requestBackend = async <T>(
 
     const config = { headers: {} }
     config.headers = {
-        'Content-Type': data ? 'application/json' : 'text/plain',
+        'Content-Type': 'application/json',
     }
     if (authRequired && jwt)
         config.headers = { ...config.headers, Authorization: 'Bearer ' + jwt }
