@@ -76,7 +76,6 @@ const App = () => {
         }, TOKEN_REFRESH_INTERVAL_SEC * 1000)
     }
     const refresh = async () => {
-        console.log('refresh !!')
         const res = await refreshToken()
         accessToken.update(res.accessToken)
     }

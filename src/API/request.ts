@@ -195,8 +195,6 @@ const requestBackend = async <T>(
     }
     if (authRequired && jwt)
         config.headers = { ...config.headers, Authorization: 'Bearer ' + jwt }
-    console.log(endpoint)
-    console.log(config)
     let response: AxiosResponse<T>
     if (method === 'POST') {
         response = await backend.post(url, data, config)

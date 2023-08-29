@@ -123,7 +123,6 @@ const Detail = () => {
         try {
             const userSongId = uuid === 'new' ? 'new' : String(userSong.id!)
             response = await saveUserSong(userSong, userSongId)
-            console.log(response)
             if (response) {
                 setUserSong(structuredClone(response))
                 setOldState(structuredClone(response))
@@ -131,6 +130,7 @@ const Detail = () => {
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
         }
+        console.log('hihi')
         console.log(response)
         if (response) {
             try {
@@ -143,8 +143,8 @@ const Detail = () => {
                         audio.url.put,
                         audioFileRef.current
                     )
-                    console.log('@@@upload finished')
-                    console.log(response)
+                    //console.log('@@@upload finished')
+                    //console.log(response)
                 }
                 //midiアップロード
                 //const midi = response.userLoopMidi
@@ -162,7 +162,7 @@ const Detail = () => {
     }
     const load = async (uuid: string) => {
         const response = await getUserSong(uuid)
-        console.log('@@URI', response)
+        //console.log('@@URI', response)
         //編集前の状態を保存しておく
         setOldState(structuredClone(response))
         setUserSong(structuredClone(response))
@@ -170,9 +170,6 @@ const Detail = () => {
         const audio = response.audio
         //audio, midiのロード
         try {
-            if (audio && audio.url.get) {
-                console.log(audio.url.get)
-            }
             for (let i = 0; i < response.sections.length; i++) {
                 const midi = response.sections[i].midi
                 if (midi && midi.url.get) {
@@ -187,7 +184,6 @@ const Detail = () => {
         }
     }
     useEffect(() => {
-        console.log({ uuid })
         if (uuid && uuid !== 'new') {
             //edit/:userSongIdのとき
             load(uuid)

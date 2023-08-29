@@ -45,7 +45,6 @@ const AudioPlayer = ({
     //const audioRef = useRef<HTMLMediaElement>(null)
     useEffect(() => {
         if (HLS.isSupported()) {
-            console.log(audioUrl)
             const hls = new HLS()
             hls.loadSource(audioUrl)
             if (audioRef) hls.attachMedia(audioRef.current!)
