@@ -68,7 +68,7 @@ const ChordDisplay2 = ({
         updateProgression(reset)
     }
     const updateProgression = (chordNames: string[]) => {
-        console.log('updateprogression')
+        //console.log('updateprogression')
         const { root, scale } = scaleForm
         const newProgression = ChordProgression.newFromChordNames(
             chordNames,

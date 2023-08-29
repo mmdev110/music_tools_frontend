@@ -74,7 +74,7 @@ configBackend()
 export const getUser = async (): Promise<User | null> => {
     const jwt = accessToken.get() || null
     if (!jwt) return null
-    const response = await requestBackend<User>('user', 'GET')
+    const response = await requestBackend<User>('user', 'GET', true)
     //console.log(response)
     return response.data
 }
@@ -87,16 +87,25 @@ export const signIn = async (
     email: string,
     password: string
 ): Promise<SignInResponse> => {
-    const response = await requestBackend<SignInResponse>('signin', 'POST', {
-        email,
-        password,
-    })
+    const response = await requestBackend<SignInResponse>(
+        'signin',
+        'POST',
+        false,
+        {
+            email,
+            password,
+        }
+    )
     console.log(response)
     return response.data
 }
 type SignOutResponse = { message: string }
 export const signOut = async (): Promise<SignOutResponse> => {
-    const response = await requestBackend<SignOutResponse>('signout', 'GET', {})
+    const response = await requestBackend<SignOutResponse>(
+        'signout',
+        'GET',
+        true
+    )
     return response.data
 }
 //email,passwordによるsignup
@@ -104,7 +113,7 @@ export const signUp = async (
     email: string,
     password: string
 ): Promise<User> => {
-    const response = await requestBackend<User>('signup', 'POST', {
+    const response = await requestBackend<User>('signup', 'POST', true, {
         email,
         password,
     })
@@ -121,6 +130,7 @@ export const saveUserSong = async (
     const response = await requestBackend<UserSong>(
         `song/${userSongId}`,
         'POST',
+        true,
         b
     )
 
@@ -134,26 +144,32 @@ export const deleteUserSong = async (id: number): Promise<GeneralResponse> => {
     const response = await requestBackend<GeneralResponse>(
         'delete_song',
         'POST',
+        true,
         { id: id }
     )
     return response.data
 }
 
 export const getUserSong = async (uuid: string): Promise<UserSong> => {
-    const response = await requestBackend<UserSong>(`song/${uuid}`, 'GET')
+    const response = await requestBackend<UserSong>(`song/${uuid}`, 'GET', true)
     return fromBackend(response.data)
 }
 export const getUserSongs = async (
     condition: UserSongSearchCondition
 ): Promise<UserSong[]> => {
     console.log('@@@@getUserSongs')
-    const response = await requestBackend<UserSong[]>('list', 'POST', condition)
+    const response = await requestBackend<UserSong[]>(
+        'list',
+        'POST',
+        true,
+        condition
+    )
     const resp = response.data.map((song) => fromBackend(song))
     return resp
 }
 //疎通確認
 export const healthCheck = async (): Promise<boolean> => {
-    const response = await requestBackend<boolean>('_chk', 'GET')
+    const response = await requestBackend<boolean>('_chk', 'GET', false)
     return response.data
 }
 
@@ -161,22 +177,24 @@ type ResRefresh = {
     accessToken: string
 }
 export const refreshToken = async (): Promise<ResRefresh> => {
-    const response = await requestBackend<ResRefresh>('refresh', 'POST')
+    const response = await requestBackend<ResRefresh>('refresh', 'POST', false)
     return response.data
 }
 const requestBackend = async <T>(
     endpoint: string,
     method: string,
+    authRequired: boolean,
     data?: any
 ): Promise<AxiosResponse<T, any>> => {
     const url = endpoint
     const jwt = accessToken.get() || null
-    const config = {
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: jwt ? 'Bearer ' + jwt : '',
-        },
+
+    const config = { headers: {} }
+    config.headers = {
+        'Content-Type': 'application/json',
     }
+    if (authRequired && jwt)
+        config.headers = { ...config.headers, Authorization: 'Bearer ' + jwt }
     let response: AxiosResponse<T>
     if (method === 'POST') {
         response = await backend.post(url, data, config)
@@ -217,6 +235,7 @@ export const resetPasswordRequest = async (
     const response = await requestBackend<ResetPasswordResponse>(
         'reset_password?action=request',
         'POST',
+        true,
         { email: email }
     )
     //console.log(response.data)
@@ -229,35 +248,41 @@ export const setNewPassword = async (
     const response = await requestBackend<User>(
         'reset_password?action=reset',
         'POST',
+        false,
         { newPassword: newPassword, token: token }
     )
     return response.data
 }
 export const confirmEmail = async (token: string): Promise<User> => {
-    const response = await requestBackend<User>('email_confirm', 'POST', {
-        token: token,
-    })
+    const response = await requestBackend<User>(
+        'email_confirm',
+        'POST',
+        false,
+        {
+            token: token,
+        }
+    )
     return response.data
 }
 
 //ユーザーのtag一覧の取得
 export const getTags = async (): Promise<Tag[]> => {
-    const response = await requestBackend<Tag[]>('tags', 'GET')
+    const response = await requestBackend<Tag[]>('tags', 'GET', true)
     return response.data
 }
 //ユーザーのtag更新
 export const saveTags = async (data: Tag[]): Promise<Tag[]> => {
-    const response = await requestBackend<Tag[]>('tags', 'POST', data)
+    const response = await requestBackend<Tag[]>('tags', 'POST', true, data)
     return response.data
 }
 //ユーザーのgenre一覧の取得
 export const getGenres = async (): Promise<Genre[]> => {
-    const response = await requestBackend<Genre[]>('genres', 'GET')
+    const response = await requestBackend<Genre[]>('genres', 'GET', true)
     return response.data
 }
 //ユーザーのgenre更新
 export const saveGenres = async (data: Genre[]): Promise<Genre[]> => {
-    const response = await requestBackend<Genre[]>('genres', 'POST', data)
+    const response = await requestBackend<Genre[]>('genres', 'POST', true, data)
     return response.data
 }
 
