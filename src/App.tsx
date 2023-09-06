@@ -19,6 +19,7 @@ import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
 import ResetReq from 'Pages/ResetReq'
 import ErrorPage from 'Pages/ErrorPage'
+import Health from 'Pages/Health'
 import OtherTools from 'Pages/OtherTools'
 import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
@@ -129,6 +130,10 @@ const App = () => {
                 {
                     path: 'email_confirm',
                     element: <EmailConfirm />,
+                },
+                {
+                    path: 'health',
+                    element: <Health />,
                 },
                 {
                     path: 'other_tools',

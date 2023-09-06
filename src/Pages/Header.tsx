@@ -7,6 +7,7 @@ import {
     Outlet,
     useNavigate,
 } from 'react-router-dom'
+import TAILWIND from 'config/tailwind'
 import { UserContext } from 'App'
 import { accessToken } from 'API/request'
 import TEXT from 'config/text'
@@ -40,6 +41,12 @@ const Header = ({ isOnline, onSignOut }: props) => {
             {!isOnline && (
                 <div className="bg-red-700 text-center font-bold text-slate-100">
                     オフライン動作中
+                    <Link
+                        to="health"
+                        className="ml-8 font-bold text-blue-300 underline"
+                    >
+                        詳細
+                    </Link>
                 </div>
             )}
             <div className="flex justify-between bg-stone-600 px-20  text-slate-100">
