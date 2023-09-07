@@ -31,6 +31,8 @@ const Health = () => {
                 dbStatus: res.dbStatus,
             }
             setStatus({ ...status })
+            setErrorText('')
+            setResultText('更新しました。')
         } catch (e) {
             if (isAxiosError(e)) {
                 setErrorText('getStatus failed: ' + e.message)
@@ -46,6 +48,7 @@ const Health = () => {
             }
             const res = await backendManager(req)
             setResultText('再開リクエストを送信しました。')
+            setErrorText('')
         } catch (e) {
             if (isAxiosError(e)) {
                 setErrorText('apply failed: ' + e.message)
@@ -88,7 +91,10 @@ const Status = ({ status, updateStatus, execApply }: StatusProps) => {
     const isOperating = () =>
         backendStatus === 'running' && dbStatus === 'available'
     const isApplying = () =>
-        backendStatus === 'stopped' && dbStatus !== 'stopped'
+        backendStatus === 'stopped' && dbStatus === 'starting'
+
+    const isStopping = () =>
+        backendStatus === 'stopped' && dbStatus === 'stopping'
     const canApply = () => backendStatus === 'stopped' && dbStatus == 'stopped'
     return (
         <div>
@@ -97,6 +103,8 @@ const Status = ({ status, updateStatus, execApply }: StatusProps) => {
 
             {isOperating() ? (
                 <div>現在サービスは稼働しています</div>
+            ) : isStopping() ? (
+                <div>現在サービスを停止中です</div>
             ) : isApplying() ? (
                 <div>現在サービスを起動中です</div>
             ) : (
