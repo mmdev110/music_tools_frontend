@@ -32,7 +32,14 @@ const Health = () => {
             }
             setStatus({ ...status })
             setErrorText('')
-            setResultText('更新しました。')
+
+            const jp = new Date().toLocaleDateString('ja-JP', {
+                timeZone: 'Asia/Tokyo',
+            })
+            const nowJP = new Date()
+            setResultText(
+                `更新しました。${nowJP.getHours()}:${nowJP.getMinutes()}:${nowJP.getSeconds()}`
+            )
         } catch (e) {
             if (isAxiosError(e)) {
                 setErrorText('getStatus failed: ' + e.message)
@@ -83,23 +90,25 @@ const Health = () => {
 
 type StatusProps = {
     status: Status
-    updateStatus: () => void
-    execApply: () => void
+    updateStatus: () => Promise<void>
+    execApply: () => Promise<void>
 }
 const Status = ({ status, updateStatus, execApply }: StatusProps) => {
     const { backendStatus, dbStatus } = status
+    const [pressingStatusBtn, setPressingStatusBtn] = useState(false)
+    const [pressingApplyBtn, setPressingApplyBtn] = useState(false)
     const isOperating = () =>
         backendStatus === 'running' && dbStatus === 'available'
-    const isApplying = () =>
-        backendStatus === 'stopped' && dbStatus === 'starting'
+    const isApplying = () => dbStatus === 'starting'
 
-    const isStopping = () =>
-        backendStatus === 'stopped' && dbStatus === 'stopping'
+    const isStopping = () => dbStatus === 'stopping'
+    const isStopped = () =>
+        backendStatus === 'stopped' && dbStatus === 'stopped'
     const canApply = () => backendStatus === 'stopped' && dbStatus == 'stopped'
     return (
         <div>
-            <div>backendStatus: {status.backendStatus}</div>
-            <div>dbStatus: {status.dbStatus}</div>
+            <div>API: {status.backendStatus}</div>
+            <div>DB: {status.dbStatus}</div>
 
             {isOperating() ? (
                 <div>現在サービスは稼働しています</div>
@@ -107,13 +116,36 @@ const Status = ({ status, updateStatus, execApply }: StatusProps) => {
                 <div>現在サービスを停止中です</div>
             ) : isApplying() ? (
                 <div>現在サービスを起動中です</div>
-            ) : (
+            ) : isStopped() ? (
                 <div>現在サービスは稼働していません</div>
+            ) : (
+                <div>
+                    現在サービスは稼働していません。何らかのエラーが発生しています。
+                </div>
             )}
             <div className="flex gap-x-4">
-                <Button onClick={updateStatus}>更新</Button>
+                <Button
+                    disabled={pressingStatusBtn}
+                    onClick={() => {
+                        setPressingStatusBtn(true)
+                        updateStatus().finally(() =>
+                            setPressingStatusBtn(false)
+                        )
+                    }}
+                >
+                    更新
+                </Button>
                 {canApply() ? (
-                    <Button onClick={execApply}>起動する</Button>
+                    <Button
+                        disabled={pressingApplyBtn}
+                        onClick={() => {
+                            setPressingApplyBtn(true)
+                            execApply().catch(() => setPressingApplyBtn(false))
+                            //連打されたくないのでエラー時のみボタンを戻す
+                        }}
+                    >
+                        起動する
+                    </Button>
                 ) : null}
             </div>
         </div>
