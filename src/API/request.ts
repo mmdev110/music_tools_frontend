@@ -1,4 +1,9 @@
-import axios, { AxiosResponse, AxiosError, isAxiosError } from 'axios'
+import axios, {
+    AxiosResponse,
+    AxiosError,
+    isAxiosError,
+    AxiosInstance,
+} from 'axios'
 import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
@@ -19,7 +24,7 @@ const backend = axios.create({
     withCredentials: true,
 })
 
-const configBackend = () => {
+const configBackend = (instance: AxiosInstance) => {
     //request.params, request.dataをcamel->snakeに、
     //response.dataをsnake->camelにするための処理
     //programabl.com/ja/convert-snakecase-and-camelcase/
@@ -47,7 +52,7 @@ const configBackend = () => {
     const mapKeysSnakeCase = (data: object) => {
         return mapKeysDeep(data, (_: string, key: string) => lo.snakeCase(key))
     }
-    backend.interceptors.request.use((request: any) => {
+    instance.interceptors.request.use((request: any) => {
         if (request.method == 'get') {
             const convertParams = mapKeysSnakeCase(request.params)
             return { ...request, params: convertParams }
@@ -57,7 +62,7 @@ const configBackend = () => {
         }
     })
 
-    backend.interceptors.response.use(
+    instance.interceptors.response.use(
         (response: any) => {
             const { data } = response
             const convertedData = mapKeysCamelCase(data)
@@ -69,7 +74,7 @@ const configBackend = () => {
         }
     )
 }
-configBackend()
+configBackend(backend)
 
 export const getUser = async (): Promise<User | null> => {
     const jwt = accessToken.get() || null
@@ -284,6 +289,27 @@ export const getGenres = async (): Promise<Genre[]> => {
 export const saveGenres = async (data: Genre[]): Promise<Genre[]> => {
     const response = await requestBackend<Genre[]>('genres', 'POST', true, data)
     return response.data
+}
+type BackendManagerReq = {
+    action: string
+    force: boolean
+}
+type BackendManagerRes = {
+    backendStatus: string
+    dbStatus: string
+}
+export const backendManager = async (
+    arg: BackendManagerReq
+): Promise<BackendManagerRes> => {
+    const endpoint = 'backend_manager'
+    const response = await requestBackend<BackendManagerRes>(
+        endpoint,
+        'POST',
+        false,
+        arg
+    )
+    const res = response.data
+    return res
 }
 
 //sectionのprogressions, midiのrootsをCsvに変換する
