@@ -13,7 +13,6 @@ import { UserSong, AudioRange, ViewType } from 'types'
 import { ALL_NOTES, ALL_DEGREES } from 'config/music'
 import TAILWIND from 'config/tailwind'
 import { Button } from 'Components/HTMLElementsWrapper'
-import Chord from 'Classes/Chord'
 import lo from 'lodash'
 
 type Props = {

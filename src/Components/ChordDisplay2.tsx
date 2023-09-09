@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { ALL_DEGREES, TERMS } from '../config/music'
 import * as Types from '../types/music'
 import ChordProgression from '../Classes/ChordProgression'
 import lo from 'lodash'
 import OneChord from './OneChord'
 import OneRelation from './OneRelation'
-import ScaleForm from './ScaleForm'
-import { NoteIntervals } from 'Classes/Chord'
 
 type Props = {
     scaleForm: Types.ScaleFormType

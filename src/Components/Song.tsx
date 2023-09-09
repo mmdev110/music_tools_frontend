@@ -1,61 +1,30 @@
-import React, {
-    useEffect,
-    useState,
-    useContext,
-    useRef,
-    SyntheticEvent,
-} from 'react'
-import {
-    Route,
-    Routes,
-    BrowserRouter,
-    useParams,
-    useLocation,
-} from 'react-router-dom'
+import React, { useState } from 'react'
 import Modal from 'react-modal'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
-import ScaleForm from 'Components/ScaleForm'
-import ScaleDisplay from 'Components/ScaleDisplay'
-import ChordDisplay from 'Components/ChordDisplay2'
-import Intervals from 'Components/Intervals'
 import Section from 'Components/Section'
-import Modes from 'Components/Modes'
-import SequenceAnalyzer from 'Components/SequenceAnalyzer'
-import MidiMonitorDescription from 'Components/MidiMonitorDescription'
-import MidiMonitor from 'Components/MidiMonitor'
 import AudioPlayer from 'Components/AudioPlayer'
 import TagModal from 'Pages/Modals/Tag'
 import GenreModal from 'Pages/Modals/Genre'
 import InstrumentsModal from 'Pages/Modals/Instruments'
 import Memo from 'Components/Memo'
 import TAILWIND from 'config/tailwind'
-import MediaRangeForm from 'Components/MediaRangeForm'
 import SectionOverView from 'Components/SectionOverView'
-import { songInit, sectionInit } from 'config/front'
+import { sectionInit } from 'config/front'
 import {
     Tag,
     Genre,
     User,
-    ScaleFormType,
     AudioRange,
     UserSongSection,
     AudioState,
     UserSongInstrument,
 } from 'types'
 import { UserSong } from 'types'
-import { getFromS3, getUserSong, saveUserSong, uploadToS3 } from 'API/request'
-import * as Utils from 'utils/music'
-import { isAxiosError } from 'axios'
-import { UserContext } from 'App'
 import lo from 'lodash'
-import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
-import { NoteIntervals } from 'Classes/Chord'
 
 const ModalStyle = {
     content: {

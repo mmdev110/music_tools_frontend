@@ -1,9 +1,3 @@
-import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-
-import { TERMS } from 'config/music'
-import * as Types from 'types/music'
-import * as Utils from 'utils/music'
 import TEXT from 'config/text'
 import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'

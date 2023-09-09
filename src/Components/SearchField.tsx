@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
-import Dropzone from 'react-dropzone'
+import React, { useState, useEffect } from 'react'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 
-import HLS from 'hls.js'
-import { AudioRange, ViewType, Tag, Genre, Order } from 'types/'
+import { ViewType, Tag, Genre, Order } from 'types/'
 import { Button } from 'Components/HTMLElementsWrapper'
-import { values } from 'lodash'
 type Selector<T extends TagModel> = T & {
     isSelected: boolean
 }

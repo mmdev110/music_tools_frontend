@@ -1,7 +1,5 @@
-import { iteratee } from 'lodash'
 import { it, describe, expect } from 'vitest'
 import * as Utils from '../utils/music'
-import * as Constants from '../config/music'
 import { TERMS, ALL_DEGREES, ALL_NOTES } from '../config/music'
 import Chord from './Chord'
 describe('new()', () => {

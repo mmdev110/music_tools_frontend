@@ -1,5 +1,3 @@
-import internal from 'stream'
-
 export type User = {
     userId: number
     email: string

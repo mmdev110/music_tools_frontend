@@ -1,20 +1,8 @@
-import React, { useState, useContext } from 'react'
-import {
-    Route,
-    Routes,
-    BrowserRouter,
-    Link,
-    Outlet,
-    useNavigate,
-} from 'react-router-dom'
-import TAILWIND from 'config/tailwind'
+import React, { useContext } from 'react'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { UserContext } from 'App'
 import { accessToken } from 'API/request'
 import TEXT from 'config/text'
-import { TERMS } from 'config/music'
-import Detail from 'Pages/Detail'
-import { User } from 'types/'
-import { forEachChild } from 'typescript'
 type props = {
     isOnline: boolean
     onSignOut: () => Promise<void>

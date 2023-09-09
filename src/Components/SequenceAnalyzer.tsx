@@ -8,7 +8,6 @@ import { Midi } from '@tonejs/midi'
 import Dropzone from 'react-dropzone'
 import MidiTypes from '@tonejs/midi/dist/Note'
 import Sequencer from './Sequencer'
-import RootForm from './RootForm'
 
 type Props = {
     scaleForm: Types.ScaleFormType

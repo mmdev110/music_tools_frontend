@@ -1,6 +1,5 @@
 import { it, describe, expect } from 'vitest'
 import ChordProgression from './ChordProgression'
-import * as Constants from '../config/music'
 import { TERMS } from '../config/music'
 import * as Utils from '../utils/music'
 

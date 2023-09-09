@@ -1,4 +1,3 @@
-import Note from './Note'
 import * as Constants from '../config/music'
 import {
     TERMS,
@@ -9,7 +8,6 @@ import {
 } from '../config/music'
 import { findNote, shiftArrayIndex, getSignatureType } from '../utils/music'
 import lo from 'lodash'
-import { NOTE } from '../types/music'
 
 //type Third = '' | 'm' | 'sus4' | 'sus2' | 'aug' | 'dim'
 type Third = string

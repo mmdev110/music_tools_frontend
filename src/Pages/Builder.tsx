@@ -1,68 +1,26 @@
-import React, {
-    useEffect,
-    useState,
-    useContext,
-    useRef,
-    SyntheticEvent,
-    useCallback,
-} from 'react'
-import {
-    Route,
-    Routes,
-    BrowserRouter,
-    useParams,
-    useLocation,
-} from 'react-router-dom'
-import Modal from 'react-modal'
-import ScaleForm from 'Components/ScaleForm'
-import ScaleDisplay from 'Components/ScaleDisplay'
-import ChordDisplay from 'Components/ChordDisplay2'
-import Intervals from 'Components/Intervals'
-import Section from 'Components/Section'
-import Modes from 'Components/Modes'
-import SequenceAnalyzer from 'Components/SequenceAnalyzer'
-import MidiMonitorDescription from 'Components/MidiMonitorDescription'
-import MidiMonitor from 'Components/MidiMonitor'
+import React, { useEffect, useState, useContext, useCallback } from 'react'
+import { useParams } from 'react-router-dom'
 import AudioPlayer from 'Components/AudioPlayer'
-import TagModal from 'Pages/Modals/Tag'
-import GenreModal from 'Pages/Modals/Genre'
-import ChordModal from 'Pages/Modals/Chord'
-import Memo from 'Components/Memo'
-import MediaRangeForm from 'Components/MediaRangeForm'
 import SearchField from 'Components/SearchField'
 import Drawer from '@mui/material/Drawer'
-import { TERMS } from 'config/music'
 import {
     Tag,
     Genre,
-    ScaleFormType,
     AudioRange,
     UserSongSection,
-    AudioState,
     UserSongSearchCondition,
     ViewType,
 } from 'types'
 import { UserSong } from 'types'
-import {
-    getFromS3,
-    getUserSong,
-    saveUserSong,
-    uploadToS3,
-    getUserSongs,
-    getTags,
-    getGenres,
-} from 'API/request'
-import * as Utils from 'utils/music'
+import { getUserSongs, getTags, getGenres } from 'API/request'
 import { isAxiosError } from 'axios'
 import { UserContext } from 'App'
 import lo from 'lodash'
 import BasicPage from 'Components/BasicPage'
-import { Button, Input } from 'Components/HTMLElementsWrapper'
-import { NoteIntervals } from 'Classes/Chord'
+import { Button } from 'Components/HTMLElementsWrapper'
 import Song from 'Components/Song'
 import SongSummary from 'Components/SongSummary'
-import { resolve } from 'dns/promises'
-import { songInit, sectionInit } from 'config/front'
+import { songInit } from 'config/front'
 
 type Audio = {
     name: string

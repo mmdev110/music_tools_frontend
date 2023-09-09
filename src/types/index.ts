@@ -1,4 +1,3 @@
-//export type { User, UserSong, Tag } from './front'
 export type {
     Tag,
     User,
