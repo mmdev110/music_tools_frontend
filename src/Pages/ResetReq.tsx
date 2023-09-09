@@ -1,15 +1,9 @@
 import React, { useState } from 'react'
-import { Route, Routes, BrowserRouter } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'config/music'
-import Detail from 'Pages/Detail'
-import * as Types from 'types/music'
-import * as Utils from 'utils/music'
-//import './App.css'
 import { resetPasswordRequest } from 'API/request'
 import BasicPage from 'Components/BasicPage'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
-import { validateEmail, validatePassword } from 'utils/front'
+import { validateEmail } from 'utils/front'
 const ResetReq = () => {
     const [email, setEmail] = useState({ email: '', error: '' })
     const onEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {

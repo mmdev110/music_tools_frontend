@@ -1,10 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Tooltip from '@mui/material/Tooltip'
-import * as Constants from '../config/music'
-import * as Types from '../types/music'
-import * as Utils from '../utils/music'
-import { TERMS } from '../config/music'
-import { Button, Input } from 'Components/HTMLElementsWrapper'
 import { NoteIntervals } from 'Classes/Chord'
 import OneTag from 'Components/OneTag2'
 

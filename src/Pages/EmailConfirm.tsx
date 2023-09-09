@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'config/music'
-import Detail from 'Pages/Detail'
-import * as Types from 'types/music'
-import * as Utils from 'utils/music'
-//import './App.css'
 import { confirmEmail } from 'API/request'
 import BasicPage from 'Components/BasicPage'
-import { Button, Input } from 'Components/HTMLElementsWrapper'
-import { validatePassword } from 'utils/front'
 const EmailConfirm = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()

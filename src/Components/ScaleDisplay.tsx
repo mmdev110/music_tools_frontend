@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import * as Constants from '../config/music'
+import React from 'react'
 import * as Types from '../types/music'
 import * as Util from '../utils/music'
 

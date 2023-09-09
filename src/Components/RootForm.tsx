@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react'
 import * as Constants from '../config/music'
 import * as Utils from '../utils/music'
 import * as Types from '../types/music'
-import { SequencerNote, SequencerSetting } from '../types/music'
-import { Midi } from '@tonejs/midi'
-import Dropzone from 'react-dropzone'
-import MidiTypes from '@tonejs/midi/dist/Note'
+import { SequencerSetting } from '../types/music'
 import InputCell from './InputCell'
 
 type numberOrNull = number | null

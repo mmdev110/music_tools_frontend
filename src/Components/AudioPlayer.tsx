@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
 import Dropzone from 'react-dropzone'
 import HLS from 'hls.js'
-import { AudioRange } from 'types/front'
 
 interface Range {
     start: number

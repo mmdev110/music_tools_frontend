@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
+import React from 'react'
 import { AudioRange } from 'types/front'
 import { Button } from 'Components/HTMLElementsWrapper'
 

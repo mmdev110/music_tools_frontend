@@ -1,12 +1,5 @@
-import React, { useState, useEffect, useRef, SyntheticEvent } from 'react'
-import Dropzone from 'react-dropzone'
-import HLS from 'hls.js'
-import {
-    AudioRange,
-    UserSongSection,
-    UserSongInstrument,
-    User,
-} from 'types/front'
+import React from 'react'
+import { AudioRange, UserSongSection, UserSongInstrument } from 'types/front'
 import { INSTRUMENT_CATEGORIES } from 'config/front'
 import { Button, Input } from 'Components/HTMLElementsWrapper'
 import OneTag from 'Components/OneTag2'

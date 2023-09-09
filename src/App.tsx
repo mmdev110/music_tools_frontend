@@ -1,15 +1,8 @@
-import React, { useState, useEffect, useRef, createContext } from 'react'
-import {
-    Route,
-    Routes,
-    RouterProvider,
-    createBrowserRouter,
-} from 'react-router-dom'
+import React, { useState, useEffect, createContext } from 'react'
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { TERMS } from 'config/music'
 import { TOKEN_REFRESH_INTERVAL_SEC } from 'config/front'
 import { User } from './types'
-import * as Utils from './utils/music'
 import Header from 'Pages/Header'
 import Top from 'Pages/Top'
 import SignIn from 'Pages/SignIn'

@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { TERMS } from '../config/music'
-import * as Util from '../utils/music'
 import * as Types from '../types/music'
-import { SequencerNote, SequencerSetting } from '../types/music'
-import { Midi } from '@tonejs/midi'
-import Dropzone from 'react-dropzone'
-import MidiTypes from '@tonejs/midi/dist/Note'
-import InputCell from './InputCell'
 
 type Props = {
     onChange: React.ChangeEventHandler<HTMLSelectElement>

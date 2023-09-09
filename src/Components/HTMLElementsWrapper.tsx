@@ -1,7 +1,6 @@
 import React, {
     ButtonHTMLAttributes,
     InputHTMLAttributes,
-    PropsWithoutRef,
     useState,
 } from 'react'
 

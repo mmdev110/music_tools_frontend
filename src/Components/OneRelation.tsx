@@ -1,8 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react'
-import * as Constants from '../config/music'
-import * as Types from '../types/music'
-import * as Utils from '../utils/music'
-
 type Props = {
     chara_relation: string[]
 }

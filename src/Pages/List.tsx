@@ -1,16 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react'
-import {
-    Route,
-    Routes,
-    BrowserRouter,
-    Link,
-    useNavigate,
-} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Modal from 'react-modal'
-import { TERMS } from 'config/music'
-import TAILWIND from 'config/tailwind'
-import Detail from 'Pages/Detail'
-import * as Types from 'types/music'
 import {
     UserSong,
     Tag,
@@ -20,8 +10,6 @@ import {
     Order,
 } from 'types/'
 import { UserContext } from 'App'
-import * as Utils from 'utils/music'
-//import './App.css'
 import { getUserSongs, getTags, deleteUserSong, getGenres } from 'API/request'
 import { isAxiosError } from 'axios'
 import BasicPage from 'Components/BasicPage'

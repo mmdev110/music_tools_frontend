@@ -1,9 +1,4 @@
-import axios, {
-    AxiosResponse,
-    AxiosError,
-    isAxiosError,
-    AxiosInstance,
-} from 'axios'
+import axios, { AxiosResponse, AxiosInstance } from 'axios'
 import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
