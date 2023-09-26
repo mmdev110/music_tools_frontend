@@ -1,7 +1,9 @@
+import AccessToken from 'Classes/AccessToken'
+
 export type User = {
     userId: number
     email: string
-    token: string
+    token: AccessToken
 }
 export type UserSong = {
     id?: number

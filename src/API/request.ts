@@ -2,16 +2,10 @@ import axios, { AxiosResponse, AxiosInstance } from 'axios'
 import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
+import AccessToken from 'Classes/AccessToken'
+import { access } from 'fs'
 
-class AccessToken {
-    constructor(private _token: string) {}
-    update = (newToken: string) => {
-        this._token = newToken
-    }
-    get = () => {
-        return this._token
-    }
-}
+//このグローバル変数を消したい
 export const accessToken = new AccessToken('')
 
 const backend = axios.create({
@@ -99,6 +93,13 @@ export const signIn = async (
     console.log(response)
     return response.data
 }
+export const authWithToken = async (token: string): Promise<User> => {
+    accessToken.update(token)
+    const response = await requestBackend<User>('auth_with_token', 'POST', true)
+    console.log(response)
+    const me = response.data
+    return me
+}
 type SignOutResponse = { message: string }
 export const signOut = async (): Promise<SignOutResponse> => {
     const response = await requestBackend<SignOutResponse>(
@@ -173,13 +174,6 @@ export const healthCheck = async (): Promise<boolean> => {
     return response.data
 }
 
-type ResRefresh = {
-    accessToken: string
-}
-export const refreshToken = async (): Promise<ResRefresh> => {
-    const response = await requestBackend<ResRefresh>('refresh', 'POST', false)
-    return response.data
-}
 const requestBackend = async <T>(
     endpoint: string,
     method: string,

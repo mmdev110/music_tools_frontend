@@ -24,3 +24,6 @@ yarn-error.log*
 
 #local audio files
 /audio_sample
+
+# env_file
+.env.development

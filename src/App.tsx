@@ -16,15 +16,41 @@ import Health from 'Pages/Health'
 import OtherTools from 'Pages/OtherTools'
 import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
+import AuthWithCognito from 'Pages/AuthWithCognito'
 import {
     getUser,
-    refreshToken,
+    authWithToken,
     healthCheck,
     accessToken,
     signOut,
 } from 'API/request'
 
+import { I18n } from 'aws-amplify'
+import { translations } from '@aws-amplify/ui-react'
+import AWS from 'config/aws'
+import { Amplify, Auth } from 'aws-amplify'
+import AccessToken from 'Classes/AccessToken'
+I18n.putVocabularies(translations)
+I18n.setLanguage('ja')
 export const UserContext = createContext<User | null>(null)
+
+Amplify.configure({
+    Auth: {
+        region: AWS.REGION,
+        userPoolId: AWS.USER_POOL_ID,
+        userPoolWebClientId: AWS.USER_POOL_APP_CLIENT_ID,
+        //authenticationFlowType: 'USER_PASSWORD_AUTH',
+        oauth: {
+            domain: AWS.COGNITO_DOMAIN,
+            redirectSignIn: 'http://localhost:3000/auth',
+            redirectSignOut: 'http://localhost:3000/auth',
+            scope: ['email', 'openid'],
+            cliendId: AWS.GOOGLE_CLIENT_ID,
+            responseType: 'code',
+        },
+    },
+})
+
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
     const [authFinished, setAuthFinished] = useState(false)
@@ -45,17 +71,27 @@ const App = () => {
     const auth = async () => {
         let me: User | null = null
         try {
-            //cookieのrefresh_tokenからaccess_token生成
-            await refresh()
+            console.log('@@auth')
+            //tokenを探す
+            const token = await AccessToken.findCurrentToken()
+            console.log(token)
+            accessToken.update(token) //userにtokenを内包したので、後で消す
+            //tokenでuser取得
             const userResult = await getUser()
             if (userResult) me = userResult
             if (me) {
+                me.token = new AccessToken(token)
                 setUser(me)
-                //アクセストークン更新用のタイマー開始
-                const timer = startRefreshTimer()
+            } else {
+                //できなかった場合の処理をどうするか
             }
         } catch (e) {
-            if (isAxiosError(e)) console.log(e)
+            if (isAxiosError(e)) {
+                console.log(e)
+            } else {
+                //no current user
+                console.log(e)
+            }
         }
         setAuthFinished(true)
     }
@@ -63,46 +99,30 @@ const App = () => {
         chk()
         auth()
     }, [])
-    const startRefreshTimer = (): NodeJS.Timer => {
-        console.log('@@@@REFRESH TIMER START')
-        return setInterval(async () => {
-            refresh()
-        }, TOKEN_REFRESH_INTERVAL_SEC * 1000)
-    }
-    const refresh = async () => {
-        const res = await refreshToken()
-        accessToken.update(res.accessToken)
-    }
-    const onVisit = () => {
-        //TOPのonVisit要らなくなったら消す
-        console.log('top')
-    }
     const onSignOut = async () => {
         try {
-            //refresh_tokenの削除リクエスト
-            const res = await signOut()
-            accessToken.update('')
+            await accessToken.signOut()
         } catch (e) {
             if (isAxiosError(e)) console.log(e)
         }
     }
     const router = createBrowserRouter([
         {
-            path: '/',
+            path: '',
             element: <Header isOnline={isOnline} onSignOut={onSignOut} />,
             errorElement: <ErrorPage />,
             children: [
                 {
-                    path: '',
-                    element: <Top onVisit={onVisit} />,
+                    path: '/',
+                    element: <Top />,
                 },
+                //{
+                //    path: 'signin',
+                //    element: <SignInWithCognito />,
+                //},
                 {
-                    path: 'signin',
-                    element: <SignIn />,
-                },
-                {
-                    path: 'signup',
-                    element: <SignUp />,
+                    path: 'auth',
+                    element: <AuthWithCognito />,
                 },
                 {
                     path: 'list',

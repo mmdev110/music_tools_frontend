@@ -11,9 +11,9 @@ const Header = ({ isOnline, onSignOut }: props) => {
     const navigate = useNavigate()
     const user = useContext(UserContext)
     const signOut = async () => {
+        console.log('SIGNOUT!!')
         await onSignOut()
-        accessToken.update('')
-
+        //accessToken.update('')
         navigate('/')
         //jwt消してリロードすることでApp.tsxのタイマーが消える
         window.location.reload()
@@ -77,7 +77,7 @@ const Header = ({ isOnline, onSignOut }: props) => {
                             </div>
                             <div>|</div>
                             <div>
-                                <Link to="signup">SIGN UP</Link>
+                                <Link to="auth">SIGN UP</Link>
                             </div>
                         </div>
                     )}
