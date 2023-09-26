@@ -73,7 +73,7 @@ const Header = ({ isOnline, onSignOut }: props) => {
                     ) : (
                         <div className="flex gap-x-2">
                             <div>
-                                <Link to="auth">SIGN IN/UP</Link>
+                                <Link to="auth">SIGN IN</Link>
                             </div>
                         </div>
                     )}
