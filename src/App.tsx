@@ -5,8 +5,6 @@ import { TOKEN_REFRESH_INTERVAL_SEC } from 'config/front'
 import { User } from './types'
 import Header from 'Pages/Header'
 import Top from 'Pages/Top'
-import SignIn from 'Pages/SignIn'
-import SignUp from 'Pages/SignUp'
 import Detail from 'Pages/Detail'
 import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
@@ -17,6 +15,7 @@ import OtherTools from 'Pages/OtherTools'
 import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
 import AuthWithCognito from 'Pages/AuthWithCognito'
+import SignOut from 'Pages/SignOut'
 import {
     getUser,
     authWithToken,
@@ -33,6 +32,7 @@ import AccessToken from 'Classes/AccessToken'
 I18n.putVocabularies(translations)
 I18n.setLanguage('ja')
 export const UserContext = createContext<User | null>(null)
+export const TokenContext = createContext<AccessToken | null>(null)
 
 Amplify.configure({
     Auth: {
@@ -53,6 +53,7 @@ Amplify.configure({
 
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
+    const [token, setToken] = useState<AccessToken | null>(null)
     const [authFinished, setAuthFinished] = useState(false)
     const [isOnline, setIsOnline] = useState(true)
 
@@ -75,6 +76,7 @@ const App = () => {
             //tokenを探す
             const token = await AccessToken.init()
             await accessToken.updateToken() //userにtokenを内包したので、消したい
+            setToken(token)
             //tokenでuser取得
             const userResult = await getUser()
             if (userResult) me = userResult
@@ -98,17 +100,10 @@ const App = () => {
         chk()
         auth()
     }, [])
-    const onSignOut = async () => {
-        try {
-            await accessToken.signOut()
-        } catch (e) {
-            if (isAxiosError(e)) console.log(e)
-        }
-    }
     const router = createBrowserRouter([
         {
             path: '',
-            element: <Header isOnline={isOnline} onSignOut={onSignOut} />,
+            element: <Header isOnline={isOnline} />,
             errorElement: <ErrorPage />,
             children: [
                 {
@@ -155,12 +150,18 @@ const App = () => {
                     path: 'build',
                     element: <Builder />,
                 },
+                {
+                    path: 'signout',
+                    element: <SignOut />,
+                },
             ],
         },
     ])
     return (
         <UserContext.Provider value={user}>
-            {authFinished ? <RouterProvider router={router} /> : null}
+            <TokenContext.Provider value={token}>
+                {authFinished ? <RouterProvider router={router} /> : null}
+            </TokenContext.Provider>
         </UserContext.Provider>
     )
 }

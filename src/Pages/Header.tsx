@@ -5,19 +5,10 @@ import { accessToken } from 'API/request'
 import TEXT from 'config/text'
 type props = {
     isOnline: boolean
-    onSignOut: () => Promise<void>
 }
-const Header = ({ isOnline, onSignOut }: props) => {
+const Header = ({ isOnline }: props) => {
     const navigate = useNavigate()
     const user = useContext(UserContext)
-    const signOut = async () => {
-        console.log('SIGNOUT!!')
-        await onSignOut()
-        //accessToken.update('')
-        navigate('/')
-        //jwt消してリロードすることでApp.tsxのタイマーが消える
-        window.location.reload()
-    }
 
     //edit中にedit/newに<Link>で遷移すると入力データがリセットされないので更新させる
     const toNewSong = async () => {
@@ -67,9 +58,7 @@ const Header = ({ isOnline, onSignOut }: props) => {
                     </div>
                     <div>|</div>
                     {user?.token.isLogin() ? (
-                        <div className="hover:cursor-pointer" onClick={signOut}>
-                            SIGN OUT
-                        </div>
+                        <Link to="signout">SIGN OUT</Link>
                     ) : (
                         <div className="flex gap-x-2">
                             <div>
