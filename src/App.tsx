@@ -42,8 +42,8 @@ Amplify.configure({
         //authenticationFlowType: 'USER_PASSWORD_AUTH',
         oauth: {
             domain: AWS.COGNITO_DOMAIN,
-            redirectSignIn: 'http://localhost:3000/auth',
-            redirectSignOut: 'http://localhost:3000/auth',
+            redirectSignIn: process.env.REACT_APP_FRONTEND_URL + '/auth',
+            redirectSignOut: process.env.REACT_APP_FRONTEND_URL + '/auth',
             scope: ['email', 'openid'],
             cliendId: AWS.GOOGLE_CLIENT_ID,
             responseType: 'code',
