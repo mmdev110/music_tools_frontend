@@ -66,7 +66,7 @@ const Header = ({ isOnline, onSignOut }: props) => {
                         <Link to="other_tools">TOOLS</Link>
                     </div>
                     <div>|</div>
-                    {user ? (
+                    {user?.token.isLogin() ? (
                         <div className="hover:cursor-pointer" onClick={signOut}>
                             SIGN OUT
                         </div>

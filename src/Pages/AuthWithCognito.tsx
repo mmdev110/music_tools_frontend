@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { isAxiosError } from 'axios'
 import { authWithToken } from 'API/request'
 import BasicPage from 'Components/BasicPage'
@@ -12,10 +13,15 @@ import '@aws-amplify/ui-react/styles.css'
 //cognito側でsigninとsignupをまとめて処理してるので、
 //コンポーネント側も処理をまとめる必要あり
 const AuthResult = ({ signOut, user }: WithAuthenticatorProps) => {
+    const navigate = useNavigate()
     const [resultMsg, setResultMsg] = useState('')
     const [errMsg, setErrMsg] = useState('')
     useEffect(() => {
-        register()
+        register().then(() => {
+            setTimeout(() => {
+                redirectToTop()
+            }, 2000)
+        })
     }, [])
     const register = async () => {
         try {
@@ -28,6 +34,10 @@ const AuthResult = ({ signOut, user }: WithAuthenticatorProps) => {
             if (isAxiosError(e)) setErrMsg(e.message)
         }
     }
+    const redirectToTop = () => {
+        navigate('/')
+        window.location.reload()
+    }
     const getIDToken = async (): Promise<string> => {
         if (!user) {
             return ''
@@ -38,14 +48,17 @@ const AuthResult = ({ signOut, user }: WithAuthenticatorProps) => {
     }
     return (
         <BasicPage>
-            <div>登録に成功しました。ログインに進んでください。</div>
-            {errMsg ? <div>{errMsg}</div> : null}
+            {errMsg ? (
+                <div>{errMsg}</div>
+            ) : (
+                <div>ログインに成功しました。トップページに移動します。</div>
+            )}
         </BasicPage>
     )
 }
 
 export default withAuthenticator(AuthResult, {
-    initialState: 'signUp',
+    initialState: 'signIn',
     loginMechanisms: ['email'],
     socialProviders: ['google'],
     variation: 'default',

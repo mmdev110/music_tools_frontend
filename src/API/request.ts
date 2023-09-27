@@ -3,7 +3,6 @@ import { User, UserSong, Tag, UserSongSearchCondition, Genre } from 'types/'
 import lo from 'lodash'
 import { BACKEND_URL } from 'config/front'
 import AccessToken from 'Classes/AccessToken'
-import { access } from 'fs'
 
 //このグローバル変数を消したい
 export const accessToken = new AccessToken('')

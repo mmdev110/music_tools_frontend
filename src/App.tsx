@@ -73,14 +73,13 @@ const App = () => {
         try {
             console.log('@@auth')
             //tokenを探す
-            const token = await AccessToken.findCurrentToken()
-            console.log(token)
-            accessToken.update(token) //userにtokenを内包したので、後で消す
+            const token = await AccessToken.init()
+            await accessToken.updateToken() //userにtokenを内包したので、消したい
             //tokenでuser取得
             const userResult = await getUser()
             if (userResult) me = userResult
             if (me) {
-                me.token = new AccessToken(token)
+                me.token = token
                 setUser(me)
             } else {
                 //できなかった場合の処理をどうするか

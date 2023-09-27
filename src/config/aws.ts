@@ -6,6 +6,4 @@ const AWS = {
     COGNITO_DOMAIN: process.env.REACT_APP_COGNITO_DOMAIN,
     GOOGLE_CLIENT_ID: process.env.REACT_APP_GOOGLE_CLIENT_ID,
 }
-console.log(AWS)
-
 export default AWS
