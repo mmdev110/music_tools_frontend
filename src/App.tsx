@@ -5,8 +5,6 @@ import { TOKEN_REFRESH_INTERVAL_SEC } from 'config/front'
 import { User } from './types'
 import Header from 'Pages/Header'
 import Top from 'Pages/Top'
-import SignIn from 'Pages/SignIn'
-import SignUp from 'Pages/SignUp'
 import Detail from 'Pages/Detail'
 import List from 'Pages/List'
 import ResetNew from 'Pages/ResetNew'
@@ -16,17 +14,46 @@ import Health from 'Pages/Health'
 import OtherTools from 'Pages/OtherTools'
 import EmailConfirm from 'Pages/EmailConfirm'
 import Builder from 'Pages/Builder'
+import AuthWithCognito from 'Pages/AuthWithCognito'
+import SignOut from 'Pages/SignOut'
 import {
     getUser,
-    refreshToken,
+    authWithToken,
     healthCheck,
     accessToken,
     signOut,
 } from 'API/request'
 
+import { I18n } from 'aws-amplify'
+import { translations } from '@aws-amplify/ui-react'
+import AWS from 'config/aws'
+import { Amplify, Auth } from 'aws-amplify'
+import AccessToken from 'Classes/AccessToken'
+I18n.putVocabularies(translations)
+I18n.setLanguage('ja')
 export const UserContext = createContext<User | null>(null)
+export const TokenContext = createContext<AccessToken | null>(null)
+
+Amplify.configure({
+    Auth: {
+        region: AWS.REGION,
+        userPoolId: AWS.USER_POOL_ID,
+        userPoolWebClientId: AWS.USER_POOL_APP_CLIENT_ID,
+        //authenticationFlowType: 'USER_PASSWORD_AUTH',
+        oauth: {
+            domain: AWS.COGNITO_DOMAIN,
+            redirectSignIn: process.env.REACT_APP_FRONTEND_URL + '/auth',
+            redirectSignOut: process.env.REACT_APP_FRONTEND_URL + '/auth',
+            scope: ['email', 'openid'],
+            cliendId: AWS.GOOGLE_CLIENT_ID,
+            responseType: 'code',
+        },
+    },
+})
+
 const App = () => {
     const [user, setUser] = useState<User | null>(null)
+    const [token, setToken] = useState<AccessToken | null>(null)
     const [authFinished, setAuthFinished] = useState(false)
     const [isOnline, setIsOnline] = useState(true)
 
@@ -45,17 +72,27 @@ const App = () => {
     const auth = async () => {
         let me: User | null = null
         try {
-            //cookieのrefresh_tokenからaccess_token生成
-            await refresh()
+            console.log('@@auth')
+            //tokenを探す
+            const token = await AccessToken.init()
+            await accessToken.updateToken() //userにtokenを内包したので、消したい
+            setToken(token)
+            //tokenでuser取得
             const userResult = await getUser()
             if (userResult) me = userResult
             if (me) {
+                me.token = token
                 setUser(me)
-                //アクセストークン更新用のタイマー開始
-                const timer = startRefreshTimer()
+            } else {
+                //できなかった場合の処理をどうするか
             }
         } catch (e) {
-            if (isAxiosError(e)) console.log(e)
+            if (isAxiosError(e)) {
+                console.log(e)
+            } else {
+                //no current user
+                console.log(e)
+            }
         }
         setAuthFinished(true)
     }
@@ -63,46 +100,23 @@ const App = () => {
         chk()
         auth()
     }, [])
-    const startRefreshTimer = (): NodeJS.Timer => {
-        console.log('@@@@REFRESH TIMER START')
-        return setInterval(async () => {
-            refresh()
-        }, TOKEN_REFRESH_INTERVAL_SEC * 1000)
-    }
-    const refresh = async () => {
-        const res = await refreshToken()
-        accessToken.update(res.accessToken)
-    }
-    const onVisit = () => {
-        //TOPのonVisit要らなくなったら消す
-        console.log('top')
-    }
-    const onSignOut = async () => {
-        try {
-            //refresh_tokenの削除リクエスト
-            const res = await signOut()
-            accessToken.update('')
-        } catch (e) {
-            if (isAxiosError(e)) console.log(e)
-        }
-    }
     const router = createBrowserRouter([
         {
-            path: '/',
-            element: <Header isOnline={isOnline} onSignOut={onSignOut} />,
+            path: '',
+            element: <Header isOnline={isOnline} />,
             errorElement: <ErrorPage />,
             children: [
                 {
-                    path: '',
-                    element: <Top onVisit={onVisit} />,
+                    path: '/',
+                    element: <Top />,
                 },
+                //{
+                //    path: 'signin',
+                //    element: <SignInWithCognito />,
+                //},
                 {
-                    path: 'signin',
-                    element: <SignIn />,
-                },
-                {
-                    path: 'signup',
-                    element: <SignUp />,
+                    path: 'auth',
+                    element: <AuthWithCognito />,
                 },
                 {
                     path: 'list',
@@ -136,12 +150,18 @@ const App = () => {
                     path: 'build',
                     element: <Builder />,
                 },
+                {
+                    path: 'signout',
+                    element: <SignOut />,
+                },
             ],
         },
     ])
     return (
         <UserContext.Provider value={user}>
-            {authFinished ? <RouterProvider router={router} /> : null}
+            <TokenContext.Provider value={token}>
+                {authFinished ? <RouterProvider router={router} /> : null}
+            </TokenContext.Provider>
         </UserContext.Provider>
     )
 }

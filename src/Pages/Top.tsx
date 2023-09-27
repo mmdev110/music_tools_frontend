@@ -3,12 +3,18 @@ import BasicPage from 'Components/BasicPage'
 import HowToUse from 'Components/Descriptions/HowToUse'
 import { Button } from 'Components/HTMLElementsWrapper'
 import { healthCheck } from 'API/request'
-type props = {
-    onVisit: () => void
-}
-const Top = ({ onVisit }: props) => {
+import { Auth } from 'aws-amplify'
+type props = {}
+const Top = () => {
     const onClick = async () => {
-        await healthCheck()
+        //await healthCheck()
+        const sess = await Auth.currentSession()
+        const accessToken = await sess.getAccessToken()
+        const idToken = await sess.getIdToken()
+        const jwt = idToken.getJwtToken()
+        console.log(accessToken.payload)
+        console.log(idToken.payload)
+        console.log(jwt)
     }
     return (
         <BasicPage>
