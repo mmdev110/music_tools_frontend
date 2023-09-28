@@ -156,7 +156,6 @@ const Song = ({
         })
     }
     const deleteSection = (index: number) => {
-        console.log('delete')
         if (song.sections.length <= 1) {
             setTabIndex(0)
             return
@@ -189,9 +188,6 @@ const Song = ({
         }
     }
 
-    const test = () => {
-        console.log(song)
-    }
     const [tabIndex, setTabIndex] = React.useState(0)
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue)

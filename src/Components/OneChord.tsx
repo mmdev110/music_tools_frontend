@@ -19,7 +19,6 @@ const OneChord = (props: Props) => {
     const [isInputting, setIsInputting] = useState(false)
     const formRef = useRef<HTMLInputElement>(null)
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log('change at OneChord')
         const newState = event.target.value
         setState(newState)
         props.onChange(props.index, newState)

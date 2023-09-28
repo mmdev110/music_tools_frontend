@@ -197,7 +197,6 @@ const ViewChords = ({ song, onClick }: ViewOverviewProps) => {
         const degreeNames = progression.chords.map((chord) =>
             chord.getDegreeName()
         )
-        console.log(degreeNames)
         const chunkBy4 = lo.chunk(degreeNames, 4)
         chunkBy4.forEach((chord4) => {
             const containsChord = chord4.find((chord) => chord !== '')

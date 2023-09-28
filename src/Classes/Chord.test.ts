@@ -97,7 +97,6 @@ describe('analyzeCharacteristics()', () => {
         it('Dm7/G, D F A C / G', () => {
             const chord = Chord.newFromChordName('Dm7/G')
             const got = chord.getNoteIntervals()
-            console.log(got)
             const want = [
                 {
                     noteName: ALL_NOTES[2].flat, //D
@@ -120,7 +119,6 @@ describe('analyzeCharacteristics()', () => {
                     interval: ALL_DEGREES[0].interval, ///root
                 },
             ]
-            console.log(want)
             expect(got).toContainEqual(want[0])
             expect(got).toContainEqual(want[1])
             expect(got).toContainEqual(want[2])

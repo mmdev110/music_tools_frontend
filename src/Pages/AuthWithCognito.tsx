@@ -29,7 +29,6 @@ const AuthResult = ({ signOut, user }: WithAuthenticatorProps) => {
             const token = await getIDToken()
             //バックエンドに投げる
             const user = await authWithToken(token)
-            console.log(user)
         } catch (e) {
             if (isAxiosError(e)) setErrMsg(e.message)
         }

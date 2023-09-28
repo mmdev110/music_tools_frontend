@@ -21,7 +21,6 @@ const SignIn = () => {
             window.location.reload()
             //setResultText(`sign in: ${user.email}`)
         } catch (err) {
-            console.log(err)
             if (isAxiosError(err)) {
                 const { code, message } = err.response?.data
                 let msg = message

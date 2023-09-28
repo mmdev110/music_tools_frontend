@@ -117,7 +117,6 @@ const List = () => {
         }
     }, [user])
     useEffect(() => {
-        console.log(searchCondition)
         if (searchCondition.userIds.length > 0) loadSongs(searchCondition)
     }, [searchCondition])
     const navigateNew = (duplicateFromId: number | null) => {
@@ -134,8 +133,6 @@ const List = () => {
 
     const [isPlayingAudio, setIsPlayingAudio] = useState(false) //このstateを変化させることで再生停止を切り替える
     const play = (song: UserSong, range: AudioRange) => {
-        console.log('play')
-        console.log(song)
         const userAudio = song.audio
         if (!userAudio) return
         const audioChanged = audio.url !== userAudio.url.get
@@ -177,7 +174,6 @@ const List = () => {
         setIsOpen(true)
     }
     const execDelete = async (input: UserSong) => {
-        console.log(input)
         const data = await deleteUserSong(input.id!)
         closeModal()
         window.location.reload()
@@ -220,7 +216,6 @@ const List = () => {
                     }}
                     orders={orders}
                     onOrderChange={(newOrder: Order) => {
-                        console.log(newOrder)
                         const newSearchCondition = { ...searchCondition }
                         newSearchCondition.orderBy = newOrder.orderBy
                         newSearchCondition.ascending = newOrder.ascending
