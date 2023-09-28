@@ -75,7 +75,6 @@ const Detail = () => {
     }
 
     const save = async () => {
-        console.log('@@@@save')
         const userSong = songRef.current!
         //sortOrderを配列のindexに合わせる
         adjustSortOrder(userSong.sections)
@@ -91,21 +90,15 @@ const Detail = () => {
         } catch (err) {
             if (isAxiosError(err)) console.log(err)
         }
-        console.log('hihi')
-        console.log(response)
         if (response) {
             try {
                 const audio = response.audio
-                console.log(audioFileRef)
-                console.log(audio)
                 if (audio && audio.url.put && audioFileRef.current) {
                     //s3へのアップロード
                     const response = await uploadToS3(
                         audio.url.put,
                         audioFileRef.current
                     )
-                    //console.log('@@@upload finished')
-                    //console.log(response)
                 }
                 //midiアップロード
                 //const midi = response.userLoopMidi

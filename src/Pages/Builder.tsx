@@ -135,8 +135,6 @@ const Builder = () => {
     const [audio, setAudio] = useState<Audio>({ name: '', url: '' })
     const [isPlayingAudio, setIsPlayingAudio] = useState(false) //このstateを変化させることで再生停止を切り替える
     const play = (song: UserSong, range: AudioRange) => {
-        console.log('play')
-        console.log(song)
         const userAudio = song.audio
         if (!userAudio) return
         const audioChanged = audio.url !== userAudio.url.get

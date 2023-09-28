@@ -42,7 +42,6 @@ const ChordDisplay2 = ({
         )
     )
     const onChange = (index: number, chords: string) => {
-        console.log('onChange')
         let newInput = progressionNames
         newInput[index] = chords
         //親のstate更新
@@ -59,7 +58,6 @@ const ChordDisplay2 = ({
         progressionNames,
     ])
     const onReset = () => {
-        console.log('onReset')
         const reset = lo.cloneDeep(ResetChordNames)
         onProgressionsChange(reset)
         updateProgression(reset)

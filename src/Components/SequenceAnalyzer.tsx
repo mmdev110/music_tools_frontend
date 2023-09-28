@@ -43,7 +43,6 @@ const SequenceAnalyzer = ({
         onDrop(acceptedFiles)
     }
     const processFile = (file: File): Promise<number> => {
-        console.log(file.name)
         return new Promise((resolve) => {
             const reader = new FileReader()
             reader.onabort = () => console.log('file reading was aborted')

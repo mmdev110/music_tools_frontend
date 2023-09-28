@@ -8,7 +8,6 @@ import { TokenContext } from 'App'
 const SignOut = () => {
     const navigate = useNavigate()
     const token = useContext(TokenContext)
-    console.log(token)
     const [resultMsg, setResultMsg] = useState('')
     const [errMsg, setErrMsg] = useState('')
     useEffect(() => {
