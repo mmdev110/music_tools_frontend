@@ -24,7 +24,6 @@ const ResetReq = () => {
             const result = await resetPasswordRequest(email.email)
             setResultText(`mail sent to:${email.email}`)
         } catch (err) {
-            console.log(err)
             if (isAxiosError(err)) setResultText(err.response?.data.message)
         }
     }

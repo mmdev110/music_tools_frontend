@@ -89,13 +89,11 @@ export const signIn = async (
             password,
         }
     )
-    console.log(response)
     return response.data
 }
 export const authWithToken = async (token: string): Promise<User> => {
     accessToken.update(token)
     const response = await requestBackend<User>('auth_with_token', 'POST', true)
-    console.log(response)
     const me = response.data
     return me
 }
@@ -117,7 +115,6 @@ export const signUp = async (
         email,
         password,
     })
-    console.log(response)
     return response.data
 }
 
@@ -126,7 +123,6 @@ export const saveUserSong = async (
     userSongId: string
 ): Promise<UserSong> => {
     const b = toBackend(song)
-    console.log(b)
     const response = await requestBackend<UserSong>(
         `song/${userSongId}`,
         'POST',
@@ -157,7 +153,6 @@ export const getUserSong = async (uuid: string): Promise<UserSong> => {
 export const getUserSongs = async (
     condition: UserSongSearchCondition
 ): Promise<UserSong[]> => {
-    console.log('@@@@getUserSongs')
     const response = await requestBackend<UserSong[]>(
         'list',
         'POST',
@@ -198,8 +193,6 @@ const requestBackend = async <T>(
 }
 
 export const uploadToS3 = async (presignedUrl: string, file: File) => {
-    console.log('@@@uploadToS3')
-
     try {
         const config = {
             //params: { Key: file.name, ContentType: file.type },
@@ -214,9 +207,6 @@ export const uploadToS3 = async (presignedUrl: string, file: File) => {
     }
 }
 export const getFromS3 = async (presignedUrl: string) => {
-    console.log('@@@getFromS3')
-    console.log('@@@presignedUrl')
-    console.log(presignedUrl)
     //const response = await axios.get(presignedUrl)
     const response = await fetch(presignedUrl)
     return response

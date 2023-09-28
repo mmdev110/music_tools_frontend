@@ -61,7 +61,6 @@ const App = () => {
         try {
             await healthCheck()
         } catch (e) {
-            console.log(e)
             if (isAxiosError(e)) {
                 if (e.code == 'ERR_NETWORK') setIsOnline(false)
                 return
@@ -72,7 +71,6 @@ const App = () => {
     const auth = async () => {
         let me: User | null = null
         try {
-            console.log('@@auth')
             //tokenを探す
             const token = await AccessToken.init()
             await accessToken.updateToken() //userにtokenを内包したので、消したい

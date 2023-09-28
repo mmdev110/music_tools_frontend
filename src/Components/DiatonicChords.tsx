@@ -61,7 +61,6 @@ const DiatonicChords = ({ scaleForm }: Props) => {
                         tailwind_style =
                             'basis-20 border-b-2 border-r-2 border-black text-center'
                         const noteIndex = colIndex - 1
-                        console.log(notes[noteIndex])
                         const note = notes[noteIndex]
                         const scaleName = row
                         const scale = Constants.SCALES[scaleName]

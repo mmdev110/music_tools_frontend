@@ -19,7 +19,6 @@ const MidiMonitor = () => {
         }
     }, [currentInputs])
     const onSuccess = (access: WebMidi.MIDIAccess) => {
-        console.log(access)
         access.addEventListener('statechange', (event) => {
             //console.log(event.port.manufacturer)
         })
@@ -132,7 +131,6 @@ const StyleFlexChild = (
 ): React.CSSProperties => {
     const MAXPITCH = 25 //MAXPITCH鍵分表示させたい
     let pitches = pitch + 12 * (octave - 1) //bottomから何pitch持ち上げるか
-    console.log(pitches)
     pitches = pitches > MAXPITCH - 1 ? MAXPITCH - 1 : pitches
     const heightUnit = vh / MAXPITCH
     return {
